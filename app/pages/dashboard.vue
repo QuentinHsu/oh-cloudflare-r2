@@ -16,8 +16,13 @@ useHead({
   <t-layout class="app-dashboard">
     <Header />
     <t-layout>
-      <t-aside>Aside</t-aside>
-      <t-content>Content</t-content>
+      <!-- aside start -->
+      <DashboardAside />
+      <!-- aside end -->
+
+      <!-- content start -->
+      <DashboardContent />
+      <!-- content end -->
     </t-layout>
     <t-footer>Footer</t-footer>
   </t-layout>
