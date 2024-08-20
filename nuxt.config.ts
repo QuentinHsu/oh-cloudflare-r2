@@ -7,7 +7,6 @@ export default defineNuxtConfig({
   // https://nuxt.com/modules
   modules: [
     '@nuxthub/core',
-    '@nuxt/eslint'
   ],
 
   // https://hub.nuxt.com/docs/getting-started/installation#options
@@ -17,19 +16,12 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       // Can be overridden by NUXT_PUBLIC_HELLO_TEXT environment variable
-      helloText: 'Hello from the Edge 👋'
-    }
+      helloText: 'Hello from the Edge 👋',
+    },
   },
 
   // https://eslint.nuxt.com
-  eslint: {
-    config: {
-      stylistic: {
-        quotes: 'single'
-      }
-    }
-  },
 
   // https://devtools.nuxt.com
-  devtools: { enabled: true }
+  devtools: { enabled: true },
 })
