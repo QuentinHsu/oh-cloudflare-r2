@@ -9,4 +9,6 @@ export default antfu({
     html: true,
     markdown: 'prettier',
   },
+}).overrideRules({
+  'no-console': ['error', { allow: ['info', 'warn', 'error'] }],
 })
