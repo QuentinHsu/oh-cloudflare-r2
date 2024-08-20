@@ -7,6 +7,7 @@ export default defineNuxtConfig({
   // https://nuxt.com/modules
   modules: [
     '@nuxthub/core',
+    '@tdesign-vue-next/nuxt',
   ],
 
   // https://hub.nuxt.com/docs/getting-started/installation#options
