@@ -16,7 +16,9 @@
     "@nuxt/icon": "^1.4.5",
     "@nuxthub/core": "^0.7.3",
     "@nuxtjs/color-mode": "^3.4.4",
+    "@pinia/nuxt": "^0.5.3",
     "nuxt": "^3.12.4",
+    "pinia": "^2.2.2",
     "tdesign-vue-next": "^1.9.9",
     "vue": "^3.4.38",
     "vue-router": "^4.4.3"
