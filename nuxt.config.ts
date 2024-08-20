@@ -8,6 +8,7 @@ export default defineNuxtConfig({
   modules: [
     '@nuxthub/core',
     '@tdesign-vue-next/nuxt',
+    '@nuxtjs/color-mode',
   ],
 
   // https://hub.nuxt.com/docs/getting-started/installation#options
