@@ -10,7 +10,9 @@ export default defineNuxtConfig({
     '@tdesign-vue-next/nuxt',
     '@nuxtjs/color-mode',
   ],
-
+  app: {
+    pageTransition: { name: 'page', mode: 'out-in' },
+  },
   // https://hub.nuxt.com/docs/getting-started/installation#options
   hub: {},
 
