@@ -9,7 +9,7 @@ import 'tdesign-vue-next/dist/reset.css'
 </template>
 
 <style>
-.page-enter-active,
+/* .page-enter-active,
 .page-leave-active {
   transition: all 0.3s;
 }
@@ -17,5 +17,5 @@ import 'tdesign-vue-next/dist/reset.css'
 .page-leave-to {
   opacity: 0;
   filter: blur(1rem);
-}
+} */
 </style>
