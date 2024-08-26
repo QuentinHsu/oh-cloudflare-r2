@@ -15,7 +15,7 @@ async function onUpload(files: UploadFile): Promise<RequestMethodResponse> {
   else {
     if (files) {
       const response = await upload(files.raw as File)
-      return { status: 'success', response: { url: `api/_hub/blob/${response.pathname}` } }
+      return { status: 'success', response: { url: `/images/${response.pathname}` } }
     }
   }
   return { status: 'fail', error: '上传失败', response: { url: undefined } }
