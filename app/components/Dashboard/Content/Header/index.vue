@@ -17,7 +17,6 @@ function onClick() {
 
 <style lang="scss" scoped>
 .dashboard-content__header {
-  padding: 10px;
   display: flex;
   justify-content: space-between;
   align-items: center;
