@@ -11,4 +11,5 @@ export default antfu({
   },
 }).overrideRules({
   'no-console': ['error', { allow: ['info', 'warn', 'error'] }],
+  'ts/unbound-method': 'off',
 })
