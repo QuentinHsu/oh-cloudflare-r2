@@ -12,6 +12,9 @@ export default defineNuxtConfig({
     '@nuxt/icon',
     '@pinia/nuxt',
   ],
+  pinia: {
+    storesDirs: ['@/store'],
+  },
   app: {
     pageTransition: { name: 'page', mode: 'out-in' },
   },
