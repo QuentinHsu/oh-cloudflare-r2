@@ -11,9 +11,13 @@ export default defineNuxtConfig({
     '@nuxtjs/color-mode',
     '@nuxt/icon',
     '@pinia/nuxt',
+    '@unocss/nuxt',
   ],
   pinia: {
     storesDirs: ['@/store'],
+  },
+  unocss: {
+    nuxtLayers: true,
   },
   app: {
     pageTransition: { name: 'page', mode: 'out-in' },
