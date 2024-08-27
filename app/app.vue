@@ -1,11 +1,15 @@
 <script setup>
 import 'tdesign-vue-next/dist/reset.css'
+import { useStoreGlobal } from './stores/useStoreGlobal'
+
+const storeGlobal = useStoreGlobal()
 </script>
 
 <template>
   <NuxtRouteAnnouncer />
   <NuxtLoadingIndicator />
   <NuxtPage />
+  <t-loading :loading="storeGlobal.loadingFullScreen.status" :text="storeGlobal.loadingFullScreen.text" fullscreen />
 </template>
 
 <style>
