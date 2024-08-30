@@ -1,8 +1,10 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+
+</script>
 
 <template>
-  <div class="dashboard-content__header_resource-view">
-    Resource View
+  <div class="dashboard-content__header_resource-view w-full">
+    <DashboardContentContentResourceViewIcon />
   </div>
 </template>
 

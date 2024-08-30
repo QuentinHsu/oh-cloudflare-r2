@@ -13,23 +13,17 @@ useHead({
 </script>
 
 <template>
-  <t-layout class="app-dashboard">
+  <t-layout class="app-dashboard h-100vh w-100vw">
     <Header />
-    <t-layout>
+    <t-layout class="flex">
       <!-- aside start -->
-      <DashboardAside />
+      <DashboardAside class="" />
       <!-- aside end -->
 
       <!-- content start -->
-      <DashboardContent />
+      <DashboardContent class="w-85vw" />
       <!-- content end -->
     </t-layout>
     <t-footer>Footer</t-footer>
   </t-layout>
 </template>
-
-<style lang="scss" scoped>
-.app-dashboard {
-  height: 100vh;
-}
-</style>

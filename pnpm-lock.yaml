@@ -51,6 +51,9 @@ importers:
       '@iconify-json/material-symbols':
         specifier: ^1.1.89
         version: 1.1.89
+      '@iconify-json/typcn':
+        specifier: ^1.1.10
+        version: 1.1.10
       '@tdesign-vue-next/nuxt':
         specifier: ^0.1.3
         version: 0.1.3(magicast@0.3.4)(rollup@4.18.0)(tdesign-icons-vue-next@0.2.4(vue@3.4.38(typescript@5.4.5)))(tdesign-vue-next@1.9.9(vue@3.4.38(typescript@5.4.5)))
@@ -1070,6 +1073,9 @@ packages:
 
   '@iconify-json/material-symbols@1.1.89':
     resolution: {integrity: sha512-lG/eoYGbXduksHNirl4eQ3Yh0mWX85WwmQgBjz4ebHp1g5QVfEK0W+0K83p9F0itiDXlCHcPwhFz4GHsPiCbiA==}
+
+  '@iconify-json/typcn@1.1.10':
+    resolution: {integrity: sha512-KrrfPLOAhFeyGMxXBJFsv4D3jiMv0zwXDZ6H7hfY6RZmv423KQetI2N68Wyn2WLJPI3YCDG3/Gno0JEv9t8z9w==}
 
   '@iconify/collections@1.0.451':
     resolution: {integrity: sha512-rxJuvER88l6nkZf3AW1uhnz5KGYwOgUoJMQ7wOn1lEf2PGkvgT+vPNfqT5ig0hp7vAlOo7reasI8TgElXZP0AQ==}
@@ -6247,6 +6253,10 @@ snapshots:
   '@humanwhocodes/retry@0.3.0': {}
 
   '@iconify-json/material-symbols@1.1.89':
+    dependencies:
+      '@iconify/types': 2.0.0
+
+  '@iconify-json/typcn@1.1.10':
     dependencies:
       '@iconify/types': 2.0.0
 
