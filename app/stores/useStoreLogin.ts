@@ -12,6 +12,8 @@ export const useStoreLogin = defineStore(
     return { token, login, logout }
   },
   {
-    persist: true,
+    persist: {
+      storage: persistedState.localStorage,
+    },
   },
 )
