@@ -11,6 +11,7 @@ export default defineNuxtConfig({
     '@nuxtjs/color-mode',
     '@nuxt/icon',
     '@pinia/nuxt',
+    '@pinia-plugin-persistedstate/nuxt',
     '@unocss/nuxt',
   ],
   pinia: {
