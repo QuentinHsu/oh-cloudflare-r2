@@ -88,7 +88,7 @@ watch(localVisible, (newValue) => {
       <t-space v-if="localVisible" direction="vertical" class="w-full">
         <t-form ref="refForm" :rules="formRules" :data="form">
           <t-form-item label="Login token" name="loginToken">
-            <t-input v-model="form.loginToken" placeholder="Please enter your login token" type="password" />
+            <t-input v-model="form.loginToken" placeholder="Please enter your login token" type="password" :autofocus="true" />
           </t-form-item>
         </t-form>
       </t-space>
