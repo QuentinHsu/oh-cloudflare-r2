@@ -20,9 +20,6 @@ importers:
       '@pinia/nuxt':
         specifier: ^0.5.4
         version: 0.5.4(magicast@0.3.4)(rollup@4.18.0)(typescript@5.4.5)(vue@3.4.38(typescript@5.4.5))
-      flat-color-icons:
-        specifier: ^1.1.0
-        version: 1.1.0
       nuxt:
         specifier: ^3.13.0
         version: 3.13.0(@opentelemetry/api@1.9.0)(@parcel/watcher@2.4.1)(@types/node@20.14.9)(encoding@0.1.13)(eslint@9.9.1(jiti@1.21.6))(ioredis@5.4.1)(magicast@0.3.4)(optionator@0.9.4)(rollup@4.18.0)(sass@1.77.8)(terser@5.31.1)(typescript@5.4.5)(vite@5.4.2(@types/node@20.14.9)(sass@1.77.8)(terser@5.31.1))(vue-tsc@2.0.29(typescript@5.4.5))
@@ -32,9 +29,6 @@ importers:
       tdesign-vue-next:
         specifier: ^1.9.9
         version: 1.9.9(vue@3.4.38(typescript@5.4.5))
-      uuid:
-        specifier: ^10.0.0
-        version: 10.0.0
       vue:
         specifier: ^3.4.38
         version: 3.4.38(typescript@5.4.5)
@@ -48,9 +42,9 @@ importers:
       '@antfu/eslint-config':
         specifier: ^3.0.0
         version: 3.0.0(@typescript-eslint/utils@8.3.0(eslint@9.9.1(jiti@1.21.6))(typescript@5.4.5))(@vue/compiler-sfc@3.4.38)(eslint-plugin-format@0.1.2(eslint@9.9.1(jiti@1.21.6)))(eslint@9.9.1(jiti@1.21.6))(typescript@5.4.5)
-      '@iconify-json/material-symbols':
-        specifier: ^1.1.89
-        version: 1.1.89
+      '@iconify-json/flat-color-icons':
+        specifier: ^1.1.11
+        version: 1.1.11
       '@iconify-json/typcn':
         specifier: ^1.1.10
         version: 1.1.10
@@ -60,9 +54,6 @@ importers:
       '@tdesign-vue-next/nuxt':
         specifier: ^0.1.3
         version: 0.1.3(magicast@0.3.4)(rollup@4.18.0)(tdesign-icons-vue-next@0.2.4(vue@3.4.38(typescript@5.4.5)))(tdesign-vue-next@1.9.9(vue@3.4.38(typescript@5.4.5)))
-      '@types/uuid':
-        specifier: ^10.0.0
-        version: 10.0.0
       '@unocss/core':
         specifier: ^0.62.3
         version: 0.62.3
@@ -1081,8 +1072,8 @@ packages:
     resolution: {integrity: sha512-d2CGZR2o7fS6sWB7DG/3a95bGKQyHMACZ5aW8qGkkqQpUoZV6C0X7Pc7l4ZNMZkfNBf4VWNe9E1jRsf0G146Ew==}
     engines: {node: '>=18.18'}
 
-  '@iconify-json/material-symbols@1.1.89':
-    resolution: {integrity: sha512-lG/eoYGbXduksHNirl4eQ3Yh0mWX85WwmQgBjz4ebHp1g5QVfEK0W+0K83p9F0itiDXlCHcPwhFz4GHsPiCbiA==}
+  '@iconify-json/flat-color-icons@1.1.11':
+    resolution: {integrity: sha512-t0DQmT8L+biKqcM5v2EoORZf47c4YWeLCDeuLQiCitNNPCmDWfLo3e1Z0744uPGhXvIpwTs2fG2rVfIN17pDcA==}
 
   '@iconify-json/typcn@1.1.10':
     resolution: {integrity: sha512-KrrfPLOAhFeyGMxXBJFsv4D3jiMv0zwXDZ6H7hfY6RZmv423KQetI2N68Wyn2WLJPI3YCDG3/Gno0JEv9t8z9w==}
@@ -1782,9 +1773,6 @@ packages:
 
   '@types/unist@2.0.11':
     resolution: {integrity: sha512-CmBKiL6NNo/OqgmMn95Fk9Whlp2mtvIv+KNpQKN2F4SjvrEesubTRWGYSg+BnWZOnlCaSTU1sMpsBOzgbYhnsA==}
-
-  '@types/uuid@10.0.0':
-    resolution: {integrity: sha512-7gqG38EyHgyP1S+7+xomFtL+ZNHcKv6DwNaCZmJmo1vgMugyF3TCnXVg4t1uk89mLNwnLtnY3TpOpCOyp1/xHQ==}
 
   '@types/validator@13.12.0':
     resolution: {integrity: sha512-nH45Lk7oPIJ1RVOF6JgFI6Dy0QpHEzq4QecZhvguxYPDwT8c93prCMqAtiIttm39voZ+DDR+qkNnMpJmMBRqag==}
@@ -3150,9 +3138,6 @@ packages:
   flat-cache@4.0.1:
     resolution: {integrity: sha512-f7ccFPK3SXFHpx15UIGyRJ/FJQctuKZ0zVuN3frBo4HnK3cay9VEW0R6yPYFHC0AgqhukPzKjq22t5DmAyqGyw==}
     engines: {node: '>=16'}
-
-  flat-color-icons@1.1.0:
-    resolution: {integrity: sha512-duN0PycToLxktav7Asyw0hYCSxH8dvoCbeZHw0zSTw+KXg4rAH4CcLViDrGjg//nLfoZjiDV34kw8xmJJfSfqA==}
 
   flatted@3.3.1:
     resolution: {integrity: sha512-X8cqMLLie7KsNUDSdzeN8FYK9rEt4Dt67OsG/DNGnYTSDBG4uFAJFBnUeiV+zCVAvwFy56IjM9sH51jVaEhNxw==}
@@ -5088,10 +5073,6 @@ packages:
   util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
 
-  uuid@10.0.0:
-    resolution: {integrity: sha512-8XkAphELsDnEGrDxUOHB3RGvXz6TeuYSGEZBOjtTtPm2lwhGBjLgOzLHB63IUWfBpNucQjND6d3AOudO+H3RWQ==}
-    hasBin: true
-
   validate-npm-package-license@3.0.4:
     resolution: {integrity: sha512-DpKm2Ui/xN7/HQKCtpZxoRWBhZ9Z0kqtygG8XCgNQ8ZlDnxuQmWhj566j8fN4Cu3/JmbhsDo7fcAJq4s9h27Ew==}
 
@@ -6249,7 +6230,7 @@ snapshots:
 
   '@humanwhocodes/retry@0.3.0': {}
 
-  '@iconify-json/material-symbols@1.1.89':
+  '@iconify-json/flat-color-icons@1.1.11':
     dependencies:
       '@iconify/types': 2.0.0
 
@@ -7211,8 +7192,6 @@ snapshots:
   '@types/tinycolor2@1.4.6': {}
 
   '@types/unist@2.0.11': {}
-
-  '@types/uuid@10.0.0': {}
 
   '@types/validator@13.12.0': {}
 
@@ -8936,8 +8915,6 @@ snapshots:
     dependencies:
       flatted: 3.3.1
       keyv: 4.5.4
-
-  flat-color-icons@1.1.0: {}
 
   flatted@3.3.1: {}
 
@@ -11117,8 +11094,6 @@ snapshots:
   urlpattern-polyfill@8.0.2: {}
 
   util-deprecate@1.0.2: {}
-
-  uuid@10.0.0: {}
 
   validate-npm-package-license@3.0.4:
     dependencies:
