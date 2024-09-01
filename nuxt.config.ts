@@ -30,7 +30,10 @@ export default defineNuxtConfig({
 
   // Env variables - https://nuxt.com/docs/getting-started/configuration#environment-variables-and-private-tokens
   runtimeConfig: {
+    loginToken: '12345678',
+    siteName: ' oh cloudflare r2',
     public: {
+      loginTokenLength: 8,
       // Can be overridden by NUXT_PUBLIC_HELLO_TEXT environment variable
       helloText: 'Hello from the Edge 👋',
     },

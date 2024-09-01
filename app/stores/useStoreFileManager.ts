@@ -1,8 +1,6 @@
-// stores/fileManager.ts
-
 import { defineStore } from 'pinia'
 import { getBlobList } from '~/server/blob'
-import type { BlobInfo, FileManagerState, TreeNode } from '~~/schema/fileManager.js'
+import type { FileManagerState, TreeNode } from '~~/schema/fileManager.js'
 
 export const useStoreFileManager = defineStore('fileManager', () => {
   const state = reactive<FileManagerState>({
@@ -21,21 +19,18 @@ export const useStoreFileManager = defineStore('fileManager', () => {
   }
   const fetchCurrentPathData = async (path: string) => {
     const response = await getBlobList({ prefix: path, folded: true })
-    state.blobs = response.blobs
-    state.folders = response.folders
-    state.hasMore = response.hasMore
+    state.blobs = response.data.blobs
+    state.folders = response.data.folders
+    state.hasMore = response.data.hasMore
     updateTreeStructure()
   }
 
   const setCurrentPath = async (path: string) => {
     state.currentPath = path
-    // 这里应该调用一个方法来获取新路径的数据
+
     await fetchCurrentPathData(path)
   }
   const navigateToFolder = async (folderName: string) => {
-    // const newPath = state.currentPath === '/'
-    //   ? `/${folderName}`
-    //   : `${state.currentPath}${folderName}`
     await setCurrentPath(folderName)
   }
 

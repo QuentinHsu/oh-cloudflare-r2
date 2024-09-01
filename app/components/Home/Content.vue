@@ -1,10 +1,7 @@
 <script setup lang="ts">
-const router = useRouter()
+const visibleDialogLogin = ref(false)
 function onClickGetStarted() {
-  // TODO：
-  // zh: 校验是否有权限，如果没有权限则跳转到登录页
-  // en: Check if you have permission, if you do not have permission, jump to the login page
-  router.push('/dashboard')
+  visibleDialogLogin.value = true
 }
 </script>
 
@@ -16,6 +13,8 @@ function onClickGetStarted() {
       Get Started
     </t-button>
   </div>
+
+  <DialogLogin v-model:visible="visibleDialogLogin" />
 </template>
 
 <style lang="scss" scoped>
