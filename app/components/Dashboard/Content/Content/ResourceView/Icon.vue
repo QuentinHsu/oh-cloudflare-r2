@@ -1,5 +1,6 @@
-<script setup lang="ts">
-import { computed } from 'vue'
+<script setup lang="tsx">
+import type { TableProps } from 'tdesign-vue-next'
+import { Icon } from '#components'
 import { useStoreFileManager } from '~/stores/useStoreFileManager'
 
 const fileManagerStore = useStoreFileManager()
@@ -68,48 +69,40 @@ function getFileType(type: string, fileName: string): string {
   if (type === 'folder')
     return 'Folder'
   const extension = fileName.match(/\.([^.]+)$/)?.[1]?.toLowerCase() || 'Unknown'
-  return extension.charAt(0).toUpperCase() + extension.slice(1)
+  return extension.charAt(0).toLowerCase() + extension.slice(1)
 }
+
+const columns: TableProps['columns'] = [
+  { colKey: 'name', title: 'Name', width: '50%', cell: (h, { row }: any) => {
+    return (
+      <div class="flex items-center cursor-pointer" onClick={() => row.type === 'folder' && navigateToFolder(row.path)}>
+        <Icon name={getIconName(row.type, getLastPathSegment(row.path))} class="text-6 mr-2" />
+        { getLastPathSegment(row.path) }
+      </div>
+    )
+  } },
+  { colKey: 'type', title: 'Type', width: '15%', cell: (h, { row }) => {
+    return (
+      <span>{ getFileType(row.type, getLastPathSegment(row.path)) }</span>
+    )
+  } },
+  { colKey: 'size', title: 'Size', width: '15%', cell: (h, { row }) => {
+    return (
+      <span>{ formatSize(row.size) }</span>
+    )
+  } },
+  { colKey: 'actions', title: 'Actions', width: '20%' },
+
+]
 </script>
 
 <template>
-  <div class="w-full">
-    <table class="w-full border-collapse">
-      <thead class="">
-        <tr class="w-full">
-          <th class="p-2 text-left w-50%">
-            Name
-          </th>
-          <th class="p-2 text-left w-15%">
-            Type
-          </th>
-          <th class="p-2 text-left w-15%">
-            Size
-          </th>
-          <th class="p-2 text-left w-20%">
-            Actions
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="item in items" :key="item.path" class="border-gray-200 ">
-          <td class="p-2">
-            <div class="flex items-center cursor-pointer" @click="item.type === 'folder' && navigateToFolder(item.path)">
-              <Icon :name="getIconName(item.type, getLastPathSegment(item.path))" class="text-6 mr-2" />
-              <span>{{ getLastPathSegment(item.path) }}</span>
-            </div>
-          </td>
-          <td class="p-2">
-            {{ getFileType(item.type, getLastPathSegment(item.path)) }}
-          </td>
-          <td class="p-2">
-            {{ formatSize(item.size) }}
-          </td>
-          <td class="p-2">
-            {{ item.type === 'folder' ? '' : 'Download' }}
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+  <t-table
+    row-key="name"
+    :data="items"
+    :columns="columns"
+    :scroll="{ type: 'lazy', bufferSize: 10 }"
+    height="100%"
+    lazy-load
+  />
 </template>
