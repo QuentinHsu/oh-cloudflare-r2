@@ -1,7 +1,18 @@
 <script setup lang="ts">
+import { getVerify } from '~/server/verify'
+
+const router = useRouter()
 const visibleDialogLogin = ref(false)
-function onClickGetStarted() {
-  visibleDialogLogin.value = true
+async function onClickGetStarted() {
+  try {
+    await getVerify()
+    router.push('/dashboard')
+  }
+  catch (error) {
+    console.error(error)
+    MessagePlugin.warning('Please login first')
+    visibleDialogLogin.value = true
+  }
 }
 </script>
 
