@@ -16,7 +16,7 @@ useHead({
     <t-layout class="app-index-content">
       <HomeContent />
     </t-layout>
-    <t-footer>Footer</t-footer>
+    <FooterBasic />
   </t-layout>
 </template>
 

@@ -39,6 +39,6 @@ onMounted(async () => {
       <DashboardContent class="w-85vw" />
       <!-- content end -->
     </t-layout>
-    <t-footer>Footer</t-footer>
+    <FooterBasic />
   </t-layout>
 </template>
