@@ -1,24 +1,19 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+const router = useRouter()
+function onClickLogo() {
+  router.push('/')
+}
+</script>
 
 <template>
-  <t-header class="header">
-    <h1>Oh Cloudflare R2</h1>
-    <SwitchTheme class="switch-theme" />
+  <t-header class="flex justify-between items-center p-x-10px">
+    <div class="flex items-center space-x-10px" @click="onClickLogo">
+      <img src="/icon-128x128.png" alt="Cloudflare R2" class="w-30px h-30px">
+      <h1 class="text-base">
+        Oh Cloudflare R2
+      </h1>
+    </div>
+
+    <SwitchTheme class="w-40px" />
   </t-header>
 </template>
-
-<style lang="scss" scoped>
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 10px;
-  h1 {
-    font-size: 1rem;
-    font-weight: bold;
-  }
-  .switch-theme {
-    width: 40px;
-  }
-}
-</style>
