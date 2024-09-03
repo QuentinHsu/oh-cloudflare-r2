@@ -3,8 +3,8 @@
 </script>
 
 <template>
-  <div class="dashboard-content__header_resource-view w-full">
-    <DashboardContentContentResourceViewIcon />
+  <div class="dashboard-content__header_resource-view h-60vh">
+    <DashboardContentContentResourceViewIcon class="h-full" />
   </div>
 </template>
 

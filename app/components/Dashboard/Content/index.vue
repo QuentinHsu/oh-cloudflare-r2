@@ -1,10 +1,8 @@
 <script setup lang="ts"></script>
 
 <template>
-  <div class="p-5">
+  <div class="flex flex-col p-4 pb-0">
     <DashboardContentHeader class="mb-3" />
-    <DashboardContentContent />
+    <DashboardContentContent class="flex-grow" />
   </div>
 </template>
-
-<style lang="scss" scoped></style>

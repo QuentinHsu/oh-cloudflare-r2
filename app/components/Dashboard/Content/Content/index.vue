@@ -32,7 +32,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="dashboard-content__content">
+  <div class="dashboard-content__content flex flex-col">
     <div class="flex space-x-3">
       <t-popup content="upload">
         <t-button variant="outline" shape="square" @click="onClickUpload">
@@ -46,7 +46,7 @@ onMounted(async () => {
       </t-popup>
       <DialogUpload v-model:visible="visibleDialogUpload" />
     </div>
-    <DashboardContentContentResourceView class="mt-5" />
+    <DashboardContentContentResourceView class="mt-5 flex-grow" />
   </div>
 </template>
 
