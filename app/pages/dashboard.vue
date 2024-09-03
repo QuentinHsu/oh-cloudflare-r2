@@ -1,6 +1,4 @@
 <script setup>
-import { useHead } from 'nuxt/app'
-
 useHead({
   title: 'Dashboard',
   meta: [
