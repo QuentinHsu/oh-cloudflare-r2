@@ -40,7 +40,6 @@ export async function useAPI<T>(api: NitroFetchRequest, options?: FetchOptions):
   }))
     .then(async (response) => {
       if (response.status > 201) {
-        void MessagePlugin.error(response.message)
         return Promise.reject(response)
       }
       else {
@@ -49,9 +48,6 @@ export async function useAPI<T>(api: NitroFetchRequest, options?: FetchOptions):
     })
     .catch(async (error: ErrorResponse) => {
       console.error('[useAPI Catch]', error)
-      if ((error?.data?.message) != null) {
-        void MessagePlugin.error(error.data.message)
-      }
       return Promise.reject(error)
     })
 }
