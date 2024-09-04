@@ -30,15 +30,9 @@ onMounted(async () => {
 <template>
   <t-layout class="app-dashboard h-100vh w-100vw overflow-hidden">
     <Header />
-    <t-layout>
-      <!-- aside start -->
-      <DashboardAside class="" />
-      <!-- aside end -->
-
-      <!-- content start -->
-      <DashboardContent class="w-85vw" />
-      <!-- content end -->
-    </t-layout>
+    <div class="p-4 h-full">
+      <DashboardContent class="w-full" />
+    </div>
     <FooterBasic />
   </t-layout>
 </template>
