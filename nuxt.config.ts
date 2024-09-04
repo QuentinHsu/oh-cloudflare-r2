@@ -30,7 +30,7 @@ export default defineNuxtConfig({
 
   // Env variables - https://nuxt.com/docs/getting-started/configuration#environment-variables-and-private-tokens
   runtimeConfig: {
-    loginToken: '12345678',
+    loginToken: 'hi!ohcloudflarer2',
     siteName: ' oh cloudflare r2',
     public: {
       loginTokenLength: 8,

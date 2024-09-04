@@ -51,6 +51,10 @@ function validateLoginToken(value: string) {
   if (value.length < loginTokenLength) {
     return { result: false, message: `Please enter at least ${loginTokenLength} characters`, type: 'error' }
   }
+  // 不能使纯数字
+  if (/^\d+$/.test(value)) {
+    return { result: false, message: 'Login token cannot be pure numbers', type: 'error' }
+  }
   return { result: true }
 }
 const formRules = {
@@ -88,7 +92,7 @@ watch(localVisible, (newValue) => {
       <t-space v-if="localVisible" direction="vertical" class="w-full">
         <t-form ref="refForm" :rules="formRules" :data="form">
           <t-form-item label="Login token" name="loginToken">
-            <t-input v-model="form.loginToken" placeholder="Please enter your login token" type="password" :autofocus="true" />
+            <t-input v-model="form.loginToken" placeholder="Please enter your login token" type="password" :autofocus="true" clearable />
           </t-form-item>
         </t-form>
       </t-space>
