@@ -11,23 +11,11 @@ useHead({
 </script>
 
 <template>
-  <t-layout class="app-index">
+  <t-layout class="app-index h-100vh w-100vw overflow-hidden">
     <Header />
-    <t-layout class="app-index-content">
+    <div class="p-4 h-full">
       <HomeContent />
-    </t-layout>
+    </div>
     <FooterBasic />
   </t-layout>
 </template>
-
-<style lang="scss" scoped>
-.app-index {
-  min-height: 100vh;
-  &-content {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-  }
-}
-</style>
