@@ -26,6 +26,7 @@
   "devDependencies": {
     "@antfu/eslint-config": "^3.0.0",
     "@iconify-json/flat-color-icons": "^1.1.11",
+    "@iconify-json/material-symbols": "^1.2.0",
     "@iconify-json/typcn": "^1.1.10",
     "@pinia-plugin-persistedstate/nuxt": "^1.2.1",
     "@tdesign-vue-next/nuxt": "^0.1.3",
