@@ -5,7 +5,11 @@ import { useStoreFileManager } from '~/stores/useStoreFileManager'
 
 const fileManagerStore = useStoreFileManager()
 const { blobs, folders } = storeToRefs(fileManagerStore)
-
+interface IFileItem {
+  type: 'folder' | 'file'
+  path: string
+  size?: number | null
+}
 const items = computed(() => [
   ...folders.value.map(folder => ({ type: 'folder', path: folder, size: null })),
   ...blobs.value.map(blob => ({ type: 'file', path: blob.pathname, size: blob.size })),
@@ -72,6 +76,17 @@ function getFileType(type: string, fileName: string): string {
   return extension.charAt(0).toLowerCase() + extension.slice(1)
 }
 
+function onClickCopy(item: IFileItem) {
+  const domain = window.location.origin
+  const markdown = `${domain}/images/${item.path}`
+  navigator.clipboard.writeText(markdown)
+}
+function onClickCopyWithMarkdown(item: IFileItem) {
+  const domain = window.location.origin
+  const markdown = `![${getLastPathSegment(item.path)}](${domain}/images/${item.path})`
+  navigator.clipboard.writeText(markdown)
+}
+
 const columns: TableProps['columns'] = [
   { colKey: 'name', title: 'Name', width: '50%', cell: (h, { row }: any) => {
     return (
@@ -91,7 +106,33 @@ const columns: TableProps['columns'] = [
       <span>{ formatSize(row.size) }</span>
     )
   } },
-  { colKey: 'actions', title: 'Actions', width: '20%' },
+  { colKey: 'actions', title: 'Actions', width: '20%', cell: (h, { row }) => {
+    return (
+      <div class="flex items-center space-x-2">
+        <div onClick={() => onClickCopy({ path: row.path, type: row.type })} class="flex items-center">
+          <t-popup content="Delete" className="flex items-center">
+            <Icon name="material-symbols-light:delete-forever-outline" class="text-7 cursor-pointer" />
+          </t-popup>
+        </div>
+        { row.type !== 'folder' && (
+          <>
+            <div onClick={() => onClickCopy({ path: row.path, type: row.type })} class="flex items-center">
+              <t-popup content="Copy" className="flex items-center">
+                <Icon name="material-symbols-light:content-copy-outline-rounded" class="text-6 cursor-pointer" />
+              </t-popup>
+            </div>
+            <div onClick={() => onClickCopyWithMarkdown({ path: row.path, type: row.type })} class="flex items-center">
+              <t-popup content="Copy with Markdown" className="flex items-center">
+                <Icon name="material-symbols-light:markdown-copy-outline-rounded" class="text-6 cursor-pointer" />
+              </t-popup>
+            </div>
+          </>
+
+        ) }
+
+      </div>
+    )
+  } },
 
 ]
 </script>
