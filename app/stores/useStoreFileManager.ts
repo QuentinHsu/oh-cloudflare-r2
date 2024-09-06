@@ -19,8 +19,13 @@ export const useStoreFileManager = defineStore('fileManager', () => {
   }
   const fetchCurrentPathData = async (path: string) => {
     const response = await getBlobList({ prefix: path, folded: true })
-    state.blobs = response.data.blobs
-    state.folders = response.data.folders
+    state.blobs = response.data.blobs.map(blob => ({
+      ...blob,
+      uploadedAt: blob.uploadedAt.toString(),
+      contentType: blob.contentType != null ? blob.contentType : '',
+      customMetadata: blob.customMetadata || {},
+    }))
+    state.folders = response.data.folders ?? []
     state.hasMore = response.data.hasMore
     updateTreeStructure()
   }
