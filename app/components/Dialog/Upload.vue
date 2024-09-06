@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
+import { useStoreFileManager } from '~/stores/useStoreFileManager'
 
 interface Props {
   visible: boolean
@@ -14,7 +15,8 @@ const emit = defineEmits<{
 const localVisible = ref(false)
 
 function onClose() {
-
+  const storeFileManager = useStoreFileManager()
+  storeFileManager.fetchCurrentPathData(storeFileManager.currentPath)
 }
 
 onMounted(() => {
