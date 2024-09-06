@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { PopconfirmProps } from 'tdesign-vue-next'
 import { useStoreLogin } from '~/stores/useStoreLogin'
 
 const router = useRouter()
@@ -7,17 +6,7 @@ const storeLogin = useStoreLogin()
 function onClickLogo() {
   router.push('/')
 }
-const visiblePopConfirmLogout = ref(false)
-const onClickLogout: PopconfirmProps['onVisibleChange'] = function (val, context = {}) {
-  if (context && context.trigger === 'confirm') {
-    storeLogin.logout()
-    visiblePopConfirmLogout.value = false
-    router.push('/')
-  }
-  else {
-    visiblePopConfirmLogout.value = val
-  }
-}
+const visibleLogout = ref(false)
 </script>
 
 <template>
@@ -30,18 +19,12 @@ const onClickLogout: PopconfirmProps['onVisibleChange'] = function (val, context
     </div>
     <div class="flex justify-center items-center space-x-10px">
       <ClientOnly>
-        <t-popconfirm
-          v-if="storeLogin.token"
-          :visible="visiblePopConfirmLogout"
-          theme="default"
-          placement="bottom"
-          content="Are you sure you want to logout?"
-          @visible-change="onClickLogout"
-        >
+        <div v-if="storeLogin.token" class="flex justify-center items-center " @click="visibleLogout = true">
           <Icon name="material-symbols:power-settings-circle" class="text-6" />
-        </t-popconfirm>
+        </div>
       </ClientOnly>
-      <SwitchTheme class="w-30px" />
+      <SwitchTheme class="w-30px block" />
     </div>
+    <DialogLogout v-model:visible="visibleLogout" />
   </t-header>
 </template>
