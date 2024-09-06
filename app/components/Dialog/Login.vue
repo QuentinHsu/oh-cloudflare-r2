@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { FormInstanceFunctions } from 'tdesign-vue-next'
+import type { CustomValidateResolveType, FormInstanceFunctions, FormProps } from 'tdesign-vue-next'
 import { ref, watch } from 'vue'
 import { getVerify } from '~/server/verify'
 import { useStoreLogin } from '~/stores/useStoreLogin'
@@ -44,7 +44,7 @@ async function onConfirm() {
   }
 }
 const { loginTokenLength } = useRuntimeConfig().public
-function validateLoginToken(value: string) {
+function validateLoginToken(value: string): CustomValidateResolveType {
   if (!value) {
     return { result: false, message: 'Please enter your login token', type: 'error' }
   }
@@ -55,9 +55,9 @@ function validateLoginToken(value: string) {
   if (/^\d+$/.test(value)) {
     return { result: false, message: 'Login token cannot be pure numbers', type: 'error' }
   }
-  return { result: true }
+  return { result: true, message: '', type: undefined }
 }
-const formRules = {
+const formRules: FormProps['rules'] = {
   loginToken: [
     { validator: validateLoginToken },
   ],
