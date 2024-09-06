@@ -1,11 +1,12 @@
 <script setup lang="tsx">
 import type { TableProps } from 'tdesign-vue-next'
-import { Icon } from '#components'
+import { DialogDeleteBlobs, Icon } from '#components'
 import { useStoreFileManager } from '~/stores/useStoreFileManager'
 
 const fileManagerStore = useStoreFileManager()
 const { blobs, folders } = storeToRefs(fileManagerStore)
-interface IFileItem {
+const selectedItems = ref<IFileItem[]>([])
+export interface IFileItem {
   type: 'folder' | 'file'
   path: string
   size?: number | null
@@ -75,6 +76,11 @@ function getFileType(type: string, fileName: string): string {
   const extension = fileName.match(/\.([^.]+)$/)?.[1]?.toLowerCase() || 'Unknown'
   return extension.charAt(0).toLowerCase() + extension.slice(1)
 }
+const visiblePopConfirmDelete = ref(false)
+async function onClickDelete(item: IFileItem) {
+  selectedItems.value = [item]
+  visiblePopConfirmDelete.value = true
+}
 
 function onClickCopy(item: IFileItem) {
   const domain = window.location.origin
@@ -109,10 +115,8 @@ const columns: TableProps['columns'] = [
   { colKey: 'actions', title: 'Actions', width: '20%', cell: (h, { row }) => {
     return (
       <div class="flex items-center space-x-2">
-        <div onClick={() => onClickCopy({ path: row.path, type: row.type })} class="flex items-center">
-          <t-popup content="Delete" className="flex items-center">
-            <Icon name="material-symbols-light:delete-forever-outline" class="text-7 cursor-pointer" />
-          </t-popup>
+        <div onClick={() => onClickDelete({ type: row.type, path: row.path })} class="flex items-center">
+          <Icon name="material-symbols-light:delete-forever-outline" class="text-7 cursor-pointer" />
         </div>
         { row.type !== 'folder' && (
           <>
@@ -127,23 +131,21 @@ const columns: TableProps['columns'] = [
               </t-popup>
             </div>
           </>
-
         ) }
-
       </div>
     )
   } },
-
 ]
 </script>
 
 <template>
-  <t-table
-    row-key="name"
-    :data="items"
-    :columns="columns"
-    :scroll="{ type: 'lazy', bufferSize: 10 }"
-    height="100%"
-    lazy-load
-  />
+  <div>
+    <t-table
+      row-key="name"
+      :data="items"
+      :columns="columns"
+      height="75vh"
+    />
+    <DialogDeleteBlobs v-model:visible="visiblePopConfirmDelete" :data="selectedItems" />
+  </div>
 </template>
