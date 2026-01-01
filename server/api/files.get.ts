@@ -1,10 +1,8 @@
-export default eventHandler(async (event) => {
-  interface IQuery {
-    prefix: string
-  }
-  const query = getQuery(event)
-  const { prefix }: IQuery = query as unknown as IQuery
-  const { blobs } = await hubBlob().list({ prefix })
+export default defineEventHandler(async event => {
+  await verifyAuth(event);
 
-  return blobs
-})
+  const query = getQuery(event);
+  const prefix = (query.prefix as string) || '';
+
+  return hubBlob().list({ prefix });
+});

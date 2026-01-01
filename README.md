@@ -1,16 +1,31 @@
 # Oh Cloudflare R2
 
-Manage your Cloudflare R2 Blob Storage
+管理你的 Cloudflare R2 Blob 存储
 
-## 如何使用
+## 部署
 
-1. 将 fork 本项目并发布在 Cloudflare pages
-2. 在 Cloudflare pages 中该项目的【设置】里
+1. Fork 本项目并部署到 Cloudflare Pages
+2. 在 Cloudflare Pages 项目设置中配置:
 
-   i. 设置 - 环境变量
+   **环境变量:**
+   - `NUXT_LOGIN_TOKEN`: 登录密钥 (8位以上)
 
-   - `NUXT_LOGIN_TOKEN`：面板登录密码，8 位以上，不建议纯数字
+   **R2 存储桶绑定:**
+   - 变量名: `BLOB`
+   - 绑定你的 R2 存储桶
 
-   ii. 设置 - 函数 - R2 存储桶绑定
+## 本地开发
 
-   - `BLOB`: 存储桶字段，然后绑定对应的存储桶
+```bash
+pnpm install
+pnpm dev
+```
+
+## 技术栈
+
+- Nuxt 4
+- NuxtHub (Blob Storage)
+- TDesign Vue Next
+- UnoCSS
+- Pinia
+- Biome

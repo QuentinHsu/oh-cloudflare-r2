@@ -1,6 +1,5 @@
-import { mergeConfigs } from '@unocss/core'
-import config from './.nuxt/uno.config.mjs'
+import { defineConfig, presetAttributify, presetUno } from 'unocss';
 
-export default mergeConfigs([config, {
-  // your overrides
-}])
+export default defineConfig({
+  presets: [presetUno(), presetAttributify()],
+});

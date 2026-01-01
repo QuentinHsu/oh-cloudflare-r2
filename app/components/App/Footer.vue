@@ -1,5 +1,3 @@
-<script setup lang="ts"></script>
-
 <template>
   <t-footer class="flex justify-center items-center p-4">
     <div class="text-sm">

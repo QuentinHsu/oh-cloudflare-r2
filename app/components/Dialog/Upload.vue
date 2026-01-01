@@ -1,35 +1,34 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
-import { useStoreFileManager } from '~/stores/useStoreFileManager'
+  interface Props {
+    visible: boolean;
+  }
 
-interface Props {
-  visible: boolean
-}
+  const props = defineProps<Props>();
+  const emit = defineEmits<{
+    'update:visible': [boolean];
+  }>();
 
-const props = defineProps<Props>()
+  const localVisible = ref(false);
 
-const emit = defineEmits<{
-  'update:visible': [boolean]
-}>()
+  function onClose() {
+    const storeFileManager = useStoreFileManager();
+    storeFileManager.fetchCurrentPathData(storeFileManager.currentPath);
+  }
 
-const localVisible = ref(false)
+  onMounted(() => {
+    localVisible.value = props.visible;
+  });
 
-function onClose() {
-  const storeFileManager = useStoreFileManager()
-  storeFileManager.fetchCurrentPathData(storeFileManager.currentPath)
-}
+  watch(
+    () => props.visible,
+    newValue => {
+      localVisible.value = newValue;
+    },
+  );
 
-onMounted(() => {
-  localVisible.value = props.visible
-})
-
-watch(() => props.visible, (newValue) => {
-  localVisible.value = newValue
-})
-
-watch(localVisible, (newValue) => {
-  emit('update:visible', newValue)
-})
+  watch(localVisible, newValue => {
+    emit('update:visible', newValue);
+  });
 </script>
 
 <template>
@@ -43,7 +42,7 @@ watch(localVisible, (newValue) => {
       @close="onClose"
     >
       <t-space v-if="localVisible" direction="vertical" style="width: 100%">
-        <UploadBasic style="width: 100%;" />
+        <UploadBasic style="width: 100%" />
       </t-space>
     </t-dialog>
   </ClientOnly>

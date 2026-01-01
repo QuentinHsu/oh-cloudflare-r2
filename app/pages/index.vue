@@ -1,21 +1,16 @@
 <script setup>
-useHead({
-  title: 'Oh Cloudflare R2',
-  meta: [
-    {
-      name: 'description',
-      content: 'Oh Cloudflare R2, manage your Cloudflare R2 Blob Storage',
-    },
-  ],
-})
+  useHead({
+    meta: [{ content: 'Oh Cloudflare R2, manage your Cloudflare R2 Blob Storage', name: 'description' }],
+    title: 'Oh Cloudflare R2',
+  });
 </script>
 
 <template>
-  <t-layout class="app-index h-100vh w-100vw overflow-hidden">
-    <Header />
+  <t-layout class="h-100vh w-100vw overflow-hidden">
+    <AppHeader />
     <div class="p-4 h-full">
       <HomeContent />
     </div>
-    <FooterBasic />
+    <AppFooter />
   </t-layout>
 </template>

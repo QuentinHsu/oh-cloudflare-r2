@@ -1,0 +1,59 @@
+{
+  "$schema": "https://biomejs.dev/schemas/2.3.10/schema.json",
+  "extends": ["@quentinhsu/biome-config/nuxt"],
+  "javascript": {
+    "globals": [
+      "defineNuxtConfig",
+      "defineNuxtRouteMiddleware",
+      "definePageMeta",
+      "defineStore",
+      "defineEventHandler",
+      "eventHandler",
+      "navigateTo",
+      "useRouter",
+      "useRoute",
+      "useHead",
+      "useFetch",
+      "useRuntimeConfig",
+      "useColorMode",
+      "useUpload",
+      "useStoreLogin",
+      "useStoreFileManager",
+      "useStoreGlobal",
+      "useAPI",
+      "getVerify",
+      "postDeleteFolder",
+      "postDeleteBlob",
+      "ref",
+      "reactive",
+      "computed",
+      "onMounted",
+      "watch",
+      "toRaw",
+      "toRefs",
+      "storeToRefs",
+      "$fetch",
+      "getQuery",
+      "getHeader",
+      "getRouterParam",
+      "getRouterParams",
+      "getValidatedQuery",
+      "readValidatedBody",
+      "createError",
+      "hubBlob",
+      "MessagePlugin",
+      "persistedState"
+    ]
+  },
+  "linter": {
+    "rules": {
+      "correctness": {
+        "noUnusedVariables": "off"
+      },
+      "suspicious": {
+        "useAwait": "off",
+        "noExplicitAny": "off"
+      }
+    }
+  }
+}
