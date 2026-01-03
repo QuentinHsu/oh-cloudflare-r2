@@ -1,61 +1,36 @@
 <script setup lang="ts">
-  interface IProps {
-    visible: boolean;
-  }
-  const props = defineProps<IProps>();
-  const emit = defineEmits<{
-    'update:visible': [boolean];
-  }>();
+interface Props {
+  visible: boolean
+}
+const props = defineProps<Props>()
+const emit = defineEmits<{
+  "update:visible": [boolean]
+}>()
 
-  const localVisible = ref(false);
-  const router = useRouter();
-  const storeLogin = useStoreLogin();
+const localVisible = ref(false)
+const router = useRouter()
+const storeLogin = useStoreLogin()
 
-  function onClose() {}
+function onConfirm() {
+  storeLogin.logout()
+  localVisible.value = false
+  router.push("/")
+}
 
-  async function onConfirm() {
-    try {
-      localVisible.value = false;
-      storeLogin.logout();
-      router.push('/');
-    } catch (error: any) {
-      console.error(error);
-      MessagePlugin.error(error.message);
-    }
-  }
-
-  onMounted(() => {
-    localVisible.value = props.visible;
-  });
-
-  watch(
-    () => props.visible,
-    newValue => {
-      localVisible.value = newValue;
-    },
-  );
-
-  watch(localVisible, newValue => {
-    emit('update:visible', newValue);
-  });
+watch(() => props.visible, (v) => { localVisible.value = v })
+watch(localVisible, (v) => { emit("update:visible", v) })
 </script>
 
 <template>
-  <ClientOnly>
-    <t-dialog
-      v-model:visible="localVisible"
-      placement="center"
-      header="Logout"
-      width="40%"
-      :close-on-overlay-click="false"
-      :on-confirm="onConfirm"
-      cancel-btn="Cancel"
-      confirm-btn="Logout"
-      @close="onClose"
-    >
-      <t-space v-if="localVisible" direction="vertical" class="w-full">
-        <div>Are you sure you want to logout?</div>
-      </t-space>
-    </t-dialog>
-  </ClientOnly>
+  <t-dialog
+    v-model:visible="localVisible"
+    header="退出登录"
+    width="400px"
+    placement="center"
+    confirm-btn="确认退出"
+    cancel-btn="取消"
+    :on-confirm="onConfirm"
+  >
+    <p class="text-slate-600 dark:text-slate-400">确定要退出登录吗？</p>
+  </t-dialog>
 </template>

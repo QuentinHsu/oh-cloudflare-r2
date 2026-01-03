@@ -1,100 +1,80 @@
 <script setup lang="ts">
-  import type { CustomValidateResolveType, FormInstanceFunctions, FormProps } from 'tdesign-vue-next';
+interface Props {
+  visible: boolean
+}
+const props = defineProps<Props>()
+const emit = defineEmits<{
+  "update:visible": [boolean]
+}>()
 
-  interface Props {
-    visible: boolean;
+const router = useRouter()
+const localVisible = ref(false)
+const token = ref("")
+const loading = ref(false)
+
+const { loginTokenLength } = useRuntimeConfig().public
+
+async function onConfirm() {
+  if (!token.value) {
+    return MessagePlugin.warning("请输入访问密钥")
   }
-  const props = defineProps<Props>();
-  const emit = defineEmits<{
-    'update:visible': [boolean];
-  }>();
-
-  const router = useRouter();
-  const form = reactive({ loginToken: '' });
-  const refForm = ref<FormInstanceFunctions>();
-  const localVisible = ref(false);
-
-  function onClose() {}
-
-  async function onConfirm() {
-    const storeLogin = useStoreLogin();
-    try {
-      const validateResult = await refForm.value?.validate();
-      if (typeof validateResult !== 'boolean') {
-        return MessagePlugin.error('Please enter the required fields');
-      }
-
-      await storeLogin.login(form.loginToken);
-      await getVerify();
-      MessagePlugin.success('Login successful');
-      router.push('/dashboard');
-    } catch (error: any) {
-      console.error(error);
-      MessagePlugin.error(error.message);
-    }
+  if (token.value.length < loginTokenLength) {
+    return MessagePlugin.warning(`密钥长度至少 ${loginTokenLength} 位`)
+  }
+  if (/^\d+$/.test(token.value)) {
+    return MessagePlugin.warning("密钥不能为纯数字")
   }
 
-  const { loginTokenLength } = useRuntimeConfig().public;
-
-  function validateLoginToken(value: string): CustomValidateResolveType {
-    if (!value) {
-      return { message: 'Please enter your login token', result: false, type: 'error' };
-    }
-    if (value.length < loginTokenLength) {
-      return { message: `Please enter at least ${loginTokenLength} characters`, result: false, type: 'error' };
-    }
-    if (/^\d+$/.test(value)) {
-      return { message: 'Login token cannot be pure numbers', result: false, type: 'error' };
-    }
-    return { message: '', result: true, type: undefined };
+  loading.value = true
+  try {
+    const storeLogin = useStoreLogin()
+    await storeLogin.login(token.value)
+    await getVerify()
+    MessagePlugin.success("登录成功")
+    localVisible.value = false
+    router.push("/dashboard")
+  } catch {
+    MessagePlugin.error("密钥验证失败")
+  } finally {
+    loading.value = false
   }
+}
 
-  const formRules: FormProps['rules'] = {
-    loginToken: [{ validator: validateLoginToken }],
-  };
-
-  onMounted(() => {
-    localVisible.value = props.visible;
-  });
-
-  watch(
-    () => props.visible,
-    newValue => {
-      localVisible.value = newValue;
-    },
-  );
-
-  watch(localVisible, newValue => {
-    emit('update:visible', newValue);
-  });
+watch(() => props.visible, (v) => { localVisible.value = v })
+watch(localVisible, (v) => { emit("update:visible", v) })
 </script>
 
 <template>
-  <ClientOnly>
-    <t-dialog
-      v-model:visible="localVisible"
-      placement="center"
-      header="Login"
-      width="40%"
-      :close-on-overlay-click="false"
-      :on-confirm="onConfirm"
-      cancel-btn="Cancel"
-      confirm-btn="Login"
-      @close="onClose"
-    >
-      <t-space v-if="localVisible" direction="vertical" class="w-full">
-        <t-form ref="refForm" :rules="formRules" :data="form">
-          <t-form-item label="Login token" name="loginToken">
-            <t-input
-              v-model="form.loginToken"
-              placeholder="Please enter your login token"
-              type="password"
-              :autofocus="true"
-              clearable
-            />
-          </t-form-item>
-        </t-form>
-      </t-space>
-    </t-dialog>
-  </ClientOnly>
+  <t-dialog
+    v-model:visible="localVisible"
+    :header="false"
+    :footer="false"
+    width="400px"
+    placement="center"
+    :close-on-overlay-click="true"
+  >
+    <div class="py-4">
+      <div class="text-center mb-8">
+        <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-orange-400 to-amber-500 flex items-center justify-center">
+          <Icon name="material-symbols:lock-outline" class="text-3xl text-white" />
+        </div>
+        <h2 class="text-xl font-semibold text-slate-800 dark:text-white">访问验证</h2>
+        <p class="text-sm text-slate-500 mt-1">请输入访问密钥以继续</p>
+      </div>
+
+      <div class="space-y-4">
+        <t-input
+          v-model="token"
+          type="password"
+          placeholder="请输入访问密钥"
+          size="large"
+          clearable
+          @enter="onConfirm"
+        />
+        <t-button block size="large" theme="primary" :loading="loading" @click="onConfirm">
+          验证并登录
+        </t-button>
+      </div>
+    </div>
+  </t-dialog>
 </template>

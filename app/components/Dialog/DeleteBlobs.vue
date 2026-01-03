@@ -1,82 +1,67 @@
 <script setup lang="ts">
-  import type { IFileItem } from '../Dashboard/ResourceView.vue';
+import type { IFileItem } from "../Dashboard/ResourceView.vue"
 
-  interface IProps {
-    visible: boolean;
-    data: IFileItem[];
-  }
-  const props = defineProps<IProps>();
-  const emit = defineEmits<{
-    'update:visible': [boolean];
-  }>();
+interface Props {
+  visible: boolean
+  data: IFileItem[]
+}
+const props = defineProps<Props>()
+const emit = defineEmits<{
+  "update:visible": [boolean]
+}>()
 
-  const localVisible = ref(false);
-  const storeFileManger = useStoreFileManager();
+const localVisible = ref(false)
+const loading = ref(false)
+const storeFileManager = useStoreFileManager()
 
-  const dialogHeader = computed(() => {
-    if (props.data[0]?.type === 'folder') {
-      return 'Delete Folder';
+const itemName = computed(() => {
+  if (!props.data[0]) return ""
+  const path = props.data[0].path.replace(/\/+$/, "")
+  return path.split("/").pop() || ""
+})
+
+const isFolder = computed(() => props.data[0]?.type === "folder")
+
+async function onConfirm() {
+  if (!props.data[0]) return
+
+  loading.value = true
+  try {
+    if (isFolder.value) {
+      await postDeleteFolder(props.data[0].path)
+    } else {
+      await postDeleteBlob([props.data[0].path])
     }
-    return 'Delete File';
-  });
-
-  function onClose() {}
-
-  async function onConfirm() {
-    try {
-      if (props.data.length === 0) {
-        return MessagePlugin.error('Please select at least one file');
-      }
-      if (props.data.length > 1) {
-        return MessagePlugin.error('Only one file can be deleted at a time');
-      }
-      if (props.data[0]?.type === 'folder') {
-        await postDeleteFolder(props.data[0].path);
-      }
-      if (props.data[0]?.type === 'file') {
-        await postDeleteBlob([props.data[0].path]);
-      }
-      await storeFileManger.fetchCurrentPathData(storeFileManger.currentPath);
-      MessagePlugin.success('Delete successful');
-      localVisible.value = false;
-    } catch (error: any) {
-      console.error(error);
-      MessagePlugin.error(error.message);
-    }
+    await storeFileManager.fetchCurrentPathData(storeFileManager.currentPath)
+    MessagePlugin.success("删除成功")
+    localVisible.value = false
+  } catch {
+    MessagePlugin.error("删除失败")
+  } finally {
+    loading.value = false
   }
+}
 
-  onMounted(() => {
-    localVisible.value = props.visible;
-  });
-
-  watch(
-    () => props.visible,
-    newValue => {
-      localVisible.value = newValue;
-    },
-  );
-
-  watch(localVisible, newValue => {
-    emit('update:visible', newValue);
-  });
+watch(() => props.visible, (v) => { localVisible.value = v })
+watch(localVisible, (v) => { emit("update:visible", v) })
 </script>
 
 <template>
-  <ClientOnly>
-    <t-dialog
-      v-model:visible="localVisible"
-      placement="center"
-      :header="dialogHeader"
-      width="40%"
-      :close-on-overlay-click="false"
-      :on-confirm="onConfirm"
-      cancel-btn="Cancel"
-      confirm-btn="Delete"
-      @close="onClose"
-    >
-      <t-space v-if="localVisible" direction="vertical" class="w-full">
-        <div>Are you sure you want to delete this?</div>
-      </t-space>
-    </t-dialog>
-  </ClientOnly>
+  <t-dialog
+    v-model:visible="localVisible"
+    :header="isFolder ? '删除文件夹' : '删除文件'"
+    width="400px"
+    placement="center"
+    confirm-btn="确认删除"
+    cancel-btn="取消"
+    :confirm-loading="loading"
+    :on-confirm="onConfirm"
+  >
+    <p class="text-slate-600 dark:text-slate-400">
+      确定要删除 <span class="font-medium text-slate-800 dark:text-white">{{ itemName }}</span> 吗？
+      <template v-if="isFolder">
+        <br><span class="text-red-500 text-sm">此操作将删除文件夹内的所有文件</span>
+      </template>
+    </p>
+  </t-dialog>
 </template>

@@ -1,170 +1,149 @@
-<script setup lang="tsx">
-  import type { TableProps } from 'tdesign-vue-next';
+<script setup lang="ts">
+const fileManagerStore = useStoreFileManager()
+const { blobs, folders } = storeToRefs(fileManagerStore)
 
-  import { DialogDeleteBlobs, Icon } from '#components';
+export interface IFileItem {
+  type: "folder" | "file"
+  path: string
+  size?: number | null
+}
 
-  const fileManagerStore = useStoreFileManager();
-  const { blobs, folders } = storeToRefs(fileManagerStore);
-  const selectedItems = ref<IFileItem[]>([]);
+const items = computed(() => [
+  ...folders.value.map((folder) => ({ type: "folder" as const, path: folder, size: null })),
+  ...blobs.value.map((blob) => ({ type: "file" as const, path: blob.pathname, size: blob.size })),
+])
 
-  export interface IFileItem {
-    type: 'folder' | 'file';
-    path: string;
-    size?: number | null;
+const selectedItem = ref<IFileItem | null>(null)
+const visibleDelete = ref(false)
+
+function navigateToFolder(folder: string) {
+  fileManagerStore.navigateToFolder(folder)
+}
+
+function formatSize(size: number | null): string {
+  if (size === null) return "-"
+  const units = ["B", "KB", "MB", "GB", "TB"]
+  let i = 0
+  let s = size
+  while (s >= 1024 && i < units.length - 1) {
+    s /= 1024
+    i++
   }
+  return `${s.toFixed(1)} ${units[i]}`
+}
 
-  const items = computed(() => [
-    ...folders.value.map(folder => ({ path: folder, size: null, type: 'folder' })),
-    ...blobs.value.map(blob => ({ path: blob.pathname, size: blob.size, type: 'file' })),
-  ]);
+function getFileName(path: string): string {
+  return path.replace(/\/+$/, "").split("/").pop() || ""
+}
 
-  function navigateToFolder(folder: string) {
-    fileManagerStore.navigateToFolder(folder);
+function getFileExt(path: string): string {
+  const name = getFileName(path)
+  const ext = name.match(/\.([^.]+)$/)?.[1]?.toLowerCase()
+  return ext || ""
+}
+
+function getIconName(type: string, path: string): string {
+  if (type === "folder") return "flat-color-icons:folder"
+  const ext = getFileExt(path)
+  const map: Record<string, string> = {
+    jpg: "flat-color-icons:image-file",
+    jpeg: "flat-color-icons:image-file",
+    png: "flat-color-icons:image-file",
+    gif: "flat-color-icons:image-file",
+    webp: "flat-color-icons:image-file",
+    svg: "flat-color-icons:image-file",
+    mp4: "flat-color-icons:video-file",
+    mov: "flat-color-icons:video-file",
+    avi: "flat-color-icons:video-file",
+    mp3: "flat-color-icons:audio-file",
+    wav: "flat-color-icons:audio-file",
+    pdf: "flat-color-icons:document",
+    doc: "flat-color-icons:document",
+    docx: "flat-color-icons:document",
+    txt: "flat-color-icons:document",
   }
+  return map[ext] || "flat-color-icons:file"
+}
 
-  function formatSize(size: number | null): string {
-    if (size === null) return '-';
-    const units = ['B', 'KB', 'MB', 'GB', 'TB'];
-    let i = 0;
-    while (size >= 1024 && i < units.length - 1) {
-      size /= 1024;
-      i++;
-    }
-    return `${size.toFixed(2)} ${units[i]}`;
+function onClickItem(item: IFileItem) {
+  if (item.type === "folder") {
+    navigateToFolder(item.path)
   }
+}
 
-  function getLastPathSegment(path: string): string {
-    const trimmedPath = path.replace(/\/+$/, '');
-    return trimmedPath.split('/').pop() || '';
-  }
+function onClickDelete(item: IFileItem) {
+  selectedItem.value = item
+  visibleDelete.value = true
+}
 
-  type IconName =
-    | 'i-flat-color-icons:folder'
-    | 'i-flat-color-icons:document'
-    | 'i-flat-color-icons:audio-file'
-    | 'i-flat-color-icons:file'
-    | 'i-flat-color-icons:image-file'
-    | 'i-flat-color-icons:video-file';
+function onClickCopy(item: IFileItem) {
+  const url = `${window.location.origin}/images/${item.path}`
+  navigator.clipboard.writeText(url)
+  MessagePlugin.success("链接已复制")
+}
 
-  function getIconName(type: string, fileName: string): IconName {
-    if (type === 'folder') return 'i-flat-color-icons:folder';
-
-    const extension = fileName.match(/\.([^.]+)$/)?.[1]?.toLowerCase();
-    const iconMap: Record<string, IconName> = {
-      avi: 'i-flat-color-icons:video-file',
-      doc: 'i-flat-color-icons:document',
-      docx: 'i-flat-color-icons:document',
-      gif: 'i-flat-color-icons:image-file',
-      jpeg: 'i-flat-color-icons:image-file',
-      jpg: 'i-flat-color-icons:image-file',
-      mov: 'i-flat-color-icons:video-file',
-      mp3: 'i-flat-color-icons:audio-file',
-      mp4: 'i-flat-color-icons:video-file',
-      ogg: 'i-flat-color-icons:audio-file',
-      pdf: 'i-flat-color-icons:document',
-      png: 'i-flat-color-icons:image-file',
-      txt: 'i-flat-color-icons:document',
-      wav: 'i-flat-color-icons:audio-file',
-      webp: 'i-flat-color-icons:image-file',
-    };
-    return extension ? (iconMap[extension] ?? 'i-flat-color-icons:file') : 'i-flat-color-icons:file';
-  }
-
-  function getFileType(type: string, fileName: string): string {
-    if (type === 'folder') return 'Folder';
-    const extension = fileName.match(/\.([^.]+)$/)?.[1]?.toLowerCase() || 'Unknown';
-    return extension.charAt(0).toLowerCase() + extension.slice(1);
-  }
-
-  const visiblePopConfirmDelete = ref(false);
-
-  async function onClickDelete(item: IFileItem) {
-    selectedItems.value = [item];
-    visiblePopConfirmDelete.value = true;
-  }
-
-  function onClickCopy(item: IFileItem) {
-    const domain = window.location.origin;
-    const markdown = `${domain}/images/${item.path}`;
-    navigator.clipboard.writeText(markdown);
-  }
-
-  function onClickCopyWithMarkdown(item: IFileItem) {
-    const domain = window.location.origin;
-    const markdown = `![${getLastPathSegment(item.path)}](${domain}/images/${item.path})`;
-    navigator.clipboard.writeText(markdown);
-  }
-
-  const columns: TableProps['columns'] = [
-    {
-      cell: (h, { row }: any) => {
-        return (
-          <div
-            class='flex cursor-pointer items-center'
-            onClick={() => row.type === 'folder' && navigateToFolder(row.path)}
-          >
-            <Icon class='mr-2 text-6' name={getIconName(row.type, getLastPathSegment(row.path))} />
-            {getLastPathSegment(row.path)}
-          </div>
-        );
-      },
-      colKey: 'name',
-      title: 'Name',
-      width: '50%',
-    },
-    {
-      cell: (h, { row }) => {
-        return <span>{getFileType(row.type, getLastPathSegment(row.path))}</span>;
-      },
-      colKey: 'type',
-      title: 'Type',
-      width: '15%',
-    },
-    {
-      cell: (h, { row }) => {
-        return <span>{formatSize(row.size)}</span>;
-      },
-      colKey: 'size',
-      title: 'Size',
-      width: '15%',
-    },
-    {
-      cell: (h, { row }) => {
-        return (
-          <div class='flex items-center space-x-2'>
-            <div class='flex items-center' onClick={() => onClickDelete({ path: row.path, type: row.type })}>
-              <Icon class='cursor-pointer text-7' name='material-symbols-light:delete-forever-outline' />
-            </div>
-            {row.type !== 'folder' && (
-              <>
-                <div class='flex items-center' onClick={() => onClickCopy({ path: row.path, type: row.type })}>
-                  <t-popup className='flex items-center' content='Copy'>
-                    <Icon class='cursor-pointer text-6' name='material-symbols-light:content-copy-outline-rounded' />
-                  </t-popup>
-                </div>
-                <div
-                  class='flex items-center'
-                  onClick={() => onClickCopyWithMarkdown({ path: row.path, type: row.type })}
-                >
-                  <t-popup className='flex items-center' content='Copy with Markdown'>
-                    <Icon class='cursor-pointer text-6' name='material-symbols-light:markdown-copy-outline-rounded' />
-                  </t-popup>
-                </div>
-              </>
-            )}
-          </div>
-        );
-      },
-      colKey: 'actions',
-      title: 'Actions',
-      width: '20%',
-    },
-  ];
+function onClickCopyMarkdown(item: IFileItem) {
+  const url = `${window.location.origin}/images/${item.path}`
+  const md = `![${getFileName(item.path)}](${url})`
+  navigator.clipboard.writeText(md)
+  MessagePlugin.success("Markdown 已复制")
+}
 </script>
 
 <template>
   <div>
-    <t-table row-key="name" :data="items" :columns="columns" height="75vh" />
-    <DialogDeleteBlobs v-model:visible="visiblePopConfirmDelete" :data="selectedItems" />
+    <!-- Empty State -->
+    <div v-if="items.length === 0" class="flex flex-col items-center justify-center py-20 text-slate-400">
+      <Icon name="material-symbols:folder-off-outline" class="text-6xl mb-4" />
+      <p>暂无文件</p>
+    </div>
+
+    <!-- File Grid -->
+    <div v-else class="grid grid-cols-1 gap-2">
+      <div
+        v-for="item in items"
+        :key="item.path"
+        class="group flex items-center gap-4 px-4 py-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 hover:shadow-sm transition-all cursor-pointer"
+        @click="onClickItem(item)"
+      >
+        <!-- Icon -->
+        <div class="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-700 flex items-center justify-center flex-shrink-0">
+          <Icon :name="getIconName(item.type, item.path)" class="text-2xl" />
+        </div>
+
+        <!-- Info -->
+        <div class="flex-1 min-w-0">
+          <div class="font-medium text-slate-800 dark:text-white truncate">
+            {{ getFileName(item.path) }}
+          </div>
+          <div class="text-xs text-slate-500 mt-0.5">
+            {{ item.type === "folder" ? "文件夹" : formatSize(item.size) }}
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity" @click.stop>
+          <template v-if="item.type === 'file'">
+            <t-tooltip content="复制链接">
+              <t-button variant="text" shape="square" size="small" @click="onClickCopy(item)">
+                <Icon name="material-symbols:link" class="text-lg" />
+              </t-button>
+            </t-tooltip>
+            <t-tooltip content="复制 Markdown">
+              <t-button variant="text" shape="square" size="small" @click="onClickCopyMarkdown(item)">
+                <Icon name="material-symbols:markdown" class="text-lg" />
+              </t-button>
+            </t-tooltip>
+          </template>
+          <t-tooltip content="删除">
+            <t-button variant="text" shape="square" size="small" theme="danger" @click="onClickDelete(item)">
+              <Icon name="material-symbols:delete-outline" class="text-lg" />
+            </t-button>
+          </t-tooltip>
+        </div>
+      </div>
+    </div>
+
+    <DialogDeleteBlobs v-model:visible="visibleDelete" :data="selectedItem ? [selectedItem] : []" />
   </div>
 </template>
