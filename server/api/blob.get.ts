@@ -12,7 +12,10 @@ const schemaAPIBlobListOptions = z.object({
     .string()
     .transform(x => Number.parseInt(x))
     .optional(),
-  prefix: z.string().optional(),
+  prefix: z
+    .string()
+    .optional()
+    .transform(x => (x === '' ? undefined : x)),
 });
 
 export interface IResponse {
