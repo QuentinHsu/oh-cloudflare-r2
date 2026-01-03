@@ -1,4 +1,15 @@
 <script setup lang="ts">
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
+
 interface Props {
   visible: boolean
 }
@@ -7,7 +18,10 @@ const emit = defineEmits<{
   "update:visible": [boolean]
 }>()
 
-const localVisible = ref(false)
+const localVisible = computed({
+  get: () => props.visible,
+  set: (v) => emit("update:visible", v)
+})
 const router = useRouter()
 const storeLogin = useStoreLogin()
 
@@ -16,21 +30,19 @@ function onConfirm() {
   localVisible.value = false
   router.push("/")
 }
-
-watch(() => props.visible, (v) => { localVisible.value = v })
-watch(localVisible, (v) => { emit("update:visible", v) })
 </script>
 
 <template>
-  <t-dialog
-    v-model:visible="localVisible"
-    header="退出登录"
-    width="400px"
-    placement="center"
-    confirm-btn="确认退出"
-    cancel-btn="取消"
-    :on-confirm="onConfirm"
-  >
-    <p class="text-slate-600 dark:text-slate-400">确定要退出登录吗？</p>
-  </t-dialog>
+  <AlertDialog v-model:open="localVisible">
+    <AlertDialogContent>
+      <AlertDialogHeader>
+        <AlertDialogTitle>退出登录</AlertDialogTitle>
+        <AlertDialogDescription>确定要退出登录吗？</AlertDialogDescription>
+      </AlertDialogHeader>
+      <AlertDialogFooter>
+        <AlertDialogCancel>取消</AlertDialogCancel>
+        <AlertDialogAction @click="onConfirm">确认</AlertDialogAction>
+      </AlertDialogFooter>
+    </AlertDialogContent>
+  </AlertDialog>
 </template>

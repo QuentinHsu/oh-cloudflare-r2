@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { Button } from '@/components/ui/button'
+
 const colorMode = useColorMode()
 const isDark = computed(() => colorMode.value === "dark")
 
@@ -8,10 +10,7 @@ function toggle() {
 </script>
 
 <template>
-  <button
-    class="w-9 h-9 rounded-lg flex items-center justify-center text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
-    @click="toggle"
-  >
-    <Icon :name="isDark ? 'material-symbols:light-mode-outline' : 'material-symbols:dark-mode-outline'" class="text-xl" />
-  </button>
+  <Button variant="ghost" size="icon" class="h-8 w-8" @click="toggle">
+    <Icon :name="isDark ? 'ph:sun' : 'ph:moon'" class="text-base text-muted-foreground" />
+  </Button>
 </template>

@@ -8,6 +8,8 @@ export default defineNuxtConfig({
   },
   compatibilityDate: '2025-01-01',
 
+  css: ['~/assets/css/main.css'],
+
   devtools: { enabled: true },
 
   hub: {
@@ -16,12 +18,11 @@ export default defineNuxtConfig({
 
   modules: [
     '@nuxthub/core',
-    '@tdesign-vue-next/nuxt',
     '@nuxtjs/color-mode',
     '@nuxt/icon',
     '@pinia/nuxt',
     'pinia-plugin-persistedstate/nuxt',
-    '@unocss/nuxt',
+    'shadcn-nuxt',
   ],
 
   pinia: {
@@ -34,5 +35,16 @@ export default defineNuxtConfig({
       loginTokenLength: 8,
       siteName: 'Oh Cloudflare R2',
     },
+  },
+
+  shadcn: {
+    prefix: '',
+    componentDir: './app/components/ui',
+  },
+
+  vite: {
+    plugins: [
+      (await import('@tailwindcss/vite')).default(),
+    ],
   },
 });

@@ -1,5 +1,15 @@
 <script setup lang="ts">
-import type { IFileItem } from "../Dashboard/ResourceView.vue"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
+import type { IFileItem } from '../Dashboard/ResourceView.vue'
 
 interface Props {
   visible: boolean
@@ -10,7 +20,10 @@ const emit = defineEmits<{
   "update:visible": [boolean]
 }>()
 
-const localVisible = ref(false)
+const localVisible = computed({
+  get: () => props.visible,
+  set: (v) => emit("update:visible", v)
+})
 const loading = ref(false)
 const storeFileManager = useStoreFileManager()
 
@@ -33,35 +46,30 @@ async function onConfirm() {
       await postDeleteBlob([props.data[0].path])
     }
     await storeFileManager.fetchCurrentPathData(storeFileManager.currentPath)
-    MessagePlugin.success("删除成功")
     localVisible.value = false
-  } catch {
-    MessagePlugin.error("删除失败")
   } finally {
     loading.value = false
   }
 }
-
-watch(() => props.visible, (v) => { localVisible.value = v })
-watch(localVisible, (v) => { emit("update:visible", v) })
 </script>
 
 <template>
-  <t-dialog
-    v-model:visible="localVisible"
-    :header="isFolder ? '删除文件夹' : '删除文件'"
-    width="400px"
-    placement="center"
-    confirm-btn="确认删除"
-    cancel-btn="取消"
-    :confirm-loading="loading"
-    :on-confirm="onConfirm"
-  >
-    <p class="text-slate-600 dark:text-slate-400">
-      确定要删除 <span class="font-medium text-slate-800 dark:text-white">{{ itemName }}</span> 吗？
-      <template v-if="isFolder">
-        <br><span class="text-red-500 text-sm">此操作将删除文件夹内的所有文件</span>
-      </template>
-    </p>
-  </t-dialog>
+  <AlertDialog v-model:open="localVisible">
+    <AlertDialogContent>
+      <AlertDialogHeader>
+        <AlertDialogTitle>{{ isFolder ? '删除文件夹' : '删除文件' }}</AlertDialogTitle>
+        <AlertDialogDescription>
+          确定要删除 <span class="font-medium text-foreground">{{ itemName }}</span> 吗？
+          <span v-if="isFolder" class="block mt-1 text-destructive">此操作将删除文件夹内的所有文件，且无法恢复。</span>
+        </AlertDialogDescription>
+      </AlertDialogHeader>
+      <AlertDialogFooter>
+        <AlertDialogCancel>取消</AlertDialogCancel>
+        <AlertDialogAction class="bg-destructive text-destructive-foreground hover:bg-destructive/90" :disabled="loading" @click="onConfirm">
+          <Icon v-if="loading" name="ph:spinner" class="mr-2 animate-spin" />
+          删除
+        </AlertDialogAction>
+      </AlertDialogFooter>
+    </AlertDialogContent>
+  </AlertDialog>
 </template>

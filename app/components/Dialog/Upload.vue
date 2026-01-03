@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import type { RequestMethodResponse, UploadFile } from "tdesign-vue-next"
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 
 interface Props {
   visible: boolean
@@ -9,79 +11,115 @@ const emit = defineEmits<{
   "update:visible": [boolean]
 }>()
 
-const localVisible = ref(false)
+const localVisible = computed({
+  get: () => props.visible,
+  set: (v) => emit("update:visible", v)
+})
 const storeFileManager = useStoreFileManager()
 const uploadPath = ref("")
+const files = ref<File[]>([])
+const uploading = ref(false)
+const fileInput = ref<HTMLInputElement>()
 
 function onOpen() {
   uploadPath.value = storeFileManager.currentPath
+  files.value = []
 }
 
 function onClose() {
   storeFileManager.fetchCurrentPathData(storeFileManager.currentPath)
 }
 
-async function onUpload(files: UploadFile): Promise<RequestMethodResponse> {
-  const file = toRaw(files[0])
+function onFileChange(e: Event) {
+  const input = e.target as HTMLInputElement
+  if (input.files) {
+    files.value = Array.from(input.files)
+  }
+}
+
+function removeFile(index: number) {
+  files.value.splice(index, 1)
+}
+
+async function onUpload() {
+  if (files.value.length === 0) return
+  uploading.value = true
+  
   const storeLogin = useStoreLogin()
   const upload = useUpload(`/api/blob?prefix=${uploadPath.value}`, {
     method: "PUT",
     headers: { Authorization: `Bearer ${storeLogin.token || ""}` },
   })
 
-  if (!Array.isArray(file) && file) {
-    const response = await upload(file.raw as File)
-    return { status: "success", response: { url: `/images/${response.pathname}` } }
+  try {
+    for (const file of files.value) {
+      await upload(file)
+    }
+    localVisible.value = false
+    onClose()
+  } finally {
+    uploading.value = false
   }
-  return { status: "fail", error: "上传失败", response: { url: undefined } }
 }
 
-watch(() => props.visible, (v) => {
-  localVisible.value = v
+watch(localVisible, (v) => {
   if (v) onOpen()
 })
-watch(localVisible, (v) => { emit("update:visible", v) })
 </script>
 
 <template>
-  <t-dialog
-    v-model:visible="localVisible"
-    :header="false"
-    :footer="false"
-    width="560px"
-    placement="center"
-    @close="onClose"
-  >
-    <div class="py-4">
-      <div class="mb-6">
-        <h2 class="text-xl font-semibold text-slate-800 dark:text-white">上传文件</h2>
-        <p class="text-sm text-slate-500 mt-1">支持拖拽或粘贴上传，最多 8 个文件</p>
-      </div>
-
-      <div class="space-y-4">
-        <div>
-          <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">上传路径</label>
-          <t-input v-model="uploadPath" placeholder="留空则上传到根目录" clearable>
-            <template #prefix-icon>
-              <Icon name="material-symbols:folder-outline" />
-            </template>
-          </t-input>
+  <Dialog v-model:open="localVisible">
+    <DialogContent class="sm:max-w-[480px]">
+      <DialogHeader>
+        <DialogTitle>上传文件</DialogTitle>
+        <DialogDescription>选择文件上传到当前目录</DialogDescription>
+      </DialogHeader>
+      <div class="space-y-4 py-2">
+        <div class="space-y-2">
+          <label class="text-sm font-medium text-foreground">上传路径</label>
+          <Input v-model="uploadPath" placeholder="留空则上传到根目录" />
         </div>
 
-        <div>
-          <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">选择文件</label>
-          <t-upload
-            theme="file-flow"
-            :request-method="onUpload"
-            :auto-upload="false"
-            :upload-button="undefined"
-            :cancel-upload-button="{ theme: 'default', content: '取消' }"
-            multiple
-            :max="8"
-            tips="支持拖拽或粘贴上传"
-          />
+        <div class="space-y-2">
+          <label class="text-sm font-medium text-foreground">选择文件</label>
+          <div
+            class="border-2 border-dashed border-border rounded-lg p-6 text-center cursor-pointer hover:border-primary/50 transition-colors"
+            @click="fileInput?.click()"
+          >
+            <Icon name="ph:upload-simple" class="text-3xl text-muted-foreground mb-2" />
+            <p class="text-sm text-muted-foreground">点击或拖拽文件到此处</p>
+            <input
+              ref="fileInput"
+              type="file"
+              multiple
+              class="hidden"
+              @change="onFileChange"
+            >
+          </div>
         </div>
+
+        <!-- File List -->
+        <div v-if="files.length > 0" class="space-y-2">
+          <div
+            v-for="(file, index) in files"
+            :key="index"
+            class="flex items-center justify-between px-3 py-2 bg-muted rounded-md"
+          >
+            <div class="flex items-center gap-2 min-w-0">
+              <Icon name="ph:file" class="text-muted-foreground flex-shrink-0" />
+              <span class="text-sm truncate">{{ file.name }}</span>
+            </div>
+            <Button variant="ghost" size="icon" class="h-6 w-6 flex-shrink-0" @click="removeFile(index)">
+              <Icon name="ph:x" class="text-xs" />
+            </Button>
+          </div>
+        </div>
+
+        <Button class="w-full" :disabled="files.length === 0 || uploading" @click="onUpload">
+          <Icon v-if="uploading" name="ph:spinner" class="mr-2 animate-spin" />
+          上传 {{ files.length > 0 ? `(${files.length})` : '' }}
+        </Button>
       </div>
-    </div>
-  </t-dialog>
+    </DialogContent>
+  </Dialog>
 </template>

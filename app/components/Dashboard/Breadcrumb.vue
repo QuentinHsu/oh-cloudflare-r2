@@ -16,25 +16,25 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="flex items-center gap-2 text-sm">
+  <nav class="flex items-center gap-1 text-sm">
     <button
-      class="flex items-center gap-1.5 px-2 py-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
-      :class="currentPath === '' ? 'text-slate-900 dark:text-white font-medium' : 'text-slate-500 dark:text-slate-400'"
+      class="flex items-center gap-1.5 px-2 py-1 rounded-md hover:bg-accent transition-colors"
+      :class="currentPath === '' ? 'text-foreground font-medium' : 'text-muted-foreground'"
       @click="navigateUp('')"
     >
-      <Icon name="material-symbols:home-outline" class="text-lg" />
+      <Icon name="ph:house-simple" class="text-sm" />
       <span>根目录</span>
     </button>
 
     <template v-for="(segment, index) in pathSegments" :key="index">
-      <Icon name="material-symbols:chevron-right" class="text-slate-400" />
+      <Icon name="ph:caret-right" class="text-muted-foreground/50 text-xs" />
       <button
-        class="px-2 py-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
-        :class="index === pathSegments.length - 1 ? 'text-slate-900 dark:text-white font-medium' : 'text-slate-500 dark:text-slate-400'"
+        class="px-2 py-1 rounded-md hover:bg-accent transition-colors max-w-40 truncate"
+        :class="index === pathSegments.length - 1 ? 'text-foreground font-medium' : 'text-muted-foreground'"
         @click="navigateUp(getPathUpTo(index))"
       >
         {{ segment }}
       </button>
     </template>
-  </div>
+  </nav>
 </template>

@@ -1,6 +1,8 @@
-<script setup>
+<script setup lang="ts">
+import { Button } from '@/components/ui/button'
+
 const router = useRouter()
-const storeLogin = useStoreLogin()
+const storeFileManager = useStoreFileManager()
 const visibleLogout = ref(false)
 const visibleUpload = ref(false)
 
@@ -12,7 +14,6 @@ async function init() {
   try {
     await getVerify()
   } catch (error) {
-    MessagePlugin.error("请先登录")
     router.push("/")
   }
 }
@@ -23,66 +24,61 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-slate-50 dark:bg-slate-900">
+  <div class="min-h-screen bg-muted/50">
     <!-- Sidebar -->
-    <aside class="fixed left-0 top-0 bottom-0 w-64 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 flex flex-col">
+    <aside class="fixed left-0 top-0 bottom-0 w-56 bg-card border-r border-border flex flex-col">
       <!-- Logo -->
-      <div class="h-16 px-6 flex items-center gap-3 border-b border-slate-200 dark:border-slate-700">
-        <img src="/icon-128x128.png" alt="Logo" class="w-8 h-8">
-        <span class="font-semibold text-slate-800 dark:text-white">Oh R2</span>
+      <div class="h-14 px-4 flex items-center gap-2.5">
+        <img src="/icon-128x128.png" alt="Logo" class="w-7 h-7">
+        <span class="font-semibold text-foreground text-sm">Oh R2</span>
       </div>
 
       <!-- Nav -->
-      <nav class="flex-1 p-4">
-        <div class="space-y-1">
-          <div class="flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-100 dark:bg-slate-700/50 text-slate-900 dark:text-white font-medium">
-            <Icon name="material-symbols:folder-outline" class="text-xl" />
-            文件管理
-          </div>
+      <nav class="flex-1 px-3 py-2">
+        <div class="flex items-center gap-3 px-3 py-2 rounded-md text-sm bg-accent text-accent-foreground font-medium">
+          <Icon name="ph:folder-simple" class="text-lg text-primary" />
+          <span>文件管理</span>
         </div>
       </nav>
 
       <!-- User -->
-      <div class="p-4 border-t border-slate-200 dark:border-slate-700">
+      <div class="p-3 border-t border-border">
         <div class="flex items-center justify-between">
-          <div class="flex items-center gap-3">
-            <div class="w-9 h-9 rounded-full bg-gradient-to-br from-orange-400 to-amber-500 flex items-center justify-center">
-              <Icon name="material-symbols:person" class="text-white text-lg" />
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
+              <Icon name="ph:user" class="text-primary-foreground text-sm" />
             </div>
-            <div>
-              <div class="text-sm font-medium text-slate-800 dark:text-white">Admin</div>
-              <div class="text-xs text-slate-500">已登录</div>
-            </div>
+            <div class="text-sm font-medium text-foreground">Admin</div>
           </div>
-          <div class="flex items-center gap-1">
+          <div class="flex items-center">
             <SwitchTheme />
-            <t-button variant="text" shape="square" size="small" @click="visibleLogout = true">
-              <Icon name="material-symbols:logout" class="text-lg text-slate-500" />
-            </t-button>
+            <Button variant="ghost" size="icon" class="h-8 w-8" @click="visibleLogout = true">
+              <Icon name="ph:sign-out" class="text-base text-muted-foreground" />
+            </Button>
           </div>
         </div>
       </div>
     </aside>
 
     <!-- Main -->
-    <main class="ml-64 min-h-screen">
+    <main class="ml-56 min-h-screen">
       <!-- Header -->
-      <header class="h-16 px-8 flex items-center justify-between border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
+      <header class="sticky top-0 z-10 h-14 px-6 flex items-center justify-between bg-card border-b border-border">
         <DashboardBreadcrumb />
-        <div class="flex items-center gap-3">
-          <t-button variant="outline" @click="useStoreFileManager().fetchCurrentPathData(useStoreFileManager().currentPath)">
-            <template #icon><Icon name="material-symbols:refresh" /></template>
+        <div class="flex items-center gap-2">
+          <Button variant="outline" size="sm" @click="storeFileManager.fetchCurrentPathData(storeFileManager.currentPath)">
+            <Icon name="ph:arrows-clockwise" class="mr-2 text-base" />
             刷新
-          </t-button>
-          <t-button theme="primary" @click="visibleUpload = true">
-            <template #icon><Icon name="material-symbols:upload-rounded" /></template>
-            上传文件
-          </t-button>
+          </Button>
+          <Button size="sm" @click="visibleUpload = true">
+            <Icon name="ph:upload-simple" class="mr-2 text-base" />
+            上传
+          </Button>
         </div>
       </header>
 
       <!-- Content -->
-      <div class="p-8">
+      <div class="p-6">
         <DashboardResourceView />
       </div>
     </main>

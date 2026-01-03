@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { Button } from '@/components/ui/button'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+
 const fileManagerStore = useStoreFileManager()
 const { blobs, folders } = storeToRefs(fileManagerStore)
 
@@ -43,26 +46,29 @@ function getFileExt(path: string): string {
 }
 
 function getIconName(type: string, path: string): string {
-  if (type === "folder") return "flat-color-icons:folder"
+  if (type === "folder") return "ph:folder-simple-fill"
   const ext = getFileExt(path)
   const map: Record<string, string> = {
-    jpg: "flat-color-icons:image-file",
-    jpeg: "flat-color-icons:image-file",
-    png: "flat-color-icons:image-file",
-    gif: "flat-color-icons:image-file",
-    webp: "flat-color-icons:image-file",
-    svg: "flat-color-icons:image-file",
-    mp4: "flat-color-icons:video-file",
-    mov: "flat-color-icons:video-file",
-    avi: "flat-color-icons:video-file",
-    mp3: "flat-color-icons:audio-file",
-    wav: "flat-color-icons:audio-file",
-    pdf: "flat-color-icons:document",
-    doc: "flat-color-icons:document",
-    docx: "flat-color-icons:document",
-    txt: "flat-color-icons:document",
+    jpg: "ph:image", jpeg: "ph:image", png: "ph:image", gif: "ph:image", webp: "ph:image", svg: "ph:image",
+    mp4: "ph:video", mov: "ph:video", avi: "ph:video",
+    mp3: "ph:music-note", wav: "ph:music-note",
+    pdf: "ph:file-pdf", doc: "ph:file-doc", docx: "ph:file-doc", txt: "ph:file-text",
+    zip: "ph:file-zip", rar: "ph:file-zip",
+    json: "ph:file-code", js: "ph:file-code", ts: "ph:file-code", html: "ph:file-code", css: "ph:file-code",
   }
-  return map[ext] || "flat-color-icons:file"
+  return map[ext] || "ph:file"
+}
+
+function getIconColor(type: string, path: string): string {
+  if (type === "folder") return "text-primary"
+  const ext = getFileExt(path)
+  const map: Record<string, string> = {
+    jpg: "text-green-500", jpeg: "text-green-500", png: "text-green-500", gif: "text-green-500", webp: "text-green-500", svg: "text-green-500",
+    mp4: "text-purple-500", mov: "text-purple-500",
+    pdf: "text-red-500",
+    zip: "text-yellow-500", rar: "text-yellow-500",
+  }
+  return map[ext] || "text-muted-foreground"
 }
 
 function onClickItem(item: IFileItem) {
@@ -79,71 +85,95 @@ function onClickDelete(item: IFileItem) {
 function onClickCopy(item: IFileItem) {
   const url = `${window.location.origin}/images/${item.path}`
   navigator.clipboard.writeText(url)
-  MessagePlugin.success("链接已复制")
 }
 
 function onClickCopyMarkdown(item: IFileItem) {
   const url = `${window.location.origin}/images/${item.path}`
   const md = `![${getFileName(item.path)}](${url})`
   navigator.clipboard.writeText(md)
-  MessagePlugin.success("Markdown 已复制")
 }
 </script>
 
 <template>
-  <div>
-    <!-- Empty State -->
-    <div v-if="items.length === 0" class="flex flex-col items-center justify-center py-20 text-slate-400">
-      <Icon name="material-symbols:folder-off-outline" class="text-6xl mb-4" />
-      <p>暂无文件</p>
-    </div>
+  <TooltipProvider>
+    <div>
+      <!-- Empty State -->
+      <div v-if="items.length === 0" class="flex flex-col items-center justify-center py-20">
+        <div class="w-14 h-14 rounded-full bg-muted flex items-center justify-center mb-4">
+          <Icon name="ph:folder-simple-dashed" class="text-2xl text-muted-foreground" />
+        </div>
+        <p class="text-foreground text-sm mb-1">此文件夹为空</p>
+        <p class="text-muted-foreground text-xs">上传文件开始使用</p>
+      </div>
 
-    <!-- File Grid -->
-    <div v-else class="grid grid-cols-1 gap-2">
-      <div
-        v-for="item in items"
-        :key="item.path"
-        class="group flex items-center gap-4 px-4 py-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 hover:shadow-sm transition-all cursor-pointer"
-        @click="onClickItem(item)"
-      >
-        <!-- Icon -->
-        <div class="w-10 h-10 rounded-lg bg-slate-100 dark:bg-slate-700 flex items-center justify-center flex-shrink-0">
-          <Icon :name="getIconName(item.type, item.path)" class="text-2xl" />
+      <!-- Table View -->
+      <div v-else class="bg-card border border-border rounded-lg overflow-hidden">
+        <!-- Table Header -->
+        <div class="grid grid-cols-12 gap-4 px-4 py-2.5 bg-muted/50 border-b border-border text-xs font-medium text-muted-foreground uppercase tracking-wide">
+          <div class="col-span-6">名称</div>
+          <div class="col-span-2">类型</div>
+          <div class="col-span-2">大小</div>
+          <div class="col-span-2 text-right">操作</div>
         </div>
 
-        <!-- Info -->
-        <div class="flex-1 min-w-0">
-          <div class="font-medium text-slate-800 dark:text-white truncate">
-            {{ getFileName(item.path) }}
-          </div>
-          <div class="text-xs text-slate-500 mt-0.5">
-            {{ item.type === "folder" ? "文件夹" : formatSize(item.size) }}
-          </div>
-        </div>
+        <!-- Table Body -->
+        <div class="divide-y divide-border">
+          <div
+            v-for="item in items"
+            :key="item.path"
+            class="group grid grid-cols-12 gap-4 px-4 py-3 items-center hover:bg-muted/50 cursor-pointer transition-colors"
+            @click="onClickItem(item)"
+          >
+            <!-- Name -->
+            <div class="col-span-6 flex items-center gap-3 min-w-0">
+              <Icon :name="getIconName(item.type, item.path)" :class="['text-lg flex-shrink-0', getIconColor(item.type, item.path)]" />
+              <span class="text-sm text-foreground truncate">{{ getFileName(item.path) }}</span>
+            </div>
 
-        <!-- Actions -->
-        <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity" @click.stop>
-          <template v-if="item.type === 'file'">
-            <t-tooltip content="复制链接">
-              <t-button variant="text" shape="square" size="small" @click="onClickCopy(item)">
-                <Icon name="material-symbols:link" class="text-lg" />
-              </t-button>
-            </t-tooltip>
-            <t-tooltip content="复制 Markdown">
-              <t-button variant="text" shape="square" size="small" @click="onClickCopyMarkdown(item)">
-                <Icon name="material-symbols:markdown" class="text-lg" />
-              </t-button>
-            </t-tooltip>
-          </template>
-          <t-tooltip content="删除">
-            <t-button variant="text" shape="square" size="small" theme="danger" @click="onClickDelete(item)">
-              <Icon name="material-symbols:delete-outline" class="text-lg" />
-            </t-button>
-          </t-tooltip>
+            <!-- Type -->
+            <div class="col-span-2 text-sm text-muted-foreground">
+              {{ item.type === "folder" ? "文件夹" : getFileExt(item.path).toUpperCase() || "文件" }}
+            </div>
+
+            <!-- Size -->
+            <div class="col-span-2 text-sm text-muted-foreground">
+              {{ item.type === "folder" ? "-" : formatSize(item.size) }}
+            </div>
+
+            <!-- Actions -->
+            <div class="col-span-2 flex items-center justify-end gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity" @click.stop>
+              <template v-if="item.type === 'file'">
+                <Tooltip>
+                  <TooltipTrigger as-child>
+                    <Button variant="ghost" size="icon" class="h-8 w-8" @click="onClickCopy(item)">
+                      <Icon name="ph:link-simple" class="text-sm text-muted-foreground" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>复制链接</TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger as-child>
+                    <Button variant="ghost" size="icon" class="h-8 w-8" @click="onClickCopyMarkdown(item)">
+                      <Icon name="ph:markdown-logo" class="text-sm text-muted-foreground" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>复制 Markdown</TooltipContent>
+                </Tooltip>
+              </template>
+              <Tooltip>
+                <TooltipTrigger as-child>
+                  <Button variant="ghost" size="icon" class="h-8 w-8 hover:text-destructive" @click="onClickDelete(item)">
+                    <Icon name="ph:trash-simple" class="text-sm" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>删除</TooltipContent>
+              </Tooltip>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
 
-    <DialogDeleteBlobs v-model:visible="visibleDelete" :data="selectedItem ? [selectedItem] : []" />
-  </div>
+      <DialogDeleteBlobs v-model:visible="visibleDelete" :data="selectedItem ? [selectedItem] : []" />
+    </div>
+  </TooltipProvider>
 </template>
