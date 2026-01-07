@@ -1,0 +1,29 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "observability": {
+    "logs": {
+      "enabled": true,
+      "head_sampling_rate": 1,
+      "invocation_logs": true,
+      "persist": true
+    },
+    "traces": {
+      "enabled": true,
+      "head_sampling_rate": 1,
+      "persist": true
+    }
+  },
+  "r2_buckets": [
+    {
+      "binding": "BLOB",
+      "bucket_name": "your-bucket-name"
+    }
+  ],
+  // 生产环境变量建议在 Cloudflare Dashboard 中配置，或写在自己的私有仓库中
+  "vars": {
+    "NUXT_ALLOWED_ORIGINS": "",
+    "NUXT_OAUTH_GITHUB_CLIENT_ID": "",
+    "NUXT_OAUTH_GITHUB_CLIENT_SECRET": "",
+    "NUXT_SESSION_PASSWORD": ""
+  }
+}
