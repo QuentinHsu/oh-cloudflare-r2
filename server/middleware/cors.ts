@@ -1,53 +1,51 @@
-export default defineEventHandler(event => {
+export default defineEventHandler((event) => {
   // 对 /images/ 和 /api/blob/ 路径生效
-  const path = getRequestURL(event).pathname;
+  const path = getRequestURL(event).pathname
   if (!path.startsWith('/images/') && !path.startsWith('/api/blob/')) {
-    return;
+    return
   }
 
-  const allowedOrigins = useRuntimeConfig().allowedOrigins as string;
+  const allowedOrigins = useRuntimeConfig().allowedOrigins as string
   if (!allowedOrigins) {
     // 未配置则不限制
-    return;
+    return
   }
 
-  const origins = allowedOrigins
-    .split(',')
-    .map(o => o.trim())
-    .filter(Boolean);
+  const origins = allowedOrigins.split(',').map(o => o.trim()).filter(Boolean)
   if (origins.length === 0) {
-    return;
+    return
   }
 
   // 检查 Origin 或 Referer
-  const origin = getHeader(event, 'origin');
-  const referer = getHeader(event, 'referer');
+  const origin = getHeader(event, 'origin')
+  const referer = getHeader(event, 'referer')
 
-  const requestOrigin = origin || (referer ? new URL(referer).origin : null);
+
+  const requestOrigin = origin || (referer ? new URL(referer).origin : null)
 
   if (!requestOrigin) {
     // 严格模式：无来源信息时拒绝
     throw createError({
-      message: 'Forbidden: Origin required',
       statusCode: 403,
-    });
+      message: 'Forbidden: Origin required',
+    })
   }
 
-  const isAllowed = origins.some(allowed => {
-    if (allowed === '*') return true;
+  const isAllowed = origins.some((allowed) => {
+    if (allowed === '*') return true
     // 支持通配符子域名，如 *.example.com
     if (allowed.startsWith('*.')) {
-      const domain = allowed.slice(2);
-      const requestHost = new URL(requestOrigin).host;
-      return requestHost === domain || requestHost.endsWith(`.${domain}`);
+      const domain = allowed.slice(2)
+      const requestHost = new URL(requestOrigin).host
+      return requestHost === domain || requestHost.endsWith('.' + domain)
     }
-    return requestOrigin === allowed || requestOrigin === allowed.replace(/\/$/, '');
-  });
+    return requestOrigin === allowed || requestOrigin === allowed.replace(/\/$/, '')
+  })
 
   if (!isAllowed) {
     throw createError({
-      message: 'Forbidden: Origin not allowed',
       statusCode: 403,
-    });
+      message: 'Forbidden: Origin not allowed',
+    })
   }
-});
+})

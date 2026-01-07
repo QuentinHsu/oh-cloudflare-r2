@@ -1,18 +1,13 @@
 <script setup lang="ts">
-  import { computed } from 'vue';
+import { LogOut, User } from 'lucide-vue-next'
 
-  import { navigateTo } from '#imports';
+const { loggedIn, user, clear } = useUserSession()
 
-  const { data: session, clear } = useUserSession();
-
-  const loggedIn = computed(() => !!session.value?.user);
-  const user = computed(() => session.value?.user);
-
-  async function logout() {
-    await $fetch('/api/auth/logout', { method: 'POST' });
-    clear();
-    navigateTo('/login');
-  }
+async function logout() {
+  await $fetch('/api/auth/logout', { method: 'POST' })
+  clear()
+  navigateTo('/login')
+}
 </script>
 
 <template>

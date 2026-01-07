@@ -1,17 +1,17 @@
 <script setup lang="ts">
-  import { useColorMode, useSeoMeta } from '#imports';
+import { Toaster } from '~/components/ui/sonner'
 
-  useSeoMeta({
-    description: '现代化的 Cloudflare R2 文件管理面板',
-    title: 'R2 Dashboard',
-  });
+useSeoMeta({
+  title: 'R2 Dashboard',
+  description: '现代化的 Cloudflare R2 文件管理面板',
+})
 
-  const _colorMode = useColorMode();
+const colorMode = useColorMode()
 </script>
 
 <template>
   <NuxtLayout>
     <NuxtPage />
   </NuxtLayout>
-  <Toaster :theme="_colorMode.value as 'light' | 'dark'" position="top-center" />
+  <Toaster :theme="colorMode.value as 'light' | 'dark'" position="top-center" />
 </template>

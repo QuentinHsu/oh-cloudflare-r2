@@ -1,23 +1,7 @@
-import tailwindcss from '@tailwindcss/vite';
+import tailwindcss from '@tailwindcss/vite'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  colorMode: {
-    classSuffix: '',
-    fallback: 'light',
-    preference: 'system',
-  },
-  compatibilityDate: '2025-12-11',
-
-  css: ['~/assets/css/main.css'],
-
-  devtools: { enabled: true },
-
-  hub: {
-    blob: true,
-  },
-
-  modules: ['@nuxthub/core', '@nuxtjs/color-mode', 'nuxt-auth-utils', 'shadcn-nuxt'],
   runtimeConfig: {
     // 允许加载资源的域名，逗号分隔，如: https://example.com,https://app.example.com
     // 支持通配符: *.example.com
@@ -25,12 +9,41 @@ export default defineNuxtConfig({
     allowedOrigins: '',
   },
 
+  modules: [
+    '@nuxthub/core',
+    '@nuxt/eslint',
+    '@nuxtjs/color-mode',
+    'nuxt-auth-utils',
+    'shadcn-nuxt',
+  ],
+
+  devtools: { enabled: true },
+  compatibilityDate: '2025-12-11',
+
+  css: ['~/assets/css/main.css'],
+
+  hub: {
+    blob: true,
+  },
+
+  colorMode: {
+    classSuffix: '',
+    preference: 'system',
+    fallback: 'light',
+  },
+
   shadcn: {
-    componentDir: './app/components/ui',
     prefix: '',
+    componentDir: './app/components/ui',
   },
 
   vite: {
     plugins: [tailwindcss()],
   },
-});
+
+  eslint: {
+    config: {
+      stylistic: true,
+    },
+  },
+})

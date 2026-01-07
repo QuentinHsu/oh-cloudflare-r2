@@ -1,142 +1,272 @@
 # R2 Dashboard
 
-现代化的 Cloudflare R2 文件管理面板（Nuxt 4）。
+现代化的 Cloudflare R2 文件管理面板，基于 Nuxt 4 构建。
 
-## 功能一览
+## 快速开始（模板使用）
 
-- 上传、移动、删除 R2 文件
-- 虚拟文件夹树 / 面包屑导航
-- 文件预览（含图片）、批量操作
-- URL 复制（原始链接 & Markdown）
-- GitHub OAuth 登录与会话保护
-- 域名白名单与通配符 Origin 校验
-- 深浅色主题、响应式 UI、Toast 提示
-
-## 推荐使用方式：作为模板 / 子仓库嵌入
-
-> 为什么推荐：将本仓库作为子模块/子目录嵌入主项目，后续只需拉取子仓库更新即可同步最新面板能力，主仓库可保留自身配置与密钥。
-
-- 子模块添加与独立配置：
+### 1. 使用模板创建项目
 
 ```bash
-git submodule add https://github.com/QuentinHsu/oh-cloudflare-r2.git oh-cloudflare-r2
+# 克隆模板
+git clone https://github.com/your-username/r2-dashboard.git my-r2-dashboard
+cd my-r2-dashboard
 
-# 根 package.json 脚本示例
-"dev": "cd oh-cloudflare-r2 && pnpm dev"
-"build": "cd oh-cloudflare-r2 && NITRO_PRESET=cloudflare_module pnpm build"
-"deploy": "pnpm -C oh-cloudflare-r2 dlx wrangler deploy --config ../wrangler.jsonc"
-```
+# 移除原有 git 历史（可选，如果想作为独立项目）
+rm -rf .git && git init
 
-- 子模块内部 `.env` 只用于本地；生产密钥放私有仓库根 `wrangler.jsonc` 或 Dashboard。
-- 需要更新面板时：在子模块目录执行 `git pull`（或 `git subtree pull`），即可同步新版本。
-
-
-## 本地开发
-
-1) 克隆与安装
-
-- 要求：Node 20+、pnpm 10+（已在 `packageManager` 标注）。
-
-```bash
-git clone https://github.com/QuentinHsu/oh-cloudflare-r2.git 
-cd oh-cloudflare-r2
+# 安装依赖
 pnpm install
 ```
 
-2) 配置环境变量（仅本地开发用 `.env`）
+### 2. 配置环境变量
 
 ```bash
+# 复制环境变量模板
 cp .env.example .env
-
-# 编辑 .env，填入本地调试用的 GitHub OAuth、SESSION、ORIGIN 白名单
 ```
 
-- 变量说明：
-    - `NUXT_OAUTH_GITHUB_CLIENT_ID` / `NUXT_OAUTH_GITHUB_CLIENT_SECRET`
-    - `NUXT_SESSION_PASSWORD`（至少 32 位，可用 `openssl rand -base64 32` 生成）
-    - `NUXT_ALLOWED_ORIGINS`（可选，用逗号分隔，支持 `*.example.com`）
+编辑 `.env` 文件，填写以下配置：
 
-3) 本地开发
+```bash
+# GitHub OAuth（必填）
+NUXT_OAUTH_GITHUB_CLIENT_ID=your_client_id
+NUXT_OAUTH_GITHUB_CLIENT_SECRET=your_client_secret
+
+# Session 密钥（必填，至少 32 位）
+NUXT_SESSION_PASSWORD=$(openssl rand -base64 32)
+
+# 域名访问控制（可选）
+NUXT_ALLOWED_ORIGINS=https://your-domain.com
+```
+
+### 3. 配置 Cloudflare（生产部署）
+
+```bash
+# 复制 wrangler 配置模板
+cp wrangler.jsonc.example wrangler.jsonc
+```
+
+编辑 `wrangler.jsonc`：
+- 修改 `r2_buckets[0].bucket_name` 为你的 R2 存储桶名称
+- 在 Cloudflare Dashboard 中配置环境变量（推荐），或在 `vars` 中填写
+
+### 4. 启动开发
 
 ```bash
 pnpm dev
 ```
 
-访问：http://localhost:3000
+访问 http://localhost:3000
 
-## 环境变量速查
+---
 
-```bash
-# 必填
-NUXT_OAUTH_GITHUB_CLIENT_ID=your_github_client_id
-NUXT_OAUTH_GITHUB_CLIENT_SECRET=your_github_client_secret
-NUXT_SESSION_PASSWORD=your_session_password_at_least_32_characters
+## 功能特性
 
-# 可选
-NUXT_ALLOWED_ORIGINS=https://example.com,https://app.example.com,https://*.example.com
-```
+### 文件管理
+- 文件上传到 Cloudflare R2 存储
+- 虚拟文件夹层级展示（基于路径前缀）
+- 文件预览（支持图片格式）
+- 文件移动和删除
+- 批量文件操作（移动、删除）
+- 文件夹树形导航
+- 面包屑路径导航
 
-> 提示：上述变量在本地开发可放 `.env`；部署时请改为 Cloudflare Secrets / `wrangler.jsonc` `vars`，以免泄露。
+### URL 复制功能
+- 纯 URL 复制：`https://domain.com/api/blob/file.png`
+- Markdown 格式复制：`![filename](https://domain.com/api/blob/file.png)`
 
-## 常用命令
+### 用户认证
+- GitHub OAuth 登录集成
+- Session 管理
+- 路由保护中间件
 
-```bash
-# 开发
-pnpm dev
+### 安全控制
+- 域名访问限制：可配置允许访问文件资源的域名白名单
+- 支持通配符子域名（如 `*.example.com`）
+- 严格的 Origin 检查机制
 
-# 构建
-pnpm build
-
-# 类型检查
-pnpm typecheck
-
-# 代码规范（Biome）
-pnpm lint
-pnpm format
-
-# 部署 Cloudflare（包含 NITRO_PRESET=cloudflare_module）
-pnpm run deploy-cloudflare
-
-# 部署 Vercel
-pnpm run deploy-vercel
-```
-
-## 项目结构（简版）
-
-```
-app/
-├── components/          # shadcn-vue 及业务组件
-├── pages/               # Nuxt 路由页面
-├── layouts/             # 布局
-└── middleware/          # 前端路由中间件
-
-server/
-├── api/                 # 文件/认证 API（R2 + OAuth）
-└── middleware/          # CORS 等服务端中间件
-```
-
-## API 速览
-
-- 文件：
-    - `GET /api/files` — 列表
-    - `GET /api/files/folders` — 文件夹路径
-    - `POST /api/files/upload` — 上传
-    - `POST /api/files/move` — 移动
-    - `DELETE /api/files/[pathname]` — 删除
-- 认证：
-    - `GET /api/auth/session` — 获取会话
-    - `POST /api/auth/logout` — 退出登录
+### 界面体验
+- 深浅色主题切换（light / dark / system）
+- 现代化 UI 设计（基于 shadcn-vue）
+- 响应式布局
+- Toast 通知提示
 
 ## 技术栈
 
-- Nuxt 4.2.2、Vue 3
-- NuxtHub Blob (Cloudflare R2)
-- nuxt-auth-utils（GitHub OAuth）
-- shadcn-vue + Radix Vue + Tailwind CSS 4
-- Lucide Vue Next、vue-sonner
+- **框架**: Nuxt 4.2.2
+- **存储**: NuxtHub Blob (Cloudflare R2)
+- **认证**: nuxt-auth-utils
+- **UI 组件**: shadcn-vue + Radix Vue
+- **样式**: Tailwind CSS 4
+- **图标**: Lucide Vue Next
+- **主题**: @nuxtjs/color-mode
+- **通知**: vue-sonner
 
-- CI / 生产的密钥请在 Cloudflare Dashboard 或 CI Secret 管理，`.env` 仅限本地开发。
+## 环境配置
+
+1. 复制环境变量文件：
+```bash
+cp .env.example .env
+```
+
+2. 配置 GitHub OAuth：
+   - 访问 [GitHub Developer Settings](https://github.com/settings/developers)
+   - 创建新的 OAuth App
+   - Authorization callback URL: `http://localhost:3000/api/auth/github`
+   - 填写 `.env` 文件中的相关配置
+
+3. 生成 Session 密钥：
+```bash
+# 生成至少 32 位的随机字符串
+openssl rand -base64 32
+```
+
+4. 配置域名访问限制（可选）：
+   - `NUXT_ALLOWED_ORIGINS`: 允许访问文件资源的域名白名单
+   - 支持多个域名，用逗号分隔：`https://example.com,https://app.example.com`
+   - 支持通配符子域名：`*.example.com`
+   - 留空则不限制访问
+
+### 环境变量说明
+
+```bash
+# GitHub OAuth 配置
+NUXT_OAUTH_GITHUB_CLIENT_ID=your_github_client_id
+NUXT_OAUTH_GITHUB_CLIENT_SECRET=your_github_client_secret
+
+# Session 密钥（至少 32 位）
+NUXT_SESSION_PASSWORD=your_session_password_at_least_32_characters
+
+# 域名访问控制（可选）
+NUXT_ALLOWED_ORIGINS=https://example.com,https://app.example.com
+```
+
+## 安装依赖
+
+```bash
+pnpm install
+```
+
+## 开发服务器
+
+启动开发服务器（默认端口 3000）：
+
+```bash
+pnpm dev
+```
+
+## 构建部署
+
+### 生产构建
+
+```bash
+pnpm build
+```
+
+### Cloudflare 部署
+
+```bash
+pnpm run deploy-cloudflare
+```
+
+Wrangler 会自动在你的 Cloudflare 账户中创建必要的资源。
+
+### Vercel 部署
+
+```bash
+pnpm run deploy-vercel
+```
+
+需要在 Vercel 控制台创建相应的存储资源并关联到项目。
+
+## 项目结构
+
+```
+app/
+├── components/
+│   ├── ui/              # shadcn 组件库
+│   ├── FileManager.vue  # 文件管理主组件
+│   └── ThemeToggle.vue  # 主题切换组件
+├── pages/
+│   └── index.vue        # 主页面
+├── layouts/
+│   └── default.vue      # 默认布局
+└── middleware/
+    └── auth.ts          # 认证中间件
+
+server/
+├── api/
+│   ├── auth/            # 认证相关 API
+│   │   ├── session.get.ts
+│   │   └── logout.post.ts
+│   └── files/           # 文件管理 API
+│       ├── index.get.ts      # 文件列表
+│       ├── folders.get.ts    # 文件夹列表
+│       ├── upload.post.ts    # 文件上传
+│       ├── move.post.ts      # 文件移动
+│       └── [...pathname].delete.ts  # 文件删除
+└── middleware/
+    └── cors.ts          # CORS 中间件
+```
+
+## API 接口
+
+### 文件管理
+- `GET /api/files` - 获取文件和文件夹列表
+- `GET /api/files/folders` - 获取所有文件夹路径
+- `POST /api/files/upload` - 上传文件
+- `POST /api/files/move` - 移动文件
+- `DELETE /api/files/[pathname]` - 删除文件
+
+### 用户认证
+- `GET /api/auth/session` - 获取当前会话
+- `POST /api/auth/logout` - 退出登录
 
 ## 许可证
 
 MIT License
+
+---
+
+## 作为子模块使用
+
+如果你想将此模板作为子仓库引入到现有项目中：
+
+```bash
+# 在你的主项目中添加子模块
+git submodule add https://github.com/your-username/r2-dashboard.git r2-dashboard
+
+# 创建个人配置文件（不会被提交到模板仓库）
+cd r2-dashboard
+cp .env.example .env
+cp wrangler.jsonc.example wrangler.jsonc
+# 编辑 .env 和 wrangler.jsonc 填写你的配置
+```
+
+### 更新模板
+
+```bash
+# 拉取模板更新
+git submodule update --remote r2-dashboard
+```
+
+### 个人配置管理建议
+
+在主项目中创建配置文件，通过符号链接或环境变量注入：
+
+```bash
+# 主项目结构示例
+my-project/
+├── r2-dashboard/          # 子模块（模板代码）
+├── configs/
+│   ├── r2-dashboard.env   # 你的个人 .env 配置
+│   └── wrangler.jsonc     # 你的个人 wrangler 配置
+└── setup.sh               # 配置链接脚本
+```
+
+`setup.sh` 示例：
+```bash
+#!/bin/bash
+ln -sf ../configs/r2-dashboard.env r2-dashboard/.env
+ln -sf ../configs/wrangler.jsonc r2-dashboard/wrangler.jsonc
+```

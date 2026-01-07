@@ -1,16 +1,16 @@
 {
   "$schema": "https://shadcn-vue.com/schema.json",
-  "aliases": {
-    "components": "~/components",
-    "ui": "~/components/ui",
-    "utils": "~/lib/utils"
-  },
   "style": "default",
+  "typescript": true,
   "tailwind": {
-    "baseColor": "neutral",
     "config": "",
     "css": "app/assets/css/main.css",
+    "baseColor": "neutral",
     "cssVariables": true
   },
-  "typescript": true
+  "aliases": {
+    "components": "~/components",
+    "utils": "~/lib/utils",
+    "ui": "~/components/ui"
+  }
 }

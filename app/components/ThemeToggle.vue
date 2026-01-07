@@ -1,15 +1,13 @@
 <script setup lang="ts">
-  import { Monitor, Moon, Sun } from 'lucide-vue-next';
+import { Moon, Sun, Monitor } from 'lucide-vue-next'
 
-  import { useColorMode } from '#imports';
+const colorMode = useColorMode()
 
-  const _colorMode = useColorMode();
-
-  const _themes = [
-    { icon: Sun, label: '浅色', value: 'light' },
-    { icon: Moon, label: '深色', value: 'dark' },
-    { icon: Monitor, label: '系统', value: 'system' },
-  ] as const;
+const themes = [
+  { value: 'light', icon: Sun, label: '浅色' },
+  { value: 'dark', icon: Moon, label: '深色' },
+  { value: 'system', icon: Monitor, label: '系统' },
+] as const
 </script>
 
 <template>
@@ -23,9 +21,9 @@
     </DropdownMenuTrigger>
     <DropdownMenuContent align="end">
       <DropdownMenuItem
-        v-for="theme in _themes"
+        v-for="theme in themes"
         :key="theme.value"
-        @click="_colorMode.preference = theme.value"
+        @click="colorMode.preference = theme.value"
       >
         <component :is="theme.icon" class="mr-2 h-4 w-4" />
         {{ theme.label }}

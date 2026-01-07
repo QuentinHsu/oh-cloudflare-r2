@@ -1,14 +1,16 @@
 <script setup lang="ts">
-  import { reactiveOmit } from '@vueuse/core';
-  import type { SelectScrollDownButtonProps } from 'reka-ui';
-  import { useForwardProps } from 'reka-ui';
-  import type { HTMLAttributes } from 'vue';
+import type { SelectScrollDownButtonProps } from "reka-ui"
+import type { HTMLAttributes } from "vue"
+import { reactiveOmit } from "@vueuse/core"
+import { ChevronDown } from "lucide-vue-next"
+import { SelectScrollDownButton, useForwardProps } from "reka-ui"
+import { cn } from '~/lib/utils'
 
-  const props = defineProps<SelectScrollDownButtonProps & { class?: HTMLAttributes['class'] }>();
+const props = defineProps<SelectScrollDownButtonProps & { class?: HTMLAttributes["class"] }>()
 
-  const delegatedProps = reactiveOmit(props, 'class');
+const delegatedProps = reactiveOmit(props, "class")
 
-  const _forwardedProps = useForwardProps(delegatedProps);
+const forwardedProps = useForwardProps(delegatedProps)
 </script>
 
 <template>

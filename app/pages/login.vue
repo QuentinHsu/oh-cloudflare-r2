@@ -1,10 +1,12 @@
 <script setup lang="ts">
-  definePageMeta({
-    layout: false,
-  });
+import { Github, HardDrive } from 'lucide-vue-next'
 
-  const route = useRoute();
-  const _error = route.query.error;
+definePageMeta({
+  layout: false,
+})
+
+const route = useRoute()
+const error = route.query.error
 </script>
 
 <template>

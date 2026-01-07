@@ -1,5 +1,19 @@
 {
+  "name": "nuxthub-starter",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "nuxt dev",
+    "build": "nuxt build",
+    "deploy-cloudflare": "NITRO_PRESET=cloudflare_module npm run build && npx wrangler deploy && npx wrangler d1 migrations apply DB --remote",
+    "deploy-vercel": "npx vercel deploy",
+    "postinstall": "nuxt prepare",
+    "lint": "eslint .",
+    "typecheck": "nuxt typecheck"
+  },
   "dependencies": {
+    "@libsql/client": "^0.15.15",
+    "@nuxt/eslint": "^1.12.1",
     "@nuxthub/core": "^0.10.1",
     "@nuxtjs/color-mode": "^4.0.0",
     "@nuxtjs/tailwindcss": "^6.14.0",
@@ -8,6 +22,8 @@
     "@vueuse/core": "^14.1.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "drizzle-kit": "^0.31.8",
+    "drizzle-orm": "^0.45.1",
     "lucide-vue-next": "^0.562.0",
     "nuxt": "^4.2.2",
     "nuxt-auth-utils": "^0.5.26",
@@ -17,14 +33,13 @@
     "vue-sonner": "^2.0.9"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.3.11",
-    "@quentinhsu/biome-config": "^0.5.0",
+    "@nuxt/eslint-config": "^1.12.1",
     "@tailwindcss/vite": "^4.1.18",
+    "eslint": "^9.39.1",
     "tailwindcss": "^4.1.18",
     "vue-tsc": "^3.1.8",
     "wrangler": "4.54.0"
   },
-  "name": "nuxthub-starter",
   "packageManager": "pnpm@10.25.0",
   "pnpm": {
     "onlyBuiltDependencies": [
@@ -34,17 +49,5 @@
       "unrs-resolver",
       "workerd"
     ]
-  },
-  "private": true,
-  "scripts": {
-    "build": "nuxt build",
-    "deploy-cloudflare": "NITRO_PRESET=cloudflare_module npm run build && npx wrangler deploy",
-    "deploy-vercel": "npx vercel deploy",
-    "dev": "nuxt dev",
-    "format": "biome format . --write",
-    "lint": "biome check . --write",
-    "postinstall": "nuxt prepare",
-    "typecheck": "nuxt typecheck"
-  },
-  "type": "module"
+  }
 }
