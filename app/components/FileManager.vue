@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Folder, File, Upload, Trash2, Link, ChevronRight, Home, Image, FolderOpen, Move, CheckSquare, Square } from 'lucide-vue-next'
+import { Folder, File, Upload, Trash2, Link, ChevronRight, Home, Image, FolderOpen, Move, CheckSquare, Square, Edit } from 'lucide-vue-next'
 import { toast } from 'vue-sonner'
 
 interface BlobFile {
@@ -47,6 +47,12 @@ const isBatchMoving = ref(false)
 const isBatchDeleting = ref(false)
 const showBatchMoveDialog = ref(false)
 const batchMoveTargetPath = ref('')
+
+// 重命名相关
+const showRenameDialog = ref(false)
+const renameFile = ref<BlobFile | null>(null)
+const newFileName = ref('')
+const isRenaming = ref(false)
 
 const hasSelection = computed(() => selectedFiles.value.size > 0)
 const allSelected = computed(() => {
@@ -433,6 +439,75 @@ async function confirmBatchMove() {
   refresh()
   refreshAllFolders()
 }
+
+// 重命名相关函数
+function openRenameDialog(file: BlobFile) {
+  renameFile.value = file
+  const currentName = file.pathname.split('/').pop() || ''
+  newFileName.value = currentName
+  showRenameDialog.value = true
+  // 延迟聚焦并选中文件名（不含扩展名）
+  nextTick(() => {
+    const input = document.querySelector('#rename-input') as HTMLInputElement
+    if (input) {
+      input.focus()
+      const dotIndex = currentName.lastIndexOf('.')
+      if (dotIndex > 0) {
+        input.setSelectionRange(0, dotIndex)
+      } else {
+        input.select()
+      }
+    }
+  })
+}
+
+function closeRenameDialog() {
+  showRenameDialog.value = false
+  renameFile.value = null
+  newFileName.value = ''
+}
+
+async function confirmRename() {
+  if (!renameFile.value) return
+
+  const trimmedName = newFileName.value.trim()
+  if (!trimmedName) {
+    toast.error('文件名不能为空')
+    return
+  }
+
+  if (trimmedName === renameFile.value.pathname.split('/').pop()) {
+    toast.error('文件名未改变')
+    return
+  }
+
+  // 验证文件名（不允许包含 / 等特殊字符）
+  if (/[\/\\]/.test(trimmedName)) {
+    toast.error('文件名不能包含 / 或 \\ 字符')
+    return
+  }
+
+  const parts = renameFile.value.pathname.split('/')
+  parts.pop()
+  const newPath = parts.length ? `${parts.join('/')}/${trimmedName}` : trimmedName
+
+  isRenaming.value = true
+  try {
+    // 复用移动 API，重命名实际就是同目录移动
+    // 成本：1次读取 + 1次写入 + 1次删除 = 3次操作
+    await $fetch('/api/files/move', {
+      method: 'POST',
+      body: { oldPath: renameFile.value.pathname, newPath },
+    })
+    toast.success('重命名成功')
+    closeRenameDialog()
+    refresh()
+  } catch (e: any) {
+    toast.error(e.data?.message || '重命名失败')
+  } finally {
+    isRenaming.value = false
+  }
+}
 </script>
 
 <template>
@@ -610,6 +685,9 @@ async function confirmBatchMove() {
                 <Button variant="ghost" size="icon" class="h-8 w-8" @click="copyUrl(file.pathname, 'markdown')">
                   <Image class="h-4 w-4" />
                 </Button>
+                <Button variant="ghost" size="icon" class="h-8 w-8" @click="openRenameDialog(file)">
+                  <Edit class="h-4 w-4" />
+                </Button>
                 <Button variant="ghost" size="icon" class="h-8 w-8" @click="openMoveDialog(file)">
                   <Move class="h-4 w-4" />
                 </Button>
@@ -640,6 +718,39 @@ async function confirmBatchMove() {
           <Button variant="outline" @click="previewFile && copyUrl(previewFile.pathname, 'markdown')">
             <Image class="mr-2 h-4 w-4" />
             复制 Markdown
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+
+    <!-- 重命名文件弹窗 -->
+    <Dialog :open="showRenameDialog" @update:open="(open) => !open && closeRenameDialog()">
+      <DialogContent class="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>重命名文件</DialogTitle>
+        </DialogHeader>
+
+        <div class="space-y-4 py-2">
+          <div class="text-sm text-muted-foreground">
+            <span class="font-medium">原文件名：</span>
+            {{ renameFile?.pathname.split('/').pop() }}
+          </div>
+
+          <div class="space-y-2">
+            <Label for="rename-input">新文件名</Label>
+            <Input
+              id="rename-input"
+              v-model="newFileName"
+              placeholder="输入新文件名"
+              @keyup.enter="confirmRename"
+            />
+          </div>
+        </div>
+
+        <DialogFooter>
+          <Button variant="ghost" size="sm" @click="closeRenameDialog">取消</Button>
+          <Button size="sm" @click="confirmRename" :disabled="isRenaming || !newFileName.trim()">
+            {{ isRenaming ? '重命名中...' : '确认' }}
           </Button>
         </DialogFooter>
       </DialogContent>
