@@ -34,6 +34,40 @@ git submodule add https://github.com/QuentinHsu/oh-cloudflare-r2.git oh-cloudfla
 - 子模块内部 `.env` 只用于本地；生产密钥放私有仓库根 `wrangler.jsonc` 或 Cloudflare Dashboard。
 - 需要更新面板时：在子模块目录执行 `git pull`（或 `git subtree pull`），即可同步新版本。
 
+### 根 wrangler.jsonc 示例
+
+```jsonc
+{
+  "name": "r2-dashboard",
+  "$schema": "oh-cloudflare-r2/node_modules/wrangler/config-schema.json",
+  "main": "./oh-cloudflare-r2/.output/server/index.mjs",
+  "assets": {
+    "directory": "./oh-cloudflare-r2/.output/public"
+  },
+  "compatibility_date": "2025-12-11",
+  "observability": {
+    "logs": {
+      "enabled": true,
+      "head_sampling_rate": 1,
+      "invocation_logs": true,
+      "persist": true
+    },
+    "traces": {
+      "enabled": true,
+      "head_sampling_rate": 1,
+      "persist": true
+    }
+  },
+  "r2_buckets": [ { "binding": "BLOB", "bucket_name": "your-bucket-name" } ],
+  "vars": {
+    "NUXT_OAUTH_GITHUB_CLIENT_ID": "xxxxx",
+    "NUXT_OAUTH_GITHUB_CLIENT_SECRET": "xxxxx",
+    "NUXT_SESSION_PASSWORD": "xxxxx",
+    "NUXT_ALLOWED_ORIGINS": "xxxxx"
+  }
+}
+
+```
 
 ## 本地开发
 
