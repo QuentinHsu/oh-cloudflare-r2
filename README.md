@@ -20,14 +20,18 @@
 
 ```bash
 git submodule add https://github.com/QuentinHsu/oh-cloudflare-r2.git oh-cloudflare-r2
-
-# 根 package.json 脚本示例
-"dev": "cd oh-cloudflare-r2 && pnpm dev"
-"build": "cd oh-cloudflare-r2 && NITRO_PRESET=cloudflare_module pnpm build"
-"deploy": "pnpm -C oh-cloudflare-r2 dlx wrangler deploy --config ../wrangler.jsonc"
 ```
 
-- 子模块内部 `.env` 只用于本地；生产密钥放私有仓库根 `wrangler.jsonc` 或 Dashboard。
+### 根 package.json 脚本示例
+```json
+"preinstall": "git submodule sync --recursive && git submodule update --init --recursive --remote --force --checkout",
+"test": "echo \"Error: no test specified\" && exit 1",
+"build": "cd oh-cloudflare-r2 && NITRO_PRESET=cloudflare_module pnpm build",
+"deploy": "ROOT=$(pwd); pnpm -C oh-cloudflare-r2 dlx wrangler deploy --config \"$ROOT/wrangler.jsonc\"",
+"postinstall": "pnpm -C oh-cloudflare-r2 install"
+```
+
+- 子模块内部 `.env` 只用于本地；生产密钥放私有仓库根 `wrangler.jsonc` 或 Cloudflare Dashboard。
 - 需要更新面板时：在子模块目录执行 `git pull`（或 `git subtree pull`），即可同步新版本。
 
 
