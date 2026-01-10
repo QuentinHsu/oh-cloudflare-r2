@@ -5,7 +5,11 @@ export default defineEventHandler((event) => {
     return
   }
 
-  const allowedOrigins = useRuntimeConfig().allowedOrigins as string
+  // 优先从 Cloudflare env 读取，再从 runtimeConfig 读取
+  const cloudflareEnv = event.context.cloudflare?.env as Record<string, string> | undefined
+  const allowedOrigins = cloudflareEnv?.NUXT_ALLOWED_ORIGINS
+    || useRuntimeConfig().allowedOrigins as string
+
   if (!allowedOrigins) {
     // 未配置则不限制
     return
