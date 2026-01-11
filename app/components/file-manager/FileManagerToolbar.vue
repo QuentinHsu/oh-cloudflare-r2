@@ -12,12 +12,21 @@ const props = defineProps<{
   isUploading: boolean
 }>()
 
+/** A cloned array of File objects with FileList-compatible item() method */
+interface FileListLike extends Array<File> {
+  item(index: number): File | null
+}
+
 const emit = defineEmits<{
   (e: 'navigate', index: number): void
   (e: 'toggle-selection'): void
   (e: 'open-batch-move'): void
   (e: 'batch-delete'): void
-  (e: 'files-selected', files: FileList): void
+  /**
+   * Emits a cloned FileList-like array so clearing input.value won't mutate it.
+   * The array has an item() method for FileList API compatibility.
+   */
+  (e: 'files-selected', files: FileListLike): void
 }>()
 
 const fileInputRef = ref<HTMLInputElement | null>(null)
@@ -28,9 +37,15 @@ function triggerUpload() {
 
 function handleFileChange(event: Event) {
   const input = event.target as HTMLInputElement
-  if (input.files?.length) {
-    emit('files-selected', input.files)
+  const arr = input.files ? Array.from(input.files) : []
+
+  if (arr.length) {
+    // Clone files into a FileListLike array (not tied to input element)
+    const fileListLike = arr.slice() as FileListLike
+    fileListLike.item = (i: number) => arr[i] ?? null
+    emit('files-selected', fileListLike)
   }
+
   if (input) input.value = ''
 }
 </script>

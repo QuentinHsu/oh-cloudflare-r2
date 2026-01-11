@@ -23,7 +23,8 @@ const { data: allFolders, refresh: refreshAllFolders } = await useFetch<{ folder
 const isUploading = ref(false)
 const showUploadDialog = ref(false)
 const uploadPathInput = ref('')
-const pendingFiles = ref<FileList | null>(null)
+// store a cloned array of File objects (not the live FileList) to avoid it being cleared
+const pendingFiles = ref<File[] | null>(null)
 const previewFile = ref<BlobFile | null>(null)
 const showPreviewDialog = ref(false)
 
@@ -130,9 +131,11 @@ function navigateToPath(index: number) {
   }
 }
 
-function handleFilesSelected(files: FileList) {
-  if (!files.length) return
-  pendingFiles.value = files
+/** Accept FileList, File[], or FileListLike (array with item() method) */
+function handleFilesSelected(files: FileList | File[]) {
+  const arr = Array.isArray(files) ? files : Array.from(files)
+  if (!arr.length) return
+  pendingFiles.value = arr
   uploadPathInput.value = currentPath.value.replace(/\/$/, '')
   expandPathParents(uploadPathInput.value)
   showUploadDialog.value = true
