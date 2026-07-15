@@ -7,6 +7,9 @@ definePageMeta({
 
 const route = useRoute();
 const error = route.query.error;
+const errorMessage = computed(() =>
+  error === "unauthorized" ? "该 GitHub 用户无权访问" : "登录失败，请重试",
+);
 </script>
 
 <template>
@@ -24,7 +27,7 @@ const error = route.query.error;
           v-if="error"
           class="p-3 rounded-lg bg-destructive/10 text-destructive text-sm text-center"
         >
-          登录失败，请重试
+          {{ errorMessage }}
         </div>
         <Button as-child class="w-full" size="lg">
           <a href="/api/auth/github">

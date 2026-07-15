@@ -63,6 +63,7 @@ git submodule add https://github.com/QuentinHsu/oh-cloudflare-r2.git oh-cloudfla
   "vars": {
     "NUXT_OAUTH_GITHUB_CLIENT_ID": "xxxxx",
     "NUXT_OAUTH_GITHUB_CLIENT_SECRET": "xxxxx",
+    "NUXT_ALLOWED_GITHUB_USER_IDS": "12345678,87654321",
     "NUXT_SESSION_PASSWORD": "xxxxx",
     "NUXT_ALLOWED_ORIGINS": "xxxxx",
   },
@@ -91,6 +92,7 @@ cp .env.example .env
 
 - 变量说明：
   - `NUXT_OAUTH_GITHUB_CLIENT_ID` / `NUXT_OAUTH_GITHUB_CLIENT_SECRET`
+  - `NUXT_ALLOWED_GITHUB_USER_IDS`（必填，允许登录的 GitHub 数字 User ID，逗号分隔）
   - `NUXT_SESSION_PASSWORD`（至少 32 位，可用 `openssl rand -base64 32` 生成）
   - `NUXT_ALLOWED_ORIGINS`（可选，用逗号分隔，支持 `*.example.com`）
 
@@ -108,6 +110,7 @@ pnpm dev
 # 必填
 NUXT_OAUTH_GITHUB_CLIENT_ID=your_github_client_id
 NUXT_OAUTH_GITHUB_CLIENT_SECRET=your_github_client_secret
+NUXT_ALLOWED_GITHUB_USER_IDS=12345678,87654321
 NUXT_SESSION_PASSWORD=your_session_password_at_least_32_characters
 
 # 可选
@@ -115,6 +118,8 @@ NUXT_ALLOWED_ORIGINS=https://example.com,https://app.example.com,https://*.examp
 ```
 
 > 提示：上述变量在本地开发可放 `.env`；部署时请改为 Cloudflare Secrets / `wrangler.jsonc` `vars`，以免泄露。
+
+> 安全策略：`NUXT_ALLOWED_GITHUB_USER_IDS` 未配置、为空或包含无效值时，系统会拒绝所有 GitHub 用户。通过私有仓库嵌入本项目时，部署新版本前必须在根 `wrangler.jsonc` 中填入真实 GitHub 数字 User ID。
 
 ## 常用命令
 

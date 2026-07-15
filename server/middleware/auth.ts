@@ -13,5 +13,8 @@ export default defineEventHandler(async (event) => {
     if (!session.user) {
       throw createError({ statusCode: 401, message: "Unauthorized" });
     }
+    if (session.authorized !== true) {
+      throw createError({ statusCode: 403, message: "Forbidden" });
+    }
   }
 });

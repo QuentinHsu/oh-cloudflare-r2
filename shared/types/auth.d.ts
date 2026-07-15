@@ -1,0 +1,13 @@
+declare module "#auth-utils" {
+  interface User {
+    id: number;
+    login: string;
+    avatar_url: string;
+  }
+
+  interface UserSession {
+    authorized: boolean;
+  }
+}
+
+export {};
