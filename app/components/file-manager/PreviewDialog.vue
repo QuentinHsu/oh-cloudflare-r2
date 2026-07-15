@@ -1,20 +1,20 @@
 <script setup lang="ts">
-import { Link, Image } from 'lucide-vue-next'
+import { Link, Image } from "lucide-vue-next";
 
 const props = defineProps<{
-  open: boolean
-  fileName?: string
-  src?: string
-}>()
+  open: boolean;
+  fileName?: string;
+  src?: string;
+}>();
 
 const emit = defineEmits<{
-  (e: 'update:open', value: boolean): void
-  (e: 'copy-raw'): void
-  (e: 'copy-markdown'): void
-}>()
+  (e: "update:open", value: boolean): void;
+  (e: "copy-raw"): void;
+  (e: "copy-markdown"): void;
+}>();
 
 function onOpenChange(value: boolean) {
-  emit('update:open', value)
+  emit("update:open", value);
 }
 </script>
 

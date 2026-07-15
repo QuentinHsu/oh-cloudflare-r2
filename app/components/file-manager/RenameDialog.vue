@@ -1,49 +1,52 @@
 <script setup lang="ts">
 const props = defineProps<{
-  open: boolean
-  currentName?: string
-  newFileName: string
-  isRenaming: boolean
-}>()
+  open: boolean;
+  currentName?: string;
+  newFileName: string;
+  isRenaming: boolean;
+}>();
 
 const emit = defineEmits<{
-  (e: 'update:open', value: boolean): void
-  (e: 'update:newFileName', value: string): void
-  (e: 'confirm'): void
-  (e: 'cancel'): void
-}>()
+  (e: "update:open", value: boolean): void;
+  (e: "update:newFileName", value: string): void;
+  (e: "confirm"): void;
+  (e: "cancel"): void;
+}>();
 
-const inputRef = ref<HTMLInputElement | null>(null)
+const inputRef = ref<HTMLInputElement | null>(null);
 
 function getInputEl() {
-  const target = inputRef.value as any
-  return (target?.$el ?? target) as HTMLInputElement | null
+  const target = inputRef.value as any;
+  return (target?.$el ?? target) as HTMLInputElement | null;
 }
 
-watch(() => props.open, (open) => {
-  if (!open) return
+watch(
+  () => props.open,
+  (open) => {
+    if (!open) return;
 
-  const defaultName = props.currentName ?? ''
-  if (props.newFileName !== defaultName) {
-    emit('update:newFileName', defaultName)
-  }
-
-  nextTick(() => {
-    const input = getInputEl()
-    if (!input) return
-    input.focus()
-    const name = props.newFileName || defaultName
-    const dotIndex = name.lastIndexOf('.')
-    if (dotIndex > 0) {
-      input.setSelectionRange(0, dotIndex)
-    } else {
-      input.select()
+    const defaultName = props.currentName ?? "";
+    if (props.newFileName !== defaultName) {
+      emit("update:newFileName", defaultName);
     }
-  })
-})
+
+    nextTick(() => {
+      const input = getInputEl();
+      if (!input) return;
+      input.focus();
+      const name = props.newFileName || defaultName;
+      const dotIndex = name.lastIndexOf(".");
+      if (dotIndex > 0) {
+        input.setSelectionRange(0, dotIndex);
+      } else {
+        input.select();
+      }
+    });
+  },
+);
 
 function onOpenChange(value: boolean) {
-  emit('update:open', value)
+  emit("update:open", value);
 }
 </script>
 
@@ -75,8 +78,12 @@ function onOpenChange(value: boolean) {
 
       <DialogFooter>
         <Button variant="ghost" size="sm" @click="emit('cancel')">取消</Button>
-        <Button size="sm" @click="emit('confirm')" :disabled="props.isRenaming || !props.newFileName.trim()">
-          {{ props.isRenaming ? '重命名中...' : '确认' }}
+        <Button
+          size="sm"
+          @click="emit('confirm')"
+          :disabled="props.isRenaming || !props.newFileName.trim()"
+        >
+          {{ props.isRenaming ? "重命名中..." : "确认" }}
         </Button>
       </DialogFooter>
     </DialogContent>

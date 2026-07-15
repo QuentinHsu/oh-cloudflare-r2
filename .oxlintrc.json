@@ -1,0 +1,21 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "unicorn", "oxc", "vue", "vitest"],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "error"
+  },
+  "rules": {},
+  "env": {
+    "builtin": true
+  },
+  "overrides": [
+    {
+      "files": ["shared/types/**/*.d.ts"],
+      "rules": {
+        "unicorn/require-module-specifiers": "off"
+      }
+    }
+  ],
+  "ignorePatterns": [".nuxt/**", ".output/**", ".wrangler/**", "node_modules/**"]
+}

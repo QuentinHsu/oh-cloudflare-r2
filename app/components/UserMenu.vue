@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { LogOut, User } from 'lucide-vue-next'
+import { LogOut, User } from "lucide-vue-next";
 
-const { loggedIn, user, clear } = useUserSession()
+const { loggedIn, user, clear } = useUserSession();
 
 async function logout() {
-  await $fetch('/api/auth/logout', { method: 'POST' })
-  clear()
-  navigateTo('/login')
+  await $fetch("/api/auth/logout", { method: "POST" });
+  clear();
+  navigateTo("/login");
 }
 </script>
 
@@ -15,7 +15,7 @@ async function logout() {
     <DropdownMenuTrigger as-child>
       <Button variant="ghost" class="relative h-9 w-9 rounded-full">
         <Avatar class="h-9 w-9">
-          <AvatarImage :src="user?.avatar_url" :alt="user?.login" />
+          <AvatarImage v-if="user?.avatar_url" :src="user.avatar_url" :alt="user.login" />
           <AvatarFallback>
             <User class="h-4 w-4" />
           </AvatarFallback>

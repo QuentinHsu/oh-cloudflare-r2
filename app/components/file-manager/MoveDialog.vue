@@ -1,30 +1,30 @@
 <script setup lang="ts">
-import { Home, FolderOpen } from 'lucide-vue-next'
-import type { FolderNode } from './types'
+import { Home, FolderOpen } from "lucide-vue-next";
+import type { FolderNode } from "./types";
 
 const props = defineProps<{
-  open: boolean
-  fileName?: string
-  folderTree: FolderNode[]
-  expandedFolders: string[]
-  targetPath: string
-  isMoving: boolean
-}>()
+  open: boolean;
+  fileName?: string;
+  folderTree: FolderNode[];
+  expandedFolders: string[];
+  targetPath: string;
+  isMoving: boolean;
+}>();
 
 const emit = defineEmits<{
-  (e: 'update:open', value: boolean): void
-  (e: 'update:targetPath', value: string): void
-  (e: 'toggle-folder', path: string): void
-  (e: 'confirm'): void
-  (e: 'cancel'): void
-}>()
+  (e: "update:open", value: boolean): void;
+  (e: "update:targetPath", value: string): void;
+  (e: "toggle-folder", path: string): void;
+  (e: "confirm"): void;
+  (e: "cancel"): void;
+}>();
 
 function onOpenChange(value: boolean) {
-  emit('update:open', value)
+  emit("update:open", value);
 }
 
 function onPathInput(event: Event) {
-  emit('update:targetPath', (event.target as HTMLInputElement).value)
+  emit("update:targetPath", (event.target as HTMLInputElement).value);
 }
 </script>
 
@@ -52,7 +52,10 @@ function onPathInput(event: Event) {
           />
         </div>
 
-        <div v-if="props.folderTree.length" class="max-h-40 overflow-y-auto rounded-lg border bg-muted/30 p-2">
+        <div
+          v-if="props.folderTree.length"
+          class="max-h-40 overflow-y-auto rounded-lg border bg-muted/30 p-2"
+        >
           <div
             class="flex items-center gap-2 px-2 py-1.5 rounded cursor-pointer hover:bg-muted text-sm"
             :class="{ 'bg-muted': props.targetPath === '' }"
@@ -76,7 +79,7 @@ function onPathInput(event: Event) {
       <DialogFooter>
         <Button variant="ghost" size="sm" @click="emit('cancel')">取消</Button>
         <Button size="sm" @click="emit('confirm')" :disabled="props.isMoving">
-          {{ props.isMoving ? '移动中...' : '移动' }}
+          {{ props.isMoving ? "移动中..." : "移动" }}
         </Button>
       </DialogFooter>
     </DialogContent>

@@ -1,12 +1,15 @@
 <script setup lang="ts">
-import { Github, HardDrive } from 'lucide-vue-next'
+import { Github, HardDrive } from "lucide-vue-next";
 
 definePageMeta({
   layout: false,
-})
+});
 
-const route = useRoute()
-const error = route.query.error
+const route = useRoute();
+const error = route.query.error;
+const errorMessage = computed(() =>
+  error === "unauthorized" ? "该 GitHub 用户无权访问" : "登录失败，请重试",
+);
 </script>
 
 <template>
@@ -17,13 +20,14 @@ const error = route.query.error
           <HardDrive class="h-6 w-6 text-primary" />
         </div>
         <CardTitle class="text-2xl">R2 Dashboard</CardTitle>
-        <CardDescription>
-          登录以管理你的文件
-        </CardDescription>
+        <CardDescription> 登录以管理你的文件 </CardDescription>
       </CardHeader>
       <CardContent class="space-y-4">
-        <div v-if="error" class="p-3 rounded-lg bg-destructive/10 text-destructive text-sm text-center">
-          登录失败，请重试
+        <div
+          v-if="error"
+          class="p-3 rounded-lg bg-destructive/10 text-destructive text-sm text-center"
+        >
+          {{ errorMessage }}
         </div>
         <Button as-child class="w-full" size="lg">
           <a href="/api/auth/github">

@@ -1,11 +1,11 @@
-import { blob } from 'hub:blob'
+import { blob } from "hub:blob";
 
 export default eventHandler(async (event) => {
-  const pathname = getRouterParam(event, 'pathname')
+  const pathname = getRouterParam(event, "pathname");
 
   if (!pathname) {
-    throw createError({ statusCode: 400, message: 'Pathname is required' })
+    throw createError({ statusCode: 400, message: "Pathname is required" });
   }
 
-  return blob.serve(event, pathname)
-})
+  return blob.serve(event, pathname);
+});

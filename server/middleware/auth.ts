@@ -1,17 +1,20 @@
 export default defineEventHandler(async (event) => {
-  const path = getRequestURL(event).pathname
+  const path = getRequestURL(event).pathname;
 
   // 跳过公开路由
-  const publicPaths = ['/api/auth/', '/api/blob/', '/_nuxt/', '/favicon.ico']
-  if (publicPaths.some(p => path.startsWith(p))) {
-    return
+  const publicPaths = ["/api/auth/", "/api/blob/", "/_nuxt/", "/favicon.ico"];
+  if (publicPaths.some((p) => path.startsWith(p))) {
+    return;
   }
 
   // API 路由需要鉴权
-  if (path.startsWith('/api/')) {
-    const session = await getUserSession(event)
+  if (path.startsWith("/api/")) {
+    const session = await getUserSession(event);
     if (!session.user) {
-      throw createError({ statusCode: 401, message: 'Unauthorized' })
+      throw createError({ statusCode: 401, message: "Unauthorized" });
+    }
+    if (session.authorized !== true) {
+      throw createError({ statusCode: 403, message: "Forbidden" });
     }
   }
-})
+});

@@ -1,52 +1,52 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { Home, ChevronRight, Upload, Trash2, Move, CheckSquare, Square } from 'lucide-vue-next'
+import { ref } from "vue";
+import { Home, ChevronRight, Upload, Trash2, Move, CheckSquare, Square } from "lucide-vue-next";
 
 const props = defineProps<{
-  pathParts: string[]
-  isSelectionMode: boolean
-  hasSelection: boolean
-  selectedCount: number
-  isBatchMoving: boolean
-  isBatchDeleting: boolean
-  isUploading: boolean
-}>()
+  pathParts: string[];
+  isSelectionMode: boolean;
+  hasSelection: boolean;
+  selectedCount: number;
+  isBatchMoving: boolean;
+  isBatchDeleting: boolean;
+  isUploading: boolean;
+}>();
 
 /** A cloned array of File objects with FileList-compatible item() method */
 interface FileListLike extends Array<File> {
-  item(index: number): File | null
+  item(index: number): File | null;
 }
 
 const emit = defineEmits<{
-  (e: 'navigate', index: number): void
-  (e: 'toggle-selection'): void
-  (e: 'open-batch-move'): void
-  (e: 'batch-delete'): void
+  (e: "navigate", index: number): void;
+  (e: "toggle-selection"): void;
+  (e: "open-batch-move"): void;
+  (e: "batch-delete"): void;
   /**
    * Emits a cloned FileList-like array so clearing input.value won't mutate it.
    * The array has an item() method for FileList API compatibility.
    */
-  (e: 'files-selected', files: FileListLike): void
-}>()
+  (e: "files-selected", files: FileListLike): void;
+}>();
 
-const fileInputRef = ref<HTMLInputElement | null>(null)
+const fileInputRef = ref<HTMLInputElement | null>(null);
 
 function triggerUpload() {
-  fileInputRef.value?.click()
+  fileInputRef.value?.click();
 }
 
 function handleFileChange(event: Event) {
-  const input = event.target as HTMLInputElement
-  const arr = input.files ? Array.from(input.files) : []
+  const input = event.target as HTMLInputElement;
+  const arr = input.files ? Array.from(input.files) : [];
 
   if (arr.length) {
     // Clone files into a FileListLike array (not tied to input element)
-    const fileListLike = arr.slice() as FileListLike
-    fileListLike.item = (i: number) => arr[i] ?? null
-    emit('files-selected', fileListLike)
+    const fileListLike = arr.slice() as FileListLike;
+    fileListLike.item = (i: number) => arr[i] ?? null;
+    emit("files-selected", fileListLike);
   }
 
-  if (input) input.value = ''
+  if (input) input.value = "";
 }
 </script>
 
@@ -68,11 +68,21 @@ function handleFileChange(event: Event) {
     <!-- 操作按钮 -->
     <div class="flex items-center gap-2">
       <template v-if="props.isSelectionMode && props.hasSelection">
-        <Button size="sm" variant="outline" @click="emit('open-batch-move')" :disabled="props.isBatchMoving">
+        <Button
+          size="sm"
+          variant="outline"
+          @click="emit('open-batch-move')"
+          :disabled="props.isBatchMoving"
+        >
           <Move class="mr-2 h-4 w-4" />
           移动 ({{ props.selectedCount }})
         </Button>
-        <Button size="sm" variant="destructive" @click="emit('batch-delete')" :disabled="props.isBatchDeleting">
+        <Button
+          size="sm"
+          variant="destructive"
+          @click="emit('batch-delete')"
+          :disabled="props.isBatchDeleting"
+        >
           <Trash2 class="mr-2 h-4 w-4" />
           删除 ({{ props.selectedCount }})
         </Button>
@@ -80,7 +90,7 @@ function handleFileChange(event: Event) {
       <Button size="sm" variant="outline" @click="emit('toggle-selection')">
         <CheckSquare v-if="props.isSelectionMode" class="mr-2 h-4 w-4" />
         <Square v-else class="mr-2 h-4 w-4" />
-        {{ props.isSelectionMode ? '取消选择' : '批量操作' }}
+        {{ props.isSelectionMode ? "取消选择" : "批量操作" }}
       </Button>
       <Button size="sm" :disabled="props.isUploading" @click="triggerUpload">
         <Upload class="mr-2 h-4 w-4" />
