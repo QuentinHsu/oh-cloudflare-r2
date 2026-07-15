@@ -1,28 +1,28 @@
 <script setup lang="ts">
-import { Folder, ChevronRight } from 'lucide-vue-next'
+import { Folder, ChevronRight } from "lucide-vue-next";
 
 interface FolderNode {
-  name: string
-  path: string
-  children: FolderNode[]
+  name: string;
+  path: string;
+  children: FolderNode[];
 }
 
 const props = defineProps<{
-  node: FolderNode
-  selected: string
-  expanded: string[]
-  depth?: number
-}>()
+  node: FolderNode;
+  selected: string;
+  expanded: string[];
+  depth?: number;
+}>();
 
 const emit = defineEmits<{
-  select: [path: string]
-  toggle: [path: string]
-}>()
+  select: [path: string];
+  toggle: [path: string];
+}>();
 
-const depth = props.depth ?? 0
-const isExpanded = computed(() => props.expanded.includes(props.node.path))
-const isSelected = computed(() => props.selected === props.node.path)
-const hasChildren = computed(() => props.node.children.length > 0)
+const depth = props.depth ?? 0;
+const isExpanded = computed(() => props.expanded.includes(props.node.path));
+const isSelected = computed(() => props.selected === props.node.path);
+const hasChildren = computed(() => props.node.children.length > 0);
 </script>
 
 <template>

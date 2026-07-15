@@ -1,24 +1,24 @@
 {
-	"$schema": "node_modules/wrangler/config-schema.json",
-	"observability": {
-		"logs": {
-			"enabled": true,
-			"head_sampling_rate": 1,
-			"persist": true,
-			"invocation_logs": true
-		},
-		"traces": {
-			"enabled": true,
-			"head_sampling_rate": 1,
-			"persist": true
-		}
-	},
-	"r2_buckets": [
-		{
-			"binding": "BLOB",
-			"bucket_name": "your-bucket-name"
-		}
-	]
-	// 生产环境变量建议在 Cloudflare Dashboard 中配置
-	// 或复制 wrangler.jsonc.example 并填写 vars 部分
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "observability": {
+    "logs": {
+      "enabled": true,
+      "head_sampling_rate": 1,
+      "persist": true,
+      "invocation_logs": true,
+    },
+    "traces": {
+      "enabled": true,
+      "head_sampling_rate": 1,
+      "persist": true,
+    },
+  },
+  "r2_buckets": [
+    {
+      "binding": "BLOB",
+      "bucket_name": "your-bucket-name",
+    },
+  ],
+  // 生产环境变量建议在 Cloudflare Dashboard 中配置
+  // 或复制 wrangler.jsonc.example 并填写 vars 部分
 }

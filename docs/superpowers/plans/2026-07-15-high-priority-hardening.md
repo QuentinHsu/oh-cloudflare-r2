@@ -48,6 +48,7 @@
 ### Task 1: Replace ESLint with OXC tooling
 
 **Files:**
+
 - Create: `.oxlintrc.json`
 - Create: `.oxfmtrc.json`
 - Modify: `package.json`
@@ -61,6 +62,7 @@
 - Delete: `eslint.config.mjs`
 
 **Interfaces:**
+
 - Produces: `pnpm lint`, `pnpm lint:fix`, `pnpm format`, and `pnpm format:check`.
 - Produces: Oxlint configuration with Vue, TypeScript, Unicorn, OXC, and Vitest plugins.
 
@@ -140,12 +142,12 @@ Apply these minimal changes:
 ```ts
 // app/components/file-manager/FileList.vue
 function pad(value: number) {
-  return value.toString().padStart(2, '0')
+  return value.toString().padStart(2, "0");
 }
 
 function formatDate(dateStr: string) {
-  const date = new Date(dateStr)
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`
+  const date = new Date(dateStr);
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
 }
 ```
 
@@ -184,9 +186,11 @@ Stage only Task 1 files. Invoke `$commit-message en auto`; expected classificati
 ### Task 2: Apply the Oxfmt baseline
 
 **Files:**
+
 - Modify: all Oxfmt-supported tracked source, configuration, CSS, JSON/JSONC, and Markdown files selected by `oxfmt .`
 
 **Interfaces:**
+
 - Consumes: `pnpm format` and `.oxfmtrc.json` from Task 1.
 - Produces: repository-wide Oxfmt baseline with no behavior changes.
 
@@ -232,6 +236,7 @@ Stage all and only Oxfmt output. Invoke `$commit-message en auto`; expected clas
 ### Task 3: Enforce the GitHub user ID allowlist
 
 **Files:**
+
 - Create: `shared/types/auth.d.ts`
 - Create: `server/utils/github-authorization.ts`
 - Create: `test/server/github-authorization.spec.ts`
@@ -244,6 +249,7 @@ Stage all and only Oxfmt output. Invoke `$commit-message en auto`; expected clas
 - Modify: `app/pages/login.vue`
 
 **Interfaces:**
+
 - Produces: `parseAllowedGithubUserIds(value: unknown): Set<number> | null`.
 - Produces: `isGithubUserAllowed(userId: number, value: unknown): boolean`.
 - Produces: runtime config `allowedGithubUserIds: string`.
@@ -254,33 +260,33 @@ Stage all and only Oxfmt output. Invoke `$commit-message en auto`; expected clas
 Create `test/server/github-authorization.spec.ts`:
 
 ```ts
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it } from "vitest";
 import {
   isGithubUserAllowed,
   parseAllowedGithubUserIds,
-} from '../../server/utils/github-authorization'
+} from "../../server/utils/github-authorization";
 
-describe('GitHub authorization', () => {
-  it('parses positive numeric IDs and removes duplicates', () => {
-    expect(parseAllowedGithubUserIds(' 123,456,123 ')).toEqual(new Set([123, 456]))
-  })
+describe("GitHub authorization", () => {
+  it("parses positive numeric IDs and removes duplicates", () => {
+    expect(parseAllowedGithubUserIds(" 123,456,123 ")).toEqual(new Set([123, 456]));
+  });
 
-  it.each([undefined, null, '', '   ', '123,invalid', '0', '-1', '1.5'])(
-    'treats %j as invalid configuration',
+  it.each([undefined, null, "", "   ", "123,invalid", "0", "-1", "1.5"])(
+    "treats %j as invalid configuration",
     (value) => {
-      expect(parseAllowedGithubUserIds(value)).toBeNull()
+      expect(parseAllowedGithubUserIds(value)).toBeNull();
     },
-  )
+  );
 
-  it('allows only IDs in a valid configuration', () => {
-    expect(isGithubUserAllowed(123, '123,456')).toBe(true)
-    expect(isGithubUserAllowed(999, '123,456')).toBe(false)
-  })
+  it("allows only IDs in a valid configuration", () => {
+    expect(isGithubUserAllowed(123, "123,456")).toBe(true);
+    expect(isGithubUserAllowed(999, "123,456")).toBe(false);
+  });
 
-  it('fails closed for invalid configuration', () => {
-    expect(isGithubUserAllowed(123, '123,invalid')).toBe(false)
-  })
-})
+  it("fails closed for invalid configuration", () => {
+    expect(isGithubUserAllowed(123, "123,invalid")).toBe(false);
+  });
+});
 ```
 
 - [ ] **Step 2: Run the test and verify RED**
@@ -299,19 +305,19 @@ Create `server/utils/github-authorization.ts`:
 
 ```ts
 export function parseAllowedGithubUserIds(value: unknown): Set<number> | null {
-  if (typeof value !== 'string' || !value.trim()) return null
+  if (typeof value !== "string" || !value.trim()) return null;
 
-  const values = value.split(',').map((item) => item.trim())
-  if (values.some((item) => !/^\d+$/.test(item))) return null
+  const values = value.split(",").map((item) => item.trim());
+  if (values.some((item) => !/^\d+$/.test(item))) return null;
 
-  const ids = values.map(Number)
-  if (ids.some((id) => !Number.isSafeInteger(id) || id <= 0)) return null
+  const ids = values.map(Number);
+  if (ids.some((id) => !Number.isSafeInteger(id) || id <= 0)) return null;
 
-  return new Set(ids)
+  return new Set(ids);
 }
 
 export function isGithubUserAllowed(userId: number, value: unknown): boolean {
-  return parseAllowedGithubUserIds(value)?.has(userId) ?? false
+  return parseAllowedGithubUserIds(value)?.has(userId) ?? false;
 }
 ```
 
@@ -336,19 +342,19 @@ allowedGithubUserIds: '',
 Create `shared/types/auth.d.ts`:
 
 ```ts
-declare module '#auth-utils' {
+declare module "#auth-utils" {
   interface User {
-    id: number
-    login: string
-    avatar_url: string
+    id: number;
+    login: string;
+    avatar_url: string;
   }
 
   interface UserSession {
-    authorized: boolean
+    authorized: boolean;
   }
 }
 
-export {}
+export {};
 ```
 
 - [ ] **Step 6: Enforce authorization in the OAuth callback**
@@ -358,14 +364,14 @@ Read `NUXT_ALLOWED_GITHUB_USER_IDS` from `event.context.cloudflare?.env` first, 
 For a denied user:
 
 ```ts
-await clearUserSession(event)
-return sendRedirect(event, '/login?error=unauthorized')
+await clearUserSession(event);
+return sendRedirect(event, "/login?error=unauthorized");
 ```
 
 For an allowed user, preserve the existing user fields and add:
 
 ```ts
-authorized: true
+authorized: true;
 ```
 
 Do not log the configured IDs.
@@ -376,11 +382,11 @@ In `server/middleware/auth.ts`, retain the existing public paths. For protected 
 
 ```ts
 if (!session.user) {
-  throw createError({ statusCode: 401, message: 'Unauthorized' })
+  throw createError({ statusCode: 401, message: "Unauthorized" });
 }
 
 if (session.authorized !== true) {
-  throw createError({ statusCode: 403, message: 'Forbidden' })
+  throw createError({ statusCode: 403, message: "Forbidden" });
 }
 ```
 
@@ -420,6 +426,7 @@ Stage only Task 3 files. Invoke `$commit-message en auto`; expected classificati
 ### Task 4: Return complete paginated R2 listings
 
 **Files:**
+
 - Create: `server/utils/blob-list.ts`
 - Create: `server/utils/file-path.ts`
 - Create: `test/server/blob-list.spec.ts`
@@ -428,6 +435,7 @@ Stage only Task 3 files. Invoke `$commit-message en auto`; expected classificati
 - Modify: `server/api/files/folders.get.ts`
 
 **Interfaces:**
+
 - Produces: `listAllBlobs(storage, options)` returning merged `blobs` and unique `folders`.
 - Produces: `normalizeDirectoryPrefix(value: unknown): string`.
 - Produces: `toRelativeFolderName(folderPath: string, prefix: string): string | null`.
@@ -437,32 +445,49 @@ Stage only Task 3 files. Invoke `$commit-message en auto`; expected classificati
 Create `test/server/blob-list.spec.ts` with structural fake storage and these behaviors:
 
 ```ts
-import { describe, expect, it, vi } from 'vitest'
-import { listAllBlobs } from '../../server/utils/blob-list'
+import { describe, expect, it, vi } from "vitest";
+import { listAllBlobs } from "../../server/utils/blob-list";
 
-describe('listAllBlobs', () => {
-  it('returns a single page', async () => {
-    const list = vi.fn().mockResolvedValue({ blobs: [{ pathname: 'a' }], folders: ['docs/'], hasMore: false })
-    await expect(listAllBlobs({ list })).resolves.toEqual({ blobs: [{ pathname: 'a' }], folders: ['docs/'] })
-  })
+describe("listAllBlobs", () => {
+  it("returns a single page", async () => {
+    const list = vi
+      .fn()
+      .mockResolvedValue({ blobs: [{ pathname: "a" }], folders: ["docs/"], hasMore: false });
+    await expect(listAllBlobs({ list })).resolves.toEqual({
+      blobs: [{ pathname: "a" }],
+      folders: ["docs/"],
+    });
+  });
 
-  it('follows cursors and merges unique folders', async () => {
-    const list = vi.fn()
-      .mockResolvedValueOnce({ blobs: [{ pathname: 'a' }], folders: ['docs/'], hasMore: true, cursor: 'next' })
-      .mockResolvedValueOnce({ blobs: [{ pathname: 'b' }], folders: ['docs/', 'images/'], hasMore: false })
+  it("follows cursors and merges unique folders", async () => {
+    const list = vi
+      .fn()
+      .mockResolvedValueOnce({
+        blobs: [{ pathname: "a" }],
+        folders: ["docs/"],
+        hasMore: true,
+        cursor: "next",
+      })
+      .mockResolvedValueOnce({
+        blobs: [{ pathname: "b" }],
+        folders: ["docs/", "images/"],
+        hasMore: false,
+      });
 
-    await expect(listAllBlobs({ list }, { prefix: 'root/', folded: true })).resolves.toEqual({
-      blobs: [{ pathname: 'a' }, { pathname: 'b' }],
-      folders: ['docs/', 'images/'],
-    })
-    expect(list).toHaveBeenNthCalledWith(2, { prefix: 'root/', folded: true, cursor: 'next' })
-  })
+    await expect(listAllBlobs({ list }, { prefix: "root/", folded: true })).resolves.toEqual({
+      blobs: [{ pathname: "a" }, { pathname: "b" }],
+      folders: ["docs/", "images/"],
+    });
+    expect(list).toHaveBeenNthCalledWith(2, { prefix: "root/", folded: true, cursor: "next" });
+  });
 
-  it('rejects a truncated page without a cursor', async () => {
-    const list = vi.fn().mockResolvedValue({ blobs: [], hasMore: true })
-    await expect(listAllBlobs({ list })).rejects.toThrow('Blob listing returned hasMore without a cursor')
-  })
-})
+  it("rejects a truncated page without a cursor", async () => {
+    const list = vi.fn().mockResolvedValue({ blobs: [], hasMore: true });
+    await expect(listAllBlobs({ list })).rejects.toThrow(
+      "Blob listing returned hasMore without a cursor",
+    );
+  });
+});
 ```
 
 - [ ] **Step 2: Write failing path tests**
@@ -470,26 +495,26 @@ describe('listAllBlobs', () => {
 Create `test/server/file-path.spec.ts`:
 
 ```ts
-import { describe, expect, it } from 'vitest'
-import { normalizeDirectoryPrefix, toRelativeFolderName } from '../../server/utils/file-path'
+import { describe, expect, it } from "vitest";
+import { normalizeDirectoryPrefix, toRelativeFolderName } from "../../server/utils/file-path";
 
-describe('file paths', () => {
+describe("file paths", () => {
   it.each([
-    [undefined, ''],
-    ['', ''],
-    ['/', ''],
-    ['/photos//2026/', 'photos/2026/'],
-    ['photos', 'photos/'],
-  ])('normalizes %j to %j', (input, expected) => {
-    expect(normalizeDirectoryPrefix(input)).toBe(expected)
-  })
+    [undefined, ""],
+    ["", ""],
+    ["/", ""],
+    ["/photos//2026/", "photos/2026/"],
+    ["photos", "photos/"],
+  ])("normalizes %j to %j", (input, expected) => {
+    expect(normalizeDirectoryPrefix(input)).toBe(expected);
+  });
 
-  it('converts folded paths to direct child names', () => {
-    expect(toRelativeFolderName('photos/2026/', 'photos/')).toBe('2026')
-    expect(toRelativeFolderName('docs/', '')).toBe('docs')
-    expect(toRelativeFolderName('photos/', 'photos/')).toBeNull()
-  })
-})
+  it("converts folded paths to direct child names", () => {
+    expect(toRelativeFolderName("photos/2026/", "photos/")).toBe("2026");
+    expect(toRelativeFolderName("docs/", "")).toBe("docs");
+    expect(toRelativeFolderName("photos/", "photos/")).toBeNull();
+  });
+});
 ```
 
 - [ ] **Step 3: Run both tests and verify RED**
@@ -507,38 +532,38 @@ Expected: FAIL because both utility modules are missing.
 Create `server/utils/blob-list.ts` using structural types so tests do not require a real R2 binding:
 
 ```ts
-import type { BlobListOptions } from '@nuxthub/core/blob'
+import type { BlobListOptions } from "@nuxthub/core/blob";
 
 interface BlobListPage<T> {
-  blobs: T[]
-  folders?: string[]
-  hasMore: boolean
-  cursor?: string
+  blobs: T[];
+  folders?: string[];
+  hasMore: boolean;
+  cursor?: string;
 }
 
 interface BlobLister<T> {
-  list: (options?: BlobListOptions) => Promise<BlobListPage<T>>
+  list: (options?: BlobListOptions) => Promise<BlobListPage<T>>;
 }
 
 export async function listAllBlobs<T>(
   storage: BlobLister<T>,
-  options: Omit<BlobListOptions, 'cursor'> = {},
+  options: Omit<BlobListOptions, "cursor"> = {},
 ): Promise<{ blobs: T[]; folders: string[] }> {
-  const blobs: T[] = []
-  const folders = new Set<string>()
-  let cursor: string | undefined
+  const blobs: T[] = [];
+  const folders = new Set<string>();
+  let cursor: string | undefined;
 
   do {
-    const page = await storage.list({ ...options, ...(cursor ? { cursor } : {}) })
-    blobs.push(...page.blobs)
-    page.folders?.forEach((folder) => folders.add(folder))
+    const page = await storage.list({ ...options, ...(cursor ? { cursor } : {}) });
+    blobs.push(...page.blobs);
+    page.folders?.forEach((folder) => folders.add(folder));
 
-    if (!page.hasMore) break
-    if (!page.cursor) throw new Error('Blob listing returned hasMore without a cursor')
-    cursor = page.cursor
-  } while (true)
+    if (!page.hasMore) break;
+    if (!page.cursor) throw new Error("Blob listing returned hasMore without a cursor");
+    cursor = page.cursor;
+  } while (true);
 
-  return { blobs, folders: [...folders] }
+  return { blobs, folders: [...folders] };
 }
 ```
 
@@ -548,16 +573,15 @@ Create `server/utils/file-path.ts`:
 
 ```ts
 export function normalizeDirectoryPrefix(value: unknown): string {
-  if (typeof value !== 'string') return ''
-  const normalized = value.split('/').filter(Boolean).join('/')
-  return normalized ? `${normalized}/` : ''
+  if (typeof value !== "string") return "";
+  const normalized = value.split("/").filter(Boolean).join("/");
+  return normalized ? `${normalized}/` : "";
 }
 
 export function toRelativeFolderName(folderPath: string, prefix: string): string | null {
-  const relativePath = prefix && folderPath.startsWith(prefix)
-    ? folderPath.slice(prefix.length)
-    : folderPath
-  return relativePath.split('/').find(Boolean) ?? null
+  const relativePath =
+    prefix && folderPath.startsWith(prefix) ? folderPath.slice(prefix.length) : folderPath;
+  return relativePath.split("/").find(Boolean) ?? null;
 }
 ```
 
@@ -609,9 +633,11 @@ Stage only Task 4 files. Invoke `$commit-message en auto`; expected classificati
 ### Task 5: Close remaining type gaps and run the complete gate
 
 **Files:**
+
 - Modify: `server/routes/images/[...pathname].get.ts`
 
 **Interfaces:**
+
 - Produces: complete `pnpm check` gate.
 - Produces: explicit 400 response when the public image route lacks a pathname.
 
@@ -630,10 +656,10 @@ Expected before the route fix: FAIL because `pathname` can be undefined in `serv
 Update the image route before `blob.serve`:
 
 ```ts
-const pathname = getRouterParam(event, 'pathname')
+const pathname = getRouterParam(event, "pathname");
 
 if (!pathname) {
-  throw createError({ statusCode: 400, message: 'Pathname is required' })
+  throw createError({ statusCode: 400, message: "Pathname is required" });
 }
 ```
 
