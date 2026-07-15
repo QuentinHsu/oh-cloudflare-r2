@@ -87,12 +87,12 @@ Expected: PASS with exit code 0 and no output.
 Run:
 
 ```bash
-if sed -n '/^  \.:$/,/^packages:$/p' pnpm-lock.yaml | rg '@nuxtjs/tailwindcss|@vercel/blob'; then
+if sed -n '/^  \.:$/,/^packages:$/p' pnpm-lock.yaml | rg "^      '@(nuxtjs/tailwindcss|vercel/blob)':$"; then
   exit 1
 fi
 ```
 
-Expected: PASS with exit code 0 and no matching direct importer entries.
+Expected: PASS with exit code 0 and no matching direct importer keys. Peer-context version strings may still mention `@vercel/blob` because `unstorage` declares it as an optional peer; those strings do not make it a direct project dependency.
 
 - [ ] **Step 5: Verify a clean frozen installation**
 
