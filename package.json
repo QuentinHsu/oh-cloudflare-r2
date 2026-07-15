@@ -5,8 +5,7 @@
   "scripts": {
     "dev": "nuxt dev",
     "build": "nuxt build",
-    "deploy-cloudflare": "NITRO_PRESET=cloudflare_module npm run build && npx wrangler deploy && npx wrangler d1 migrations apply DB --remote",
-    "deploy-vercel": "npx vercel deploy",
+    "deploy-cloudflare": "NITRO_PRESET=cloudflare_module pnpm build && wrangler deploy",
     "postinstall": "nuxt prepare",
     "lint": "oxlint .",
     "lint:fix": "oxlint --fix .",
@@ -19,8 +18,6 @@
   "dependencies": {
     "@nuxthub/core": "^0.10.1",
     "@nuxtjs/color-mode": "^4.0.0",
-    "@nuxtjs/tailwindcss": "^6.14.0",
-    "@vercel/blob": "^2.0.0",
     "@vueuse/core": "^14.1.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
