@@ -2,6 +2,8 @@
 
 现代化的 Cloudflare R2 文件管理面板（Nuxt 4）。
 
+生产部署目标为 Cloudflare Workers + R2。本项目不再提供 Vercel Blob 或其他存储平台的部署支持。
+
 ## 功能一览
 
 - 上传、移动、删除 R2 文件
@@ -144,9 +146,6 @@ pnpm check
 
 # 部署 Cloudflare（包含 NITRO_PRESET=cloudflare_module）
 pnpm run deploy-cloudflare
-
-# 部署 Vercel
-pnpm run deploy-vercel
 ```
 
 ## 项目结构（简版）
