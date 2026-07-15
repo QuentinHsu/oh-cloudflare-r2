@@ -31,9 +31,12 @@ function formatSize(bytes: number) {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
 }
 
+function pad(value: number) {
+  return value.toString().padStart(2, '0')
+}
+
 function formatDate(dateStr: string) {
   const date = new Date(dateStr)
-  const pad = (n: number) => n.toString().padStart(2, '0')
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`
 }
 

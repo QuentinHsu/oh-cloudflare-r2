@@ -17,6 +17,6 @@ export default defineEventHandler(async () => {
   }
 
   return {
-    folders: Array.from(folders).sort(),
+    folders: Array.from(folders).toSorted(),
   }
 })

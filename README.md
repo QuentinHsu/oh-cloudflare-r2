@@ -128,9 +128,14 @@ pnpm build
 # 类型检查
 pnpm typecheck
 
-# 代码规范（Biome）
+# OXC 代码检查与格式化
 pnpm lint
+pnpm lint:fix
 pnpm format
+pnpm format:check
+
+# 完整质量检查
+pnpm check
 
 # 部署 Cloudflare（包含 NITRO_PRESET=cloudflare_module）
 pnpm run deploy-cloudflare

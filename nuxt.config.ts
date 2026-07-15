@@ -11,7 +11,6 @@ export default defineNuxtConfig({
 
   modules: [
     '@nuxthub/core',
-    '@nuxt/eslint',
     '@nuxtjs/color-mode',
     'nuxt-auth-utils',
     'shadcn-nuxt',
@@ -39,11 +38,5 @@ export default defineNuxtConfig({
 
   vite: {
     plugins: [tailwindcss()],
-  },
-
-  eslint: {
-    config: {
-      stylistic: true,
-    },
   },
 })

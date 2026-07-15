@@ -25,8 +25,8 @@ export default defineEventHandler(async (event) => {
   }
 
   return {
-    folders: Array.from(folders).sort(),
-    files: files.sort((a, b) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime()),
+    folders: Array.from(folders).toSorted(),
+    files: files.toSorted((a, b) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime()),
     currentPath: prefix,
   }
 })

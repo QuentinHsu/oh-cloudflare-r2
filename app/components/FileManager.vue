@@ -433,7 +433,7 @@ async function confirmRename() {
   }
 
   // 验证文件名（不允许包含 / 等特殊字符）
-  if (/[\/\\]/.test(trimmedName)) {
+  if (/[/\\]/.test(trimmedName)) {
     toast.error('文件名不能包含 / 或 \\ 字符')
     return
   }
