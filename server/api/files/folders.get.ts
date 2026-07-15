@@ -1,7 +1,7 @@
 import { blob } from "hub:blob";
 
 export default defineEventHandler(async () => {
-  const { blobs } = await blob.list();
+  const { blobs } = await listAllBlobs(blob);
 
   // 收集所有唯一的文件夹路径
   const folders = new Set<string>();
