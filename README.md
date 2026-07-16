@@ -48,6 +48,7 @@ git submodule add https://github.com/QuentinHsu/oh-cloudflare-r2.git oh-cloudfla
     "directory": "./oh-cloudflare-r2/.output/public",
   },
   "compatibility_date": "2025-12-11",
+  "compatibility_flags": ["nodejs_compat", "no_nodejs_compat_v2"],
   "observability": {
     "logs": {
       "enabled": true,
