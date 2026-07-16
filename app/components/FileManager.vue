@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { toast } from "vue-sonner";
 import { computed, watch } from "vue";
+import FileDropOverlay from "./file-manager/FileDropOverlay.vue";
 import FileManagerToolbar from "./file-manager/FileManagerToolbar.vue";
 import FileViewControls from "./file-manager/FileViewControls.vue";
 import FileList from "./file-manager/FileList.vue";
@@ -12,6 +13,7 @@ import BatchMoveDialog from "./file-manager/BatchMoveDialog.vue";
 import { useFolderBrowser } from "../composables/file-manager/useFolderBrowser";
 import { useFileSelection } from "../composables/file-manager/useFileSelection";
 import { useFileMutations } from "../composables/file-manager/useFileMutations";
+import { useFileDropzone } from "../composables/file-manager/useFileDropzone";
 import { useFilePreview } from "../composables/file-manager/useFilePreview";
 import { useFileView } from "../composables/file-manager/useFileView";
 import type { CopyUrlPayload, FilesResponse } from "./file-manager/types";
@@ -140,6 +142,12 @@ const {
   confirmRename,
 } = mutations;
 
+const { isDraggingFiles } = useFileDropzone({
+  isUploading,
+  onFilesDropped: handleFilesSelected,
+  notify: { warning: toast.warning },
+});
+
 const {
   previewFile,
   showPreviewDialog,
@@ -152,7 +160,9 @@ const {
 </script>
 
 <template>
-  <div class="space-y-4">
+  <div class="relative space-y-4">
+    <FileDropOverlay v-if="isDraggingFiles" />
+
     <FileManagerToolbar
       :path-parts="pathParts"
       :is-selection-mode="isSelectionMode"
