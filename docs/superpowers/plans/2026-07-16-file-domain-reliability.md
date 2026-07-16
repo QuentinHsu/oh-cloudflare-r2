@@ -72,7 +72,7 @@
 - Produces `parseDirectoryPath(value: unknown): string`, `parseFilePath(value: unknown): string`, `joinFilePath(directory: string, filename: string): string`, and exported limit constants.
 - Produces `FileDomainError`, `isFileDomainError(error: unknown)`, and `toApiFailure(error: unknown)`.
 
-- [ ] **Step 1: Replace the path tests with strict-path expectations**
+- [x] **Step 1: Replace the path tests with strict-path expectations**
 
 Update `test/server/file-path.spec.ts`:
 
@@ -126,7 +126,7 @@ describe("file paths", () => {
 });
 ```
 
-- [ ] **Step 2: Add failing domain-error tests**
+- [x] **Step 2: Add failing domain-error tests**
 
 Create `test/server/file-errors.spec.ts`:
 
@@ -168,7 +168,7 @@ describe("file errors", () => {
 });
 ```
 
-- [ ] **Step 3: Run both tests and confirm red**
+- [x] **Step 3: Run both tests and confirm red**
 
 Run:
 
@@ -178,7 +178,7 @@ pnpm test --run test/server/file-path.spec.ts test/server/file-errors.spec.ts
 
 Expected: FAIL because the new contracts and error utilities do not exist and the old path utility normalizes invalid paths.
 
-- [ ] **Step 4: Create the shared contract**
+- [x] **Step 4: Create the shared contract**
 
 Create `shared/types/files.ts`:
 
@@ -239,7 +239,7 @@ export interface UploadResult {
 }
 ```
 
-- [ ] **Step 5: Implement strict path parsing**
+- [x] **Step 5: Implement strict path parsing**
 
 Replace `server/utils/file-path.ts` with:
 
@@ -302,7 +302,7 @@ export function toRelativeFolderName(folderPath: string, prefix: string): string
 }
 ```
 
-- [ ] **Step 6: Implement typed domain errors**
+- [x] **Step 6: Implement typed domain errors**
 
 Create `server/utils/file-errors.ts`:
 
@@ -356,7 +356,7 @@ export function toApiFailure(error: unknown): { statusCode: number; body: ApiFai
 }
 ```
 
-- [ ] **Step 7: Run focused checks**
+- [x] **Step 7: Run focused checks**
 
 Run:
 
@@ -368,7 +368,7 @@ pnpm exec oxfmt --check shared/types/files.ts server/utils/file-path.ts server/u
 
 Expected: all focused tests pass and both static checks exit 0.
 
-- [ ] **Step 8: Commit Task 1**
+- [x] **Step 8: Commit Task 1**
 
 Stage only the five Task 1 files and invoke `/commit-message en auto`. Expected classification: `refactor(file-domain)`.
 
@@ -389,7 +389,7 @@ Stage only the five Task 1 files and invoke `/commit-message en auto`. Expected 
 - Produces `FileRepository` with `list`, `read`, `write`, and `remove`.
 - Produces `createBlobFileRepository(storage)`.
 
-- [ ] **Step 1: Add failing repository tests**
+- [x] **Step 1: Add failing repository tests**
 
 Create `test/server/blob-file-repository.spec.ts` with a typed storage fake and these assertions:
 
@@ -435,13 +435,13 @@ describe("blob file repository", () => {
 });
 ```
 
-- [ ] **Step 2: Run the repository test and confirm red**
+- [x] **Step 2: Run the repository test and confirm red**
 
 Run `pnpm test --run test/server/blob-file-repository.spec.ts`.
 
 Expected: FAIL because the repository module does not exist.
 
-- [ ] **Step 3: Implement the repository adapter**
+- [x] **Step 3: Implement the repository adapter**
 
 Create `server/repositories/blob-file-repository.ts`:
 
@@ -469,7 +469,7 @@ export function createBlobFileRepository(storage: BlobStorage): FileRepository {
 }
 ```
 
-- [ ] **Step 4: Keep pagination behavior green through the repository**
+- [x] **Step 4: Keep pagination behavior green through the repository**
 
 Retain `listAllBlobs` cursor checks and run:
 
@@ -479,7 +479,7 @@ pnpm test --run test/server/blob-list.spec.ts test/server/blob-file-repository.s
 
 Expected: 4 tests pass.
 
-- [ ] **Step 5: Run focused static checks**
+- [x] **Step 5: Run focused static checks**
 
 Run:
 
@@ -490,7 +490,7 @@ pnpm exec oxfmt --check server/repositories/blob-file-repository.ts server/utils
 
 Expected: both commands exit 0.
 
-- [ ] **Step 6: Commit Task 2**
+- [x] **Step 6: Commit Task 2**
 
 Stage only Task 2 files and invoke `/commit-message en auto`. Expected classification: `refactor(storage)`.
 
@@ -508,7 +508,7 @@ Stage only Task 2 files and invoke `/commit-message en auto`. Expected classific
 - Consumes `FileRepository`, strict path functions, shared operation types, and `FileDomainError`.
 - Produces `createFileService(repository)` with `upload`, `move`, `delete`, and `execute`.
 
-- [ ] **Step 1: Add failing service tests**
+- [x] **Step 1: Add failing service tests**
 
 Create `test/server/file-service.spec.ts` with a fresh repository fake per test and cover these exact scenarios:
 
@@ -593,13 +593,13 @@ describe("file service", () => {
 });
 ```
 
-- [ ] **Step 2: Run the service test and confirm red**
+- [x] **Step 2: Run the service test and confirm red**
 
 Run `pnpm test --run test/server/file-service.spec.ts`.
 
 Expected: FAIL because `createFileService` does not exist.
 
-- [ ] **Step 3: Implement the service**
+- [x] **Step 3: Implement the service**
 
 Create `server/services/file-service.ts` with:
 
@@ -685,7 +685,7 @@ export function createFileService(repository: FileRepository) {
 }
 ```
 
-- [ ] **Step 4: Run the service tests and refine only to satisfy tested behavior**
+- [x] **Step 4: Run the service tests and refine only to satisfy tested behavior**
 
 Run:
 
@@ -697,7 +697,7 @@ pnpm exec oxfmt --check server/services/file-service.ts test/server/file-service
 
 Expected: all service tests pass and static checks exit 0.
 
-- [ ] **Step 5: Commit Task 3**
+- [x] **Step 5: Commit Task 3**
 
 Stage the service and its test, then invoke `/commit-message en auto`. Expected classification: `refactor(file-operations)`.
 
@@ -715,7 +715,7 @@ Stage the service and its test, then invoke `/commit-message en auto`. Expected 
 - Consumes `FileOperation[]`.
 - Produces `batch(operations: FileOperation[]): Promise<BatchResult>`.
 
-- [ ] **Step 1: Add failing batch tests**
+- [x] **Step 1: Add failing batch tests**
 
 Append to `test/server/file-service.spec.ts`:
 
@@ -754,13 +754,13 @@ it("rejects empty and oversized batches before execution", async () => {
 });
 ```
 
-- [ ] **Step 2: Run the focused test and confirm red**
+- [x] **Step 2: Run the focused test and confirm red**
 
 Run `pnpm test --run test/server/file-service.spec.ts`.
 
 Expected: FAIL because `batch` is not returned by the service.
 
-- [ ] **Step 3: Implement sequential batch execution**
+- [x] **Step 3: Implement sequential batch execution**
 
 Add to `server/services/file-service.ts`:
 
@@ -801,7 +801,7 @@ async function batch(operations: FileOperation[]): Promise<BatchResult> {
 
 Return `{ upload, move, delete: remove, execute, batch }`.
 
-- [ ] **Step 4: Run focused verification**
+- [x] **Step 4: Run focused verification**
 
 Run:
 
@@ -813,7 +813,7 @@ pnpm exec oxfmt --check server/services/file-service.ts test/server/file-service
 
 Expected: all service tests pass.
 
-- [ ] **Step 5: Commit Task 4**
+- [x] **Step 5: Commit Task 4**
 
 Stage only the two Task 4 files and invoke `/commit-message en auto`. Expected classification: `feat(batch-operations)` because server-side batch execution is a new API capability.
 
@@ -841,7 +841,7 @@ Stage only the two Task 4 files and invoke `/commit-message en auto`. Expected c
 - All handlers instantiate `createBlobFileRepository(blob)` and `createFileService(repository)`.
 - Management routes return shared `ApiResponse<T>` shapes.
 
-- [ ] **Step 1: Add failing API helper tests**
+- [x] **Step 1: Add failing API helper tests**
 
 Create `test/server/file-api.spec.ts`:
 
@@ -867,7 +867,7 @@ describe("file API helpers", () => {
 });
 ```
 
-- [ ] **Step 2: Add source-level contract tests for route boundaries**
+- [x] **Step 2: Add source-level contract tests for route boundaries**
 
 Create `test/server/file-contracts.spec.ts`:
 
@@ -898,7 +898,7 @@ describe("file API contracts", () => {
 });
 ```
 
-- [ ] **Step 3: Run API tests and confirm red**
+- [x] **Step 3: Run API tests and confirm red**
 
 Run:
 
@@ -908,7 +908,7 @@ pnpm test --run test/server/file-api.spec.ts test/server/file-contracts.spec.ts
 
 Expected: FAIL because the helper and new endpoints do not exist and legacy handlers still exist.
 
-- [ ] **Step 4: Implement the response helper**
+- [x] **Step 4: Implement the response helper**
 
 Create `server/utils/file-api.ts`:
 
@@ -928,7 +928,7 @@ export function respondFileError(event: H3Event, error: unknown): ApiFailure {
 }
 ```
 
-- [ ] **Step 5: Replace management handlers with the listed repository/service calls**
+- [x] **Step 5: Replace management handlers with the listed repository/service calls**
 
 Each handler uses this exact dependency boundary; handler-specific imports for shared types and path helpers are added alongside it:
 
@@ -1003,7 +1003,7 @@ return success(await service.batch(body.operations));
 
 Define `toClientBlobFile` in `server/utils/file-api.ts` so listing and upload share the same metadata conversion.
 
-- [ ] **Step 6: Remove legacy handlers and stabilize auth failures**
+- [x] **Step 6: Remove legacy handlers and stabilize auth failures**
 
 Delete `move.post.ts` and `[...pathname].delete.ts`. Replace `server/middleware/auth.ts` with:
 
@@ -1038,7 +1038,7 @@ export default defineEventHandler(async (event) => {
 });
 ```
 
-- [ ] **Step 7: Run server tests and typecheck**
+- [x] **Step 7: Run server tests and typecheck**
 
 Run:
 
@@ -1051,7 +1051,7 @@ pnpm exec oxfmt --check server shared/types/files.ts test/server
 
 Expected: server tests pass, typecheck passes, and both static checks exit 0.
 
-- [ ] **Step 8: Commit Task 5**
+- [x] **Step 8: Commit Task 5**
 
 Stage only Task 5 files and invoke `/commit-message en auto`. Expected classification: `refactor(file-api)`.
 
@@ -1073,7 +1073,7 @@ Stage only Task 5 files and invoke `/commit-message en auto`. Expected classific
 - Produces `parseAllowedOrigins(value: unknown): string[]`, `getRequestOrigin(origin, referer): string | null`, and `isOriginAllowed(origin, allowedOrigins): boolean`.
 - Public routes consume `parseFilePath` before `blob.serve`.
 
-- [ ] **Step 1: Add failing pure Origin-policy tests**
+- [x] **Step 1: Add failing pure Origin-policy tests**
 
 Create `test/server/origin-policy.spec.ts`:
 
@@ -1106,13 +1106,13 @@ describe("origin policy", () => {
 });
 ```
 
-- [ ] **Step 2: Run the Origin test and confirm red**
+- [x] **Step 2: Run the Origin test and confirm red**
 
 Run `pnpm test --run test/server/origin-policy.spec.ts`.
 
 Expected: FAIL because the module does not exist.
 
-- [ ] **Step 3: Implement the pure Origin policy**
+- [x] **Step 3: Implement the pure Origin policy**
 
 Create `server/utils/origin-policy.ts`:
 
@@ -1157,7 +1157,7 @@ export function isOriginAllowed(requestOrigin: string, allowedOrigins: readonly 
 }
 ```
 
-- [ ] **Step 4: Refactor CORS middleware and validate public paths**
+- [x] **Step 4: Refactor CORS middleware and validate public paths**
 
 Replace `server/middleware/cors.ts` with:
 
@@ -1190,11 +1190,11 @@ return blob.serve(event, pathname);
 
 Keep the image route Content Security Policy header unchanged.
 
-- [ ] **Step 5: Add source-level public-route assertions**
+- [x] **Step 5: Add source-level public-route assertions**
 
 Create `test/server/public-file-routes.spec.ts` and assert both route files import and call `parseFilePath`, while both retain `blob.serve` because public serving remains in the route layer.
 
-- [ ] **Step 6: Run focused and server-wide checks**
+- [x] **Step 6: Run focused and server-wide checks**
 
 Run:
 
@@ -1206,7 +1206,7 @@ pnpm typecheck
 
 Expected: all tests and typecheck pass.
 
-- [ ] **Step 7: Commit Task 6**
+- [x] **Step 7: Commit Task 6**
 
 Stage only Task 6 files and invoke `/commit-message en auto`. Expected classification: `fix(origin-policy)` because malformed headers previously caused unexpected server errors.
 
@@ -1236,7 +1236,7 @@ Stage only Task 6 files and invoke `/commit-message en auto`. Expected classific
 - `useBatchFileOperations(dependencies)` produces batch move/delete state and actions.
 - `useFileSelection` adds `replaceSelection(paths: Iterable<string>)`.
 
-- [ ] **Step 1: Add failing API decoding tests**
+- [x] **Step 1: Add failing API decoding tests**
 
 Create `test/file-manager/useFileApi.spec.ts`:
 
@@ -1267,7 +1267,7 @@ describe("file API", () => {
 });
 ```
 
-- [ ] **Step 2: Add focused workflow tests**
+- [x] **Step 2: Add focused workflow tests**
 
 Create one test file per composable with injected fakes. The critical assertions are:
 
@@ -1361,7 +1361,7 @@ it("keeps only failed source paths after partial batch completion", async () => 
 
 Define `createUpload`, `createOperations`, and `createBatch` as small test helpers that call the respective composable with the named fakes. Do not mount Vue components in these tests.
 
-- [ ] **Step 3: Run new composable tests and confirm red**
+- [x] **Step 3: Run new composable tests and confirm red**
 
 Run:
 
@@ -1371,7 +1371,7 @@ pnpm test --run test/file-manager/useFileApi.spec.ts test/file-manager/useFileUp
 
 Expected: FAIL because the modules do not exist.
 
-- [ ] **Step 4: Implement the typed transport**
+- [x] **Step 4: Implement the typed transport**
 
 Create `app/composables/file-manager/useFileApi.ts`:
 
@@ -1444,7 +1444,7 @@ export function createFileApi(request: Request) {
 }
 ```
 
-- [ ] **Step 5: Extend selection replacement**
+- [x] **Step 5: Extend selection replacement**
 
 Add to `useFileSelection.ts`:
 
@@ -1456,7 +1456,7 @@ function replaceSelection(paths: Iterable<string>) {
 
 Return it and add a test proving it replaces, rather than appends to, the current selection.
 
-- [ ] **Step 6: Implement the three workflow composables**
+- [x] **Step 6: Implement the three workflow composables**
 
 Use the same dependency shape in all three modules:
 
@@ -1574,7 +1574,7 @@ await refreshIndexes(dependencies.refreshFiles, dependencies.refreshFolders, dep
 
 If the entire batch request rejects, do not replace selection or close the batch Dialog. After a resolved result, close the Dialog only when at least one operation succeeded; retain it when every result failed.
 
-- [ ] **Step 7: Re-export shared UI types**
+- [x] **Step 7: Re-export shared UI types**
 
 Update `app/components/file-manager/types.ts`:
 
@@ -1593,7 +1593,7 @@ export interface CopyUrlPayload {
 }
 ```
 
-- [ ] **Step 8: Run focused frontend checks**
+- [x] **Step 8: Run focused frontend checks**
 
 Run:
 
@@ -1606,7 +1606,7 @@ pnpm exec oxfmt --check app/composables/file-manager app/components/file-manager
 
 Expected: focused tests, typecheck, lint, and formatting checks pass.
 
-- [ ] **Step 9: Commit Task 7**
+- [x] **Step 9: Commit Task 7**
 
 Stage only Task 7 files and invoke `/commit-message en auto`. Expected classification: `refactor(file-manager)`.
 
@@ -1630,7 +1630,7 @@ Stage only Task 7 files and invoke `/commit-message en auto`. Expected classific
 - `currentPath` becomes canonical (`""`, `"photos"`, `"photos/2026"`) without a trailing slash.
 - `FileManager.vue` creates one `fileApi` and composes upload, single-operation, and batch composables.
 
-- [ ] **Step 1: Change folder-browser expectations to canonical paths**
+- [x] **Step 1: Change folder-browser expectations to canonical paths**
 
 Update `test/file-manager/useFolderBrowser.spec.ts` so navigation expects:
 
@@ -1644,7 +1644,7 @@ browser.navigateToPath(-1);
 expect(browser.currentPath.value).toBe("");
 ```
 
-- [ ] **Step 2: Update FileManager integration tests for the new API**
+- [x] **Step 2: Update FileManager integration tests for the new API**
 
 Change mocked list data to `{ ok: true, data: FilesResponse }`. Assert:
 
@@ -1654,7 +1654,7 @@ Change mocked list data to `{ ok: true, data: FilesResponse }`. Assert:
 - partial batch results retain only failed selections;
 - move and rename use `/api/files/operations`.
 
-- [ ] **Step 3: Run changed tests and confirm red**
+- [x] **Step 3: Run changed tests and confirm red**
 
 Run:
 
@@ -1664,7 +1664,7 @@ pnpm test --run test/file-manager/useFolderBrowser.spec.ts test/file-manager/Fil
 
 Expected: FAIL because the implementation still uses trailing slashes and `useFileMutations`.
 
-- [ ] **Step 4: Make folder browsing canonical**
+- [x] **Step 4: Make folder browsing canonical**
 
 Update `useFolderBrowser.ts`:
 
@@ -1682,7 +1682,7 @@ function navigateToPath(index: number) {
 
 Keep folder-tree paths canonical and update helper expectations that previously tolerated or emitted trailing slashes.
 
-- [ ] **Step 5: Replace FileManager composition**
+- [x] **Step 5: Replace FileManager composition**
 
 In `FileManager.vue`:
 
@@ -1695,11 +1695,11 @@ In `FileManager.vue`:
 
 Delete `useFileMutations.ts` after all call sites move.
 
-- [ ] **Step 6: Remove obsolete tests and keep workflow coverage focused**
+- [x] **Step 6: Remove obsolete tests and keep workflow coverage focused**
 
 Delete `useFileMutations.spec.ts`. Ensure each moved behavior appears in exactly one focused composable test. Retain only composition and DOM-event coverage in `FileManager.spec.ts`.
 
-- [ ] **Step 7: Run the complete frontend suite**
+- [x] **Step 7: Run the complete frontend suite**
 
 Run:
 
@@ -1712,7 +1712,7 @@ pnpm exec oxfmt --check app test/file-manager
 
 Expected: all frontend tests and static checks pass.
 
-- [ ] **Step 8: Commit Task 8**
+- [x] **Step 8: Commit Task 8**
 
 Stage only Task 8 files and invoke `/commit-message en auto`. Expected classification: `refactor(file-manager)`.
 
@@ -1729,7 +1729,7 @@ Stage only Task 8 files and invoke `/commit-message en auto`. Expected classific
 
 - Documents the final management routes and unchanged public routes.
 
-- [ ] **Step 1: Update the README API overview**
+- [x] **Step 1: Update the README API overview**
 
 Replace the old move/delete API list with:
 
@@ -1745,7 +1745,7 @@ Replace the old move/delete API list with:
 
 Also state the 50-file upload limit, 100-operation batch limit, and no-overwrite policy.
 
-- [ ] **Step 2: Run full verification from a clean index**
+- [x] **Step 2: Run full verification from a clean index**
 
 Run:
 
