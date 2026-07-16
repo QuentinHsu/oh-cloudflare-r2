@@ -27,17 +27,22 @@ describe("FileList", () => {
   ];
   const folders = ["docs"];
 
-  const mountList = (isSelectionMode = false) =>
+  const baseProps = {
+    status: "success",
+    folders,
+    files,
+    isSelectionMode: false,
+    selectedFiles: new Set<string>(),
+    allSelected: false,
+    hasSelection: false,
+    hasActiveSearch: false,
+    searchQuery: "",
+    hasSourceItems: true,
+  };
+
+  const mountList = (overrides: Partial<typeof baseProps> = {}) =>
     mount(FileList, {
-      props: {
-        status: "success",
-        folders,
-        files,
-        isSelectionMode,
-        selectedFiles: new Set<string>(),
-        allSelected: false,
-        hasSelection: false,
-      },
+      props: { ...baseProps, ...overrides },
       global: {
         stubs: {
           Button: ButtonStub,
@@ -90,5 +95,31 @@ describe("FileList", () => {
     expect(wrapper.emitted("rename")).toBeTruthy();
     expect(wrapper.emitted("move")).toBeTruthy();
     expect(wrapper.emitted("delete")).toBeTruthy();
+  });
+
+  it("shows the ordinary empty state for an empty source directory", () => {
+    const wrapper = mountList({
+      folders: [],
+      files: [],
+      hasActiveSearch: true,
+      searchQuery: "invoice",
+      hasSourceItems: false,
+    });
+    expect(wrapper.text()).toContain("暂无文件");
+    expect(wrapper.text()).not.toContain("没有找到");
+  });
+
+  it("shows and clears an active search with no visible results", async () => {
+    const wrapper = mountList({
+      folders: [],
+      files: [],
+      hasActiveSearch: true,
+      searchQuery: "invoice",
+      hasSourceItems: true,
+    });
+
+    expect(wrapper.text()).toContain("没有找到与“invoice”匹配的文件或文件夹");
+    await wrapper.get("button").trigger("click");
+    expect(wrapper.emitted("clear-search")).toHaveLength(1);
   });
 });

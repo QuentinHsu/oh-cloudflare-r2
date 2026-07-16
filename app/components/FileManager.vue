@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { toast } from "vue-sonner";
+import { computed, watch } from "vue";
 import FileManagerToolbar from "./file-manager/FileManagerToolbar.vue";
+import FileViewControls from "./file-manager/FileViewControls.vue";
 import FileList from "./file-manager/FileList.vue";
 import UploadDialog from "./file-manager/UploadDialog.vue";
 import PreviewDialog from "./file-manager/PreviewDialog.vue";
@@ -11,6 +13,7 @@ import { useFolderBrowser } from "../composables/file-manager/useFolderBrowser";
 import { useFileSelection } from "../composables/file-manager/useFileSelection";
 import { useFileMutations } from "../composables/file-manager/useFileMutations";
 import { useFilePreview } from "../composables/file-manager/useFilePreview";
+import { useFileView } from "../composables/file-manager/useFileView";
 import type { CopyUrlPayload, FilesResponse } from "./file-manager/types";
 
 const { data: allFolders, refresh: refreshAllFolders } = await useFetch<{ folders: string[] }>(
@@ -34,6 +37,25 @@ const { data, refresh, status } = await useFetch<FilesResponse>("/api/files", {
 });
 
 const {
+  searchQuery,
+  sortField,
+  sortDirection,
+  visibleFolders,
+  visibleFiles,
+  hasActiveSearch,
+  resultCount,
+  clearSearch,
+  toggleSortDirection,
+} = useFileView(
+  () => data.value?.folders ?? [],
+  () => data.value?.files ?? [],
+);
+
+const hasSourceItems = computed(
+  () => (data.value?.folders.length ?? 0) + (data.value?.files.length ?? 0) > 0,
+);
+
+const {
   selectedFiles,
   isSelectionMode,
   hasSelection,
@@ -42,7 +64,9 @@ const {
   toggleSelectionMode,
   toggleFileSelection,
   toggleSelectAll,
-} = useFileSelection(() => data.value?.files ?? []);
+} = useFileSelection(visibleFiles);
+
+watch(searchQuery, clearSelection);
 
 const mutations = useFileMutations({
   request: async (url, options) => {
@@ -66,6 +90,16 @@ const preview = useFilePreview({
 
 function handleCopyUrl(payload: CopyUrlPayload) {
   void preview.copyUrl(payload.pathname, payload.type);
+}
+
+function handleNavigateFolder(folder: string) {
+  navigateToFolder(folder);
+  clearSearch();
+}
+
+function handleNavigatePath(index: number) {
+  navigateToPath(index);
+  clearSearch();
 }
 
 const {
@@ -127,11 +161,23 @@ const {
       :is-batch-moving="isBatchMoving"
       :is-batch-deleting="isBatchDeleting"
       :is-uploading="isUploading"
-      @navigate="navigateToPath"
+      @navigate="handleNavigatePath"
       @toggle-selection="toggleSelectionMode"
       @open-batch-move="openBatchMoveDialog"
       @batch-delete="batchDelete"
       @files-selected="handleFilesSelected"
+    />
+
+    <FileViewControls
+      :search-query="searchQuery"
+      :sort-field="sortField"
+      :sort-direction="sortDirection"
+      :has-active-search="hasActiveSearch"
+      :result-count="resultCount"
+      @update:search-query="searchQuery = $event"
+      @update:sort-field="sortField = $event"
+      @toggle-sort-direction="toggleSortDirection"
+      @clear-search="clearSearch"
     />
 
     <UploadDialog
@@ -151,13 +197,17 @@ const {
 
     <FileList
       :status="status"
-      :folders="data?.folders || []"
-      :files="data?.files || []"
+      :folders="visibleFolders"
+      :files="visibleFiles"
       :is-selection-mode="isSelectionMode"
       :selected-files="selectedFiles"
       :all-selected="allSelected"
       :has-selection="hasSelection"
-      @navigate-folder="navigateToFolder"
+      :has-active-search="hasActiveSearch"
+      :search-query="searchQuery"
+      :has-source-items="hasSourceItems"
+      @navigate-folder="handleNavigateFolder"
+      @clear-search="clearSearch"
       @toggle-select-all="toggleSelectAll"
       @toggle-file="toggleFileSelection"
       @open-preview="openPreview"
