@@ -10,7 +10,7 @@ import {
   Edit,
   CheckSquare,
   Square,
-} from "lucide-vue-next";
+} from "@lucide/vue";
 import type { BlobFile } from "./types";
 
 const props = withDefaults(

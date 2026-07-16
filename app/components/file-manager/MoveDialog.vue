@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Home, FolderOpen } from "lucide-vue-next";
+import { Home, FolderOpen } from "@lucide/vue";
 import type { FolderNode } from "./types";
 
 const props = defineProps<{

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { LogOut, User } from "lucide-vue-next";
+import { LogOut, User } from "@lucide/vue";
 
 const { loggedIn, user, clear } = useUserSession();
 

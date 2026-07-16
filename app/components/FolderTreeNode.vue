@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Folder, ChevronRight } from "lucide-vue-next";
+import { Folder, ChevronRight } from "@lucide/vue";
 
 interface FolderNode {
   name: string;

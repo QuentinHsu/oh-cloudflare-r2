@@ -16,21 +16,21 @@
     "typecheck": "nuxt typecheck"
   },
   "dependencies": {
+    "@lucide/vue": "^1.24.0",
     "@nuxthub/core": "^0.10.8",
     "@nuxtjs/color-mode": "^4.0.1",
-    "@vueuse/core": "^14.1.0",
+    "@vueuse/core": "^14.3.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "lucide-vue-next": "^0.562.0",
     "nuxt": "^4.4.8",
     "nuxt-auth-utils": "^0.5.29",
-    "reka-ui": "^2.7.0",
-    "shadcn-nuxt": "^2.4.3",
-    "tailwind-merge": "^3.4.0",
+    "reka-ui": "^2.10.1",
+    "shadcn-nuxt": "^2.8.0",
+    "tailwind-merge": "^3.6.0",
     "vue-sonner": "^2.0.9"
   },
   "devDependencies": {
-    "@tailwindcss/vite": "^4.1.18",
+    "@tailwindcss/vite": "^4.3.2",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/vue": "^8.1.0",
     "@vitejs/plugin-vue": "^6.0.3",
@@ -38,7 +38,7 @@
     "jsdom": "^27.4.0",
     "oxfmt": "0.59.0",
     "oxlint": "1.74.0",
-    "tailwindcss": "^4.1.18",
+    "tailwindcss": "^4.3.2",
     "vitest": "^4.0.16",
     "vue-tsc": "^3.3.7",
     "wrangler": "4.54.0"

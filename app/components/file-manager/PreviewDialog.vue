@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Link, Image } from "lucide-vue-next";
+import { Link, Image } from "@lucide/vue";
 
 const props = defineProps<{
   open: boolean;

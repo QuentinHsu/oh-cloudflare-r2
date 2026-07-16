@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Github, HardDrive } from "lucide-vue-next";
+import { GitFork as Github, HardDrive } from "@lucide/vue";
 
 definePageMeta({
   layout: false,
