@@ -75,4 +75,38 @@ describe("useBatchFileOperations", () => {
     expect(replaceSelection).not.toHaveBeenCalled();
     expect(notify.error).toHaveBeenCalledWith("存储服务暂时不可用");
   });
+
+  it("refreshes indexes after a partially completed batch move", async () => {
+    batch.mockResolvedValueOnce({
+      results: [
+        {
+          operation: { action: "move", source: "a.txt", destination: "archive/a.txt" },
+          ok: false,
+          error: {
+            code: "MOVE_PARTIALLY_COMPLETED",
+            message: "目标副本已创建，但源文件删除失败",
+            details: { source: "a.txt", destination: "archive/a.txt" },
+            recoverable: true,
+          },
+        },
+        {
+          operation: { action: "move", source: "b.txt", destination: "archive/b.txt" },
+          ok: false,
+          error: {
+            code: "DESTINATION_EXISTS",
+            message: "目标文件已存在",
+            recoverable: true,
+          },
+        },
+      ],
+    });
+    const state = createBatch();
+    state.openBatchMoveDialog();
+    state.batchMoveTargetPath.value = "archive";
+    await state.confirmBatchMove();
+
+    expect(state.showBatchMoveDialog.value).toBe(true);
+    expect(refreshFiles).toHaveBeenCalledOnce();
+    expect(refreshFolders).toHaveBeenCalledOnce();
+  });
 });

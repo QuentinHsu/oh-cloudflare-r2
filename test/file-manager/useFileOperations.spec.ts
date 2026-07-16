@@ -69,6 +69,8 @@ describe("useFileOperations", () => {
     expect(notify.error).toHaveBeenCalledWith(
       "目标副本已创建，但源文件删除失败：photos/a.txt → archive/a.txt",
     );
+    expect(refreshFiles).toHaveBeenCalledOnce();
+    expect(refreshFolders).toHaveBeenCalledOnce();
   });
 
   it("renames through the same move operation", async () => {

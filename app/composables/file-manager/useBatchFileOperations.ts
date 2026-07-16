@@ -50,7 +50,10 @@ export function useBatchFileOperations(dependencies: BatchFileOperationsDependen
       }
     }
 
-    if (successCount > 0) {
+    const hasStorageChanges =
+      successCount > 0 ||
+      failedResults.some((item) => item.error.code === "MOVE_PARTIALLY_COMPLETED");
+    if (hasStorageChanges) {
       await refreshFileIndexes(
         dependencies.refreshFiles,
         dependencies.refreshFolders,

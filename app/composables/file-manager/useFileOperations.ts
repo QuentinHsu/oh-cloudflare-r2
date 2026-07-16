@@ -97,6 +97,13 @@ export function useFileOperations(dependencies: FileOperationsDependencies) {
       );
     } catch (error: unknown) {
       dependencies.notify.error(formatOperationError(error));
+      if (readFileApiError(error).code === "MOVE_PARTIALLY_COMPLETED") {
+        await refreshFileIndexes(
+          dependencies.refreshFiles,
+          dependencies.refreshFolders,
+          dependencies.notify,
+        );
+      }
     } finally {
       isMoving.value = false;
     }
@@ -154,6 +161,13 @@ export function useFileOperations(dependencies: FileOperationsDependencies) {
       );
     } catch (error: unknown) {
       dependencies.notify.error(formatOperationError(error));
+      if (readFileApiError(error).code === "MOVE_PARTIALLY_COMPLETED") {
+        await refreshFileIndexes(
+          dependencies.refreshFiles,
+          dependencies.refreshFolders,
+          dependencies.notify,
+        );
+      }
     } finally {
       isRenaming.value = false;
     }
