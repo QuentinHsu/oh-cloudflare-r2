@@ -1,13 +1,27 @@
 import type { BlobObject } from "@nuxthub/core/blob";
-import type { FileOperation } from "../../shared/types/files";
+import type {
+  BatchOperationResult,
+  BatchResult,
+  FileErrorCode,
+  FileOperation,
+} from "../../shared/types/files";
 import type { FileRepository } from "../repositories/blob-file-repository";
-import { FileDomainError, isFileDomainError } from "../utils/file-errors";
+import { FileDomainError, isFileDomainError, toApiFailure } from "../utils/file-errors";
 import {
+  MAX_BATCH_OPERATIONS,
   MAX_UPLOAD_FILES,
   joinFilePath,
   parseDirectoryPath,
   parseFilePath,
 } from "../utils/file-path";
+
+const RECOVERABLE_CODES: ReadonlySet<FileErrorCode> = new Set([
+  "INVALID_PATH",
+  "SOURCE_NOT_FOUND",
+  "DESTINATION_EXISTS",
+  "SOURCE_EQUALS_DESTINATION",
+  "MOVE_PARTIALLY_COMPLETED",
+]);
 
 export function createFileService(repository: FileRepository) {
   async function upload(directoryValue: unknown, files: File[]): Promise<BlobObject[]> {
@@ -107,5 +121,30 @@ export function createFileService(repository: FileRepository) {
     return remove(operation.path);
   }
 
-  return { upload, move, delete: remove, execute };
+  async function batch(operations: FileOperation[]): Promise<BatchResult> {
+    if (!operations.length || operations.length > MAX_BATCH_OPERATIONS) {
+      throw new FileDomainError("INVALID_FILE");
+    }
+
+    const results: BatchOperationResult[] = [];
+    for (const operation of operations) {
+      try {
+        await execute(operation);
+        results.push({ operation, ok: true });
+      } catch (error: unknown) {
+        const failure = toApiFailure(error).body.error;
+        results.push({
+          operation,
+          ok: false,
+          error: {
+            ...failure,
+            recoverable: RECOVERABLE_CODES.has(failure.code),
+          },
+        });
+      }
+    }
+    return { results };
+  }
+
+  return { upload, move, delete: remove, execute, batch };
 }

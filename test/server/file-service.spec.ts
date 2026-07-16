@@ -97,4 +97,67 @@ describe("file service", () => {
     });
     expect(repository.remove).not.toHaveBeenCalled();
   });
+
+  it("executes batch operations sequentially and preserves partial results", async () => {
+    vi.mocked(repository.read)
+      .mockResolvedValueOnce(new Blob(["a"]))
+      .mockResolvedValueOnce(new Blob(["b"]));
+    vi.mocked(repository.remove)
+      .mockResolvedValueOnce(undefined)
+      .mockRejectedValueOnce(new Error("delete failed"));
+    const operations = [
+      { action: "delete", path: "a.txt" },
+      { action: "delete", path: "b.txt" },
+    ] as const;
+
+    await expect(createFileService(repository).batch([...operations])).resolves.toEqual({
+      results: [
+        { operation: operations[0], ok: true },
+        {
+          operation: operations[1],
+          ok: false,
+          error: {
+            code: "STORAGE_DELETE_FAILED",
+            message: "文件删除失败",
+            details: { path: "b.txt" },
+            recoverable: false,
+          },
+        },
+      ],
+    });
+    expect(repository.remove).toHaveBeenNthCalledWith(1, "a.txt");
+    expect(repository.remove).toHaveBeenNthCalledWith(2, "b.txt");
+  });
+
+  it("marks destination conflicts as recoverable batch failures", async () => {
+    vi.mocked(repository.read)
+      .mockResolvedValueOnce(new Blob(["source"]))
+      .mockResolvedValueOnce(new Blob(["destination"]));
+    const operation = { action: "move", source: "a.txt", destination: "b.txt" } as const;
+
+    await expect(createFileService(repository).batch([operation])).resolves.toMatchObject({
+      results: [
+        {
+          operation,
+          ok: false,
+          error: { code: "DESTINATION_EXISTS", recoverable: true },
+        },
+      ],
+    });
+  });
+
+  it("rejects empty and oversized batches before storage I/O", async () => {
+    const service = createFileService(repository);
+
+    await expect(service.batch([])).rejects.toMatchObject({ code: "INVALID_FILE" });
+    await expect(
+      service.batch(
+        Array.from({ length: 101 }, (_, index) => ({
+          action: "delete" as const,
+          path: `${index}.txt`,
+        })),
+      ),
+    ).rejects.toMatchObject({ code: "INVALID_FILE" });
+    expect(repository.read).not.toHaveBeenCalled();
+  });
 });
