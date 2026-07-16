@@ -1,22 +1,23 @@
 import { blob } from "hub:blob";
+import { createBlobFileRepository } from "../../repositories/blob-file-repository";
+import { respondFileError, success } from "../../utils/file-api";
 
-export default defineEventHandler(async () => {
-  const { blobs } = await listAllBlobs(blob);
+const repository = createBlobFileRepository(blob);
 
-  // 收集所有唯一的文件夹路径
-  const folders = new Set<string>();
+export default defineEventHandler(async (event) => {
+  try {
+    const { blobs } = await repository.list();
+    const folders = new Set<string>();
 
-  for (const item of blobs) {
-    const parts = item.pathname.split("/");
-    // 构建所有层级的路径
-    let path = "";
-    for (let i = 0; i < parts.length - 1; i++) {
-      path += parts[i] + "/";
-      folders.add(path);
+    for (const item of blobs) {
+      const parts = item.pathname.split("/");
+      for (let index = 1; index < parts.length; index += 1) {
+        folders.add(parts.slice(0, index).join("/"));
+      }
     }
-  }
 
-  return {
-    folders: Array.from(folders).toSorted(),
-  };
+    return success({ folders: [...folders].toSorted() });
+  } catch (error: unknown) {
+    return respondFileError(event, error);
+  }
 });

@@ -1,27 +1,19 @@
 import { blob } from "hub:blob";
+import { createBlobFileRepository } from "../../repositories/blob-file-repository";
+import { createFileService } from "../../services/file-service";
+import { respondFileError, success, toClientBlobFile } from "../../utils/file-api";
+
+const service = createFileService(createBlobFileRepository(blob));
 
 export default defineEventHandler(async (event) => {
-  const query = getQuery(event);
-  const prefix = (query.prefix as string) || "";
+  try {
+    const formData = await readFormData(event);
+    const directory = formData.get("directory");
+    const files = formData.getAll("files").filter((value): value is File => value instanceof File);
+    const uploaded = await service.upload(directory, files);
 
-  const formData = await readFormData(event);
-  const files = formData.getAll("files") as File[];
-
-  if (!files.length) {
-    throw createError({ statusCode: 400, message: "No files provided" });
+    return success({ files: uploaded.map(toClientBlobFile) });
+  } catch (error: unknown) {
+    return respondFileError(event, error);
   }
-
-  const results = [];
-
-  for (const file of files) {
-    const pathname = prefix ? `${prefix}${file.name}` : file.name;
-
-    const result = await blob.put(pathname, file, {
-      contentType: file.type,
-    });
-
-    results.push(result);
-  }
-
-  return results;
 });
