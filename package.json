@@ -16,14 +16,14 @@
     "typecheck": "nuxt typecheck"
   },
   "dependencies": {
-    "@nuxthub/core": "^0.10.1",
-    "@nuxtjs/color-mode": "^4.0.0",
+    "@nuxthub/core": "^0.10.8",
+    "@nuxtjs/color-mode": "^4.0.1",
     "@vueuse/core": "^14.1.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-vue-next": "^0.562.0",
-    "nuxt": "^4.2.2",
-    "nuxt-auth-utils": "^0.5.26",
+    "nuxt": "^4.4.8",
+    "nuxt-auth-utils": "^0.5.29",
     "reka-ui": "^2.7.0",
     "shadcn-nuxt": "^2.4.3",
     "tailwind-merge": "^3.4.0",
@@ -40,7 +40,7 @@
     "oxlint": "1.74.0",
     "tailwindcss": "^4.1.18",
     "vitest": "^4.0.16",
-    "vue-tsc": "^3.1.8",
+    "vue-tsc": "^3.3.7",
     "wrangler": "4.54.0"
   },
   "packageManager": "pnpm@10.25.0",

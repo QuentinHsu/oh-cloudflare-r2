@@ -176,7 +176,7 @@ server/
 
 ## 技术栈
 
-- Nuxt 4.2.2、Vue 3
+- Nuxt 4.4.8、Vue 3
 - NuxtHub Blob (Cloudflare R2)
 - nuxt-auth-utils（GitHub OAuth）
 - shadcn-vue + Radix Vue + Tailwind CSS 4
