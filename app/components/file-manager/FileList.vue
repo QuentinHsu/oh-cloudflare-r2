@@ -10,6 +10,7 @@ import {
   Edit,
   CheckSquare,
   Square,
+  SearchX,
 } from "@lucide/vue";
 import type { BlobFile } from "./types";
 
@@ -22,6 +23,9 @@ const props = withDefaults(
     selectedFiles: Set<string>;
     allSelected: boolean;
     hasSelection: boolean;
+    hasActiveSearch: boolean;
+    searchQuery: string;
+    hasSourceItems: boolean;
   }>(),
   {
     status: null,
@@ -37,6 +41,7 @@ const emit = defineEmits<{
   (e: "rename", file: BlobFile): void;
   (e: "move", file: BlobFile): void;
   (e: "delete", pathname: string): void;
+  (e: "clear-search"): void;
 }>();
 
 function formatSize(bytes: number) {
@@ -72,10 +77,26 @@ function getFileName(pathname: string) {
         </div>
 
         <div
-          v-else-if="!props.folders.length && !props.files.length"
-          class="text-center py-8 text-muted-foreground"
+          v-else-if="
+            props.hasActiveSearch &&
+            props.hasSourceItems &&
+            !props.folders.length &&
+            !props.files.length
+          "
+          class="py-8 text-center text-muted-foreground"
         >
-          <Folder class="mx-auto h-12 w-12 mb-2 opacity-50" />
+          <SearchX aria-hidden="true" class="mx-auto mb-2 h-12 w-12 opacity-50" />
+          <p>没有找到与“{{ props.searchQuery.trim() }}”匹配的文件或文件夹</p>
+          <Button type="button" variant="link" class="mt-2" @click="emit('clear-search')">
+            清除搜索
+          </Button>
+        </div>
+
+        <div
+          v-else-if="!props.folders.length && !props.files.length"
+          class="py-8 text-center text-muted-foreground"
+        >
+          <Folder class="mx-auto mb-2 h-12 w-12 opacity-50" />
           <p>暂无文件</p>
         </div>
 

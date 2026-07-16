@@ -38,4 +38,16 @@ describe("useFileSelection", () => {
     selection.toggleSelectAll();
     expect(selection.allSelected.value).toBe(false);
   });
+
+  it("selects only files in the reactive visible list", () => {
+    const visibleFiles = ref(files);
+    const selection = useFileSelection(visibleFiles);
+    selection.toggleSelectionMode();
+
+    visibleFiles.value = [files[1]];
+    selection.toggleSelectAll();
+
+    expect([...selection.selectedFiles.value]).toEqual(["b.png"]);
+    expect(selection.allSelected.value).toBe(true);
+  });
 });
