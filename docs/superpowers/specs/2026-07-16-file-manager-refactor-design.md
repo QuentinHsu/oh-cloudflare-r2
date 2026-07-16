@@ -239,7 +239,7 @@ pnpm exec wrangler deploy --dry-run
 ## 验收标准
 
 - `FileManager.vue` 只包含数据获取、composable 接线和模板编排；
-- 容器中不再出现文件 mutation 循环、目录树构建和剪贴板写入；
+- 容器中不再出现文件 mutation 循环、目录树构建、复制流程或剪贴板错误处理；容器只保留 `writeClipboard` 的基础设施接线；
 - 四个 composable 均有单一职责和独立测试；
 - 路径和目录树逻辑由纯函数覆盖；
 - 所有异步 loading 状态在成功和失败后都恢复；

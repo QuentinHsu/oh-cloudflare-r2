@@ -1335,7 +1335,7 @@ Do not weaken either side to `any`.
 Run:
 
 ```bash
-if rg -n 'for \(const pathname|buildFolderTree|navigator\.clipboard\.writeText|selectedFiles\.value\.(add|delete|clear)|catch \([^)]*: any\)' app/components/FileManager.vue; then
+if rg -n 'for \(const pathname|buildFolderTree|selectedFiles\.value\.(add|delete|clear)|catch \([^)]*: any\)|Markdown 链接已复制|复制失败' app/components/FileManager.vue; then
   exit 1
 fi
 wc -l app/components/FileManager.vue
