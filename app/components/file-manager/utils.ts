@@ -58,10 +58,3 @@ export function buildFileLink(origin: string, pathname: string, type: FileLinkTy
   const url = `${origin.replace(/\/+$/g, "")}/api/blob/${pathname}`;
   return type === "markdown" ? `![${getFileName(pathname)}](${url})` : url;
 }
-
-export function getRequestErrorMessage(error: unknown) {
-  if (!error || typeof error !== "object" || !("data" in error)) return undefined;
-  const data = error.data;
-  if (!data || typeof data !== "object" || !("message" in data)) return undefined;
-  return typeof data.message === "string" && data.message.trim() ? data.message : undefined;
-}

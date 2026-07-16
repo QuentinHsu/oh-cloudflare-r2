@@ -1,11 +1,12 @@
 import { blob } from "hub:blob";
+import { respondFileError } from "../../../utils/file-api";
+import { parseFilePath } from "../../../utils/file-path";
 
 export default eventHandler(async (event) => {
-  const pathname = getRouterParam(event, "pathname");
-
-  if (!pathname) {
-    throw createError({ statusCode: 400, message: "Pathname is required" });
+  try {
+    const pathname = parseFilePath(getRouterParam(event, "pathname"));
+    return blob.serve(event, pathname);
+  } catch (error: unknown) {
+    return respondFileError(event, error);
   }
-
-  return blob.serve(event, pathname);
 });

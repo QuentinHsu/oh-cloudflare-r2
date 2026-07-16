@@ -6,7 +6,6 @@ import {
   getExpandedParentPaths,
   getFileName,
   getParentDirectory,
-  getRequestErrorMessage,
   normalizeDirectoryPath,
 } from "../../app/components/file-manager/utils";
 
@@ -55,12 +54,5 @@ describe("file-manager utils", () => {
     expect(buildFileLink("https://cdn.example.com", "photos/cat.png", "markdown")).toBe(
       "![cat.png](https://cdn.example.com/api/blob/photos/cat.png)",
     );
-  });
-
-  it("reads only non-empty server messages from unknown errors", () => {
-    expect(getRequestErrorMessage({ data: { message: "目标文件已存在" } })).toBe("目标文件已存在");
-    expect(getRequestErrorMessage({ data: { message: "" } })).toBeUndefined();
-    expect(getRequestErrorMessage(new Error("private detail"))).toBeUndefined();
-    expect(getRequestErrorMessage(null)).toBeUndefined();
   });
 });

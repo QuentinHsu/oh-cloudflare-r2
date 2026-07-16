@@ -50,4 +50,12 @@ describe("useFileSelection", () => {
     expect([...selection.selectedFiles.value]).toEqual(["b.png"]);
     expect(selection.allSelected.value).toBe(true);
   });
+
+  it("replaces the complete selection", () => {
+    const selection = useFileSelection(ref(files));
+    selection.toggleFileSelection("a.png");
+    selection.replaceSelection(["b.png"]);
+
+    expect([...selection.selectedFiles.value]).toEqual(["b.png"]);
+  });
 });

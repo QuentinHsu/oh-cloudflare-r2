@@ -166,14 +166,18 @@ server/
 ## API 速览
 
 - 文件：
-  - `GET /api/files` — 列表
-  - `GET /api/files/folders` — 文件夹路径
-  - `POST /api/files/upload` — 上传
-  - `POST /api/files/move` — 移动
-  - `DELETE /api/files/[pathname]` — 删除
+  - `GET /api/files?path=<directory>` — 当前目录列表
+  - `GET /api/files/folders` — 完整文件夹索引
+  - `POST /api/files/upload` — multipart 文件上传
+  - `POST /api/files/operations` — 单文件移动、重命名或删除
+  - `POST /api/files/batch` — 批量移动或删除
+  - `GET /api/blob/<pathname>` — 公开 Blob 读取（URL 保持不变）
+  - `GET /images/<pathname>` — 公开图片读取（URL 保持不变）
 - 认证：
   - `GET /api/auth/session` — 获取会话
   - `POST /api/auth/logout` — 退出登录
+
+文件操作默认禁止覆盖已有目标。单次上传最多包含 50 个文件，单次批量请求最多包含 100 个操作；批量写操作按顺序执行并返回逐项结果。
 
 ## 技术栈
 

@@ -23,6 +23,7 @@ type Refresh = () => Promise<unknown>;
 type Request = (url: string, options?: unknown) => Promise<unknown>;
 
 const request = vi.fn<Request>();
+const useFetchMock = vi.fn<(url: string, options?: unknown) => Promise<unknown>>();
 const mountedWrappers: VueWrapper[] = [];
 
 const ControlsStub = defineComponent({
@@ -53,10 +54,13 @@ const ControlsStub = defineComponent({
 
 const ToolbarStub = defineComponent({
   name: "FileManagerToolbar",
-  emits: ["navigate"],
+  emits: ["navigate", "batch-delete"],
   setup(_, { emit }) {
     return () =>
-      h("button", { "data-action": "navigate-root", onClick: () => emit("navigate", -1) });
+      h("div", [
+        h("button", { "data-action": "navigate-root", onClick: () => emit("navigate", -1) }),
+        h("button", { "data-action": "batch-delete", onClick: () => emit("batch-delete") }),
+      ]);
   },
 });
 
@@ -143,15 +147,15 @@ const FileListStub = defineComponent({
 });
 
 async function mountManager() {
-  const allFolders = ref({ folders: ["docs"] });
-  const data = ref<FilesResponse>({ folders: ["docs"], files: sourceFiles, currentPath: "" });
-  vi.stubGlobal(
-    "useFetch",
-    vi
-      .fn()
-      .mockResolvedValueOnce({ data: allFolders, refresh: vi.fn<Refresh>() })
-      .mockResolvedValueOnce({ data, refresh: vi.fn<Refresh>(), status: ref("success") }),
-  );
+  const allFolders = ref({ ok: true as const, data: { folders: ["docs"] } });
+  const data = ref({
+    ok: true as const,
+    data: { folders: ["docs"], files: sourceFiles, currentPath: "" } satisfies FilesResponse,
+  });
+  useFetchMock
+    .mockResolvedValueOnce({ data: allFolders, refresh: vi.fn<Refresh>() })
+    .mockResolvedValueOnce({ data, refresh: vi.fn<Refresh>(), status: ref("success") });
+  vi.stubGlobal("useFetch", useFetchMock);
   vi.stubGlobal("$fetch", request);
 
   const Host = defineComponent({
@@ -180,8 +184,18 @@ async function mountManager() {
 describe("FileManager view workflow", () => {
   beforeEach(() => {
     vi.unstubAllGlobals();
+    vi.restoreAllMocks();
+    useFetchMock.mockReset();
     request.mockReset();
-    request.mockResolvedValue(undefined);
+    request.mockImplementation((url) => {
+      if (url === "/api/files/upload") {
+        return Promise.resolve({ ok: true, data: { files: [] } });
+      }
+      return Promise.resolve({
+        ok: true,
+        data: { operation: { action: "delete", path: "a.txt" } },
+      });
+    });
   });
 
   afterEach(() => {
@@ -196,6 +210,16 @@ describe("FileManager view workflow", () => {
 
     expect(wrapper.get('[data-files="value"]').text()).toBe("cat.png");
     expect(wrapper.get('[data-selected="value"]').text()).toBe("cat.png");
+  });
+
+  it("lists files with the canonical path query", async () => {
+    await mountManager();
+
+    expect(useFetchMock).toHaveBeenNthCalledWith(
+      2,
+      "/api/files",
+      expect.objectContaining({ query: { path: expect.anything() } }),
+    );
   });
 
   it("clears selection on search changes but preserves it for sorting", async () => {
@@ -234,6 +258,53 @@ describe("FileManager view workflow", () => {
     expect(wrapper.find('[data-drop-overlay="visible"]').exists()).toBe(false);
     expect(wrapper.get("[data-upload-open]").attributes("data-upload-open")).toBe("true");
     expect(wrapper.get("[data-pending-count]").attributes("data-pending-count")).toBe("1");
+  });
+
+  it("uploads with multipart directory and files fields", async () => {
+    const wrapper = await mountManager();
+    window.dispatchEvent(createDragEvent("drop", createDataTransfer([new File(["a"], "a.txt")])));
+    await wrapper.get('[data-action="confirm-upload"]').trigger("click");
+    await flushPromises();
+
+    expect(request).toHaveBeenCalledWith(
+      "/api/files/upload",
+      expect.objectContaining({ method: "POST", body: expect.any(FormData) }),
+    );
+    const formData = request.mock.calls[0]?.[1] as { body: FormData };
+    expect(formData.body.get("directory")).toBe("");
+    expect(formData.body.getAll("files")).toHaveLength(1);
+  });
+
+  it("sends one batch request and retains only failed selections", async () => {
+    vi.spyOn(window, "confirm").mockReturnValue(true);
+    request.mockResolvedValueOnce({
+      ok: true,
+      data: {
+        results: [
+          { operation: { action: "delete", path: "cat.png" }, ok: true },
+          {
+            operation: { action: "delete", path: "dog.png" },
+            ok: false,
+            error: {
+              code: "STORAGE_DELETE_FAILED",
+              message: "文件删除失败",
+              recoverable: false,
+            },
+          },
+        ],
+      },
+    });
+    const wrapper = await mountManager();
+    await wrapper.get('[data-action="select-all"]').trigger("click");
+    await wrapper.get('[data-action="batch-delete"]').trigger("click");
+    await flushPromises();
+
+    expect(request).toHaveBeenCalledTimes(1);
+    expect(request).toHaveBeenCalledWith(
+      "/api/files/batch",
+      expect.objectContaining({ method: "POST" }),
+    );
+    expect(wrapper.get('[data-selected="value"]').text()).toBe("dog.png");
   });
 
   it("appends a second drop to the open upload batch", async () => {
