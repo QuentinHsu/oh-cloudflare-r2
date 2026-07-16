@@ -16,3 +16,8 @@ export interface FolderNode {
   path: string;
   children: FolderNode[];
 }
+
+export interface CopyUrlPayload {
+  pathname: string;
+  type: "raw" | "markdown";
+}
