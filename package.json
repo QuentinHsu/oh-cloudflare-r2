@@ -30,18 +30,19 @@
     "vue-sonner": "^2.0.9"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "5.20260716.1",
     "@tailwindcss/vite": "^4.3.2",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/vue": "^8.1.0",
-    "@vitejs/plugin-vue": "^6.0.3",
-    "@vue/test-utils": "^2.4.6",
-    "jsdom": "^27.4.0",
+    "@vitejs/plugin-vue": "^6.0.8",
+    "@vue/test-utils": "^2.4.11",
+    "jsdom": "^29.1.1",
     "oxfmt": "0.59.0",
     "oxlint": "1.74.0",
     "tailwindcss": "^4.3.2",
-    "vitest": "^4.0.16",
+    "vitest": "^4.1.10",
     "vue-tsc": "^3.3.7",
-    "wrangler": "4.54.0"
+    "wrangler": "4.111.0"
   },
   "packageManager": "pnpm@10.25.0",
   "pnpm": {
