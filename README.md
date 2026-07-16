@@ -48,6 +48,7 @@ git submodule add https://github.com/QuentinHsu/oh-cloudflare-r2.git oh-cloudfla
     "directory": "./oh-cloudflare-r2/.output/public",
   },
   "compatibility_date": "2025-12-11",
+  "compatibility_flags": ["nodejs_compat", "no_nodejs_compat_v2"],
   "observability": {
     "logs": {
       "enabled": true,
@@ -176,7 +177,7 @@ server/
 
 ## 技术栈
 
-- Nuxt 4.2.2、Vue 3
+- Nuxt 4.4.8、Vue 3
 - NuxtHub Blob (Cloudflare R2)
 - nuxt-auth-utils（GitHub OAuth）
 - shadcn-vue + Radix Vue + Tailwind CSS 4

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { Home, ChevronRight, Upload, Trash2, Move, CheckSquare, Square } from "lucide-vue-next";
+import { Home, ChevronRight, Upload, Trash2, Move, CheckSquare, Square } from "@lucide/vue";
 
 const props = defineProps<{
   pathParts: string[];

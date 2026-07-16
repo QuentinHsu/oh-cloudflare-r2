@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { HardDrive } from "lucide-vue-next";
+import { HardDrive } from "@lucide/vue";
 </script>
 
 <template>
