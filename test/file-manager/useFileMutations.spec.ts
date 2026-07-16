@@ -73,6 +73,80 @@ describe("useFileMutations", () => {
     expect(refreshFolders).toHaveBeenCalledOnce();
   });
 
+  it("appends files to an open upload batch and preserves the chosen path", () => {
+    const mutations = createMutations();
+    mutations.handleFilesSelected([new File(["a"], "a.txt")]);
+    mutations.uploadPathInput.value = "archive/manual";
+
+    mutations.handleFilesSelected([new File(["b"], "b.pdf")]);
+
+    expect(mutations.pendingFiles.value?.map((pendingFile) => pendingFile.name)).toEqual([
+      "a.txt",
+      "b.pdf",
+    ]);
+    expect(mutations.uploadPathInput.value).toBe("archive/manual");
+    expect(expandPathParents).toHaveBeenCalledOnce();
+  });
+
+  it("replaces pending files by name with the most recent File object", () => {
+    const first = new File(["old"], "same.txt", { type: "text/plain" });
+    const second = new File(["new"], "same.txt", { type: "text/plain" });
+    const mutations = createMutations();
+    mutations.handleFilesSelected([first]);
+
+    mutations.handleFilesSelected([second]);
+
+    expect(mutations.pendingFiles.value).toEqual([second]);
+    expect(notify.warning).toHaveBeenCalledWith("已替换 1 个同名文件");
+  });
+
+  it("uses the last duplicate inside one incoming batch", () => {
+    const first = new File(["first"], "same.txt");
+    const second = new File(["second"], "same.txt");
+    const mutations = createMutations();
+
+    mutations.handleFilesSelected([first, second]);
+
+    expect(mutations.pendingFiles.value).toEqual([second]);
+    expect(notify.warning).toHaveBeenCalledWith("已替换 1 个同名文件");
+  });
+
+  it("rejects new files while uploading without changing the pending batch", async () => {
+    let resolveRequest: (() => void) | undefined;
+    request.mockImplementationOnce(
+      () =>
+        new Promise<void>((resolve) => {
+          resolveRequest = resolve;
+        }),
+    );
+    const mutations = createMutations();
+    const first = new File(["a"], "a.txt");
+    mutations.handleFilesSelected([first]);
+    const upload = mutations.confirmUpload();
+
+    mutations.handleFilesSelected([new File(["b"], "b.txt")]);
+    expect(mutations.pendingFiles.value).toEqual([first]);
+    expect(notify.warning).toHaveBeenCalledWith("正在上传，请稍后再试");
+
+    resolveRequest?.();
+    await upload;
+  });
+
+  it("keeps the upload dialog, files, and path after request failure", async () => {
+    request.mockRejectedValueOnce(new Error("failed"));
+    const mutations = createMutations();
+    const uploadFile = new File(["a"], "a.txt");
+    mutations.handleFilesSelected([uploadFile]);
+    mutations.uploadPathInput.value = "retry-target";
+
+    await mutations.confirmUpload();
+
+    expect(mutations.showUploadDialog.value).toBe(true);
+    expect(mutations.pendingFiles.value).toEqual([uploadFile]);
+    expect(mutations.uploadPathInput.value).toBe("retry-target");
+    expect(mutations.isUploading.value).toBe(false);
+  });
+
   it("restores move loading and keeps the dialog open on request failure", async () => {
     request.mockRejectedValue({ data: { message: "目标文件已存在" } });
     const mutations = createMutations();
