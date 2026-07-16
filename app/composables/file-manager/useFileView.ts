@@ -22,6 +22,14 @@ function getTimestamp(value: string): number {
   return Number.isNaN(timestamp) ? 0 : timestamp;
 }
 
+function comparePathnames(left: string, right: string): number {
+  if (left === right) {
+    return 0;
+  }
+
+  return left < right ? -1 : 1;
+}
+
 export function useFileView(
   folders: MaybeRefOrGetter<readonly string[]>,
   files: MaybeRefOrGetter<readonly BlobFile[]>,
@@ -68,7 +76,7 @@ export function useFileView(
     }
 
     const filenameResult = collator.compare(leftName, rightName);
-    return filenameResult || collator.compare(left.pathname, right.pathname);
+    return filenameResult || comparePathnames(left.pathname, right.pathname);
   }
 
   const visibleFiles = computed(() =>

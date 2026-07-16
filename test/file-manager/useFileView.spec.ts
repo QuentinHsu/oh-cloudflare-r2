@@ -105,6 +105,30 @@ describe("useFileView", () => {
     ]);
   });
 
+  it("uses case-sensitive pathname order when collated names are equal", () => {
+    const tied: BlobFile[] = [
+      {
+        pathname: "a/same.png",
+        contentType: "image/png",
+        size: 10,
+        uploadedAt: "2026-01-01",
+      },
+      {
+        pathname: "A/same.png",
+        contentType: "image/png",
+        size: 10,
+        uploadedAt: "2026-01-01",
+      },
+    ];
+    const view = useFileView(ref([]), ref(tied));
+    view.sortField.value = "size";
+
+    expect(view.visibleFiles.value.map((file) => file.pathname)).toEqual([
+      "A/same.png",
+      "a/same.png",
+    ]);
+  });
+
   it("treats invalid dates as timestamp zero", () => {
     const dated: BlobFile[] = [
       {
