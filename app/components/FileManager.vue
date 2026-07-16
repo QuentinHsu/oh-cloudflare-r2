@@ -1,25 +1,31 @@
 <script setup lang="ts">
-import { toast } from "vue-sonner";
 import { computed, watch } from "vue";
+import { toast } from "vue-sonner";
+import type { ApiResponse } from "../../shared/types/files";
+import { useBatchFileOperations } from "../composables/file-manager/useBatchFileOperations";
+import { useFileDropzone } from "../composables/file-manager/useFileDropzone";
+import { createFileApi } from "../composables/file-manager/useFileApi";
+import { useFileOperations } from "../composables/file-manager/useFileOperations";
+import { useFilePreview } from "../composables/file-manager/useFilePreview";
+import { useFileSelection } from "../composables/file-manager/useFileSelection";
+import { useFileUpload } from "../composables/file-manager/useFileUpload";
+import { useFileView } from "../composables/file-manager/useFileView";
+import { useFolderBrowser } from "../composables/file-manager/useFolderBrowser";
+import BatchMoveDialog from "./file-manager/BatchMoveDialog.vue";
 import FileDropOverlay from "./file-manager/FileDropOverlay.vue";
-import FileManagerToolbar from "./file-manager/FileManagerToolbar.vue";
-import FileViewControls from "./file-manager/FileViewControls.vue";
 import FileList from "./file-manager/FileList.vue";
-import UploadDialog from "./file-manager/UploadDialog.vue";
+import FileManagerToolbar from "./file-manager/FileManagerToolbar.vue";
+import type { CopyUrlPayload, FilesResponse } from "./file-manager/types";
+import FileViewControls from "./file-manager/FileViewControls.vue";
+import MoveDialog from "./file-manager/MoveDialog.vue";
 import PreviewDialog from "./file-manager/PreviewDialog.vue";
 import RenameDialog from "./file-manager/RenameDialog.vue";
-import MoveDialog from "./file-manager/MoveDialog.vue";
-import BatchMoveDialog from "./file-manager/BatchMoveDialog.vue";
-import { useFolderBrowser } from "../composables/file-manager/useFolderBrowser";
-import { useFileSelection } from "../composables/file-manager/useFileSelection";
-import { useFileMutations } from "../composables/file-manager/useFileMutations";
-import { useFileDropzone } from "../composables/file-manager/useFileDropzone";
-import { useFilePreview } from "../composables/file-manager/useFilePreview";
-import { useFileView } from "../composables/file-manager/useFileView";
-import type { CopyUrlPayload, FilesResponse } from "./file-manager/types";
+import UploadDialog from "./file-manager/UploadDialog.vue";
 
-const { data: allFolders, refresh: refreshAllFolders } = await useFetch<{ folders: string[] }>(
-  "/api/files/folders",
+const { data: foldersResponse, refresh: refreshAllFolders } =
+  await useFetch<ApiResponse<{ folders: string[] }>>("/api/files/folders");
+const allFolders = computed(() =>
+  foldersResponse.value?.ok ? foldersResponse.value.data.folders : [],
 );
 
 const {
@@ -31,12 +37,17 @@ const {
   navigateToPath,
   toggleFolder,
   expandPathParents,
-} = useFolderBrowser(() => allFolders.value?.folders ?? []);
+} = useFolderBrowser(allFolders);
 
-const { data, refresh, status } = await useFetch<FilesResponse>("/api/files", {
-  query: { prefix: currentPath },
+const {
+  data: filesResponse,
+  refresh,
+  status,
+} = await useFetch<ApiResponse<FilesResponse>>("/api/files", {
+  query: { path: currentPath },
   watch: [currentPath],
 });
+const filesData = computed(() => (filesResponse.value?.ok ? filesResponse.value.data : undefined));
 
 const {
   searchQuery,
@@ -49,12 +60,12 @@ const {
   clearSearch,
   toggleSortDirection,
 } = useFileView(
-  () => data.value?.folders ?? [],
-  () => data.value?.files ?? [],
+  () => filesData.value?.folders ?? [],
+  () => filesData.value?.files ?? [],
 );
 
 const hasSourceItems = computed(
-  () => (data.value?.folders.length ?? 0) + (data.value?.files.length ?? 0) > 0,
+  () => (filesData.value?.folders.length ?? 0) + (filesData.value?.files.length ?? 0) > 0,
 );
 
 const {
@@ -63,6 +74,7 @@ const {
   hasSelection,
   allSelected,
   clearSelection,
+  replaceSelection,
   toggleSelectionMode,
   toggleFileSelection,
   toggleSelectAll,
@@ -70,17 +82,39 @@ const {
 
 watch(searchQuery, clearSelection);
 
-const mutations = useFileMutations({
-  request: async (url, options) => {
-    await $fetch(url, options);
-  },
+const requestFileApi = $fetch as unknown as (
+  url: string,
+  options?: Record<string, unknown>,
+) => Promise<unknown>;
+const fileApi = createFileApi(requestFileApi);
+
+const upload = useFileUpload({
+  api: fileApi,
+  refreshFiles: refresh,
+  refreshFolders: refreshAllFolders,
+  notify: toast,
+  currentPath,
+  expandPathParents,
+});
+
+const operations = useFileOperations({
+  api: fileApi,
+  refreshFiles: refresh,
+  refreshFolders: refreshAllFolders,
+  confirmAction: (message) => window.confirm(message),
+  notify: toast,
+  expandPathParents,
+});
+
+const batchOperations = useBatchFileOperations({
+  api: fileApi,
   refreshFiles: refresh,
   refreshFolders: refreshAllFolders,
   confirmAction: (message) => window.confirm(message),
   notify: toast,
   currentPath,
   selectedFiles,
-  clearSelection,
+  replaceSelection,
   expandPathParents,
 });
 
@@ -109,38 +143,44 @@ const {
   showUploadDialog,
   uploadPathInput,
   pendingFiles,
-  showMoveDialog,
-  moveFile,
-  moveTargetPath,
-  isMoving,
-  isBatchMoving,
-  isBatchDeleting,
-  showBatchMoveDialog,
-  batchMoveTargetPath,
-  showRenameDialog,
-  renameFile,
-  newFileName,
-  isRenaming,
   handleFilesSelected,
   confirmUpload,
   cancelUpload,
   handleUploadDialogOpenChange,
   selectFolder,
+} = upload;
+
+const {
+  showMoveDialog,
+  moveFile,
+  moveTargetPath,
+  isMoving,
+  showRenameDialog,
+  renameFile,
+  newFileName,
+  isRenaming,
   deleteFile,
   openMoveDialog,
   closeMoveDialog,
   handleMoveDialogOpenChange,
   confirmMove,
+  openRenameDialog,
+  closeRenameDialog,
+  handleRenameDialogOpenChange,
+  confirmRename,
+} = operations;
+
+const {
+  isBatchMoving,
+  isBatchDeleting,
+  showBatchMoveDialog,
+  batchMoveTargetPath,
   batchDelete,
   openBatchMoveDialog,
   closeBatchMoveDialog,
   handleBatchMoveDialogOpenChange,
   confirmBatchMove,
-  openRenameDialog,
-  closeRenameDialog,
-  handleRenameDialogOpenChange,
-  confirmRename,
-} = mutations;
+} = batchOperations;
 
 const { isDraggingFiles } = useFileDropzone({
   isUploading,

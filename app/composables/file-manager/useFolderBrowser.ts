@@ -8,11 +8,11 @@ export function useFolderBrowser(folders: MaybeRefOrGetter<readonly string[]>) {
   const folderTree = computed(() => buildFolderTree(toValue(folders)));
 
   function navigateToFolder(folder: string) {
-    currentPath.value = currentPath.value ? `${currentPath.value}${folder}/` : `${folder}/`;
+    currentPath.value = [...pathParts.value, folder].join("/");
   }
 
   function navigateToPath(index: number) {
-    currentPath.value = index === -1 ? "" : `${pathParts.value.slice(0, index + 1).join("/")}/`;
+    currentPath.value = index === -1 ? "" : pathParts.value.slice(0, index + 1).join("/");
   }
 
   function toggleFolder(path: string) {

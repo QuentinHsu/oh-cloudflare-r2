@@ -8,11 +8,11 @@ describe("useFolderBrowser", () => {
 
     browser.navigateToFolder("photos");
     browser.navigateToFolder("2026");
-    expect(browser.currentPath.value).toBe("photos/2026/");
+    expect(browser.currentPath.value).toBe("photos/2026");
     expect(browser.pathParts.value).toEqual(["photos", "2026"]);
 
     browser.navigateToPath(0);
-    expect(browser.currentPath.value).toBe("photos/");
+    expect(browser.currentPath.value).toBe("photos");
     browser.navigateToPath(-1);
     expect(browser.currentPath.value).toBe("");
   });
