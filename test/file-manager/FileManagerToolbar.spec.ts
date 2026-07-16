@@ -58,7 +58,7 @@ describe("FileManagerToolbar", () => {
       global: { stubs: { Button: ButtonStub } },
     });
 
-    const file = new File(["dummy"], "test.png", { type: "image/png" });
+    const file = new File(["dummy"], "notes.txt", { type: "text/plain" });
     const files = {
       0: file,
       length: 1,
@@ -74,6 +74,16 @@ describe("FileManagerToolbar", () => {
     expect(emitted).toBeTruthy();
     const payload = emitted?.[0]?.[0] as FileList | undefined;
     expect(payload).toBeTruthy();
-    expect(payload?.item(0)?.name).toBe("test.png");
+    expect(payload?.item(0)?.name).toBe("notes.txt");
+  });
+
+  it("accepts ordinary files without MIME filtering", () => {
+    const wrapper = mount(FileManagerToolbar, {
+      props: baseProps,
+      global: { stubs: { Button: ButtonStub } },
+    });
+    const input = wrapper.get('input[type="file"]');
+    expect(input.attributes("accept")).toBeUndefined();
+    expect(input.attributes("multiple")).toBeDefined();
   });
 });

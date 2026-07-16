@@ -96,14 +96,7 @@ function handleFileChange(event: Event) {
         <Upload class="mr-2 h-4 w-4" />
         上传文件
       </Button>
-      <input
-        ref="fileInputRef"
-        type="file"
-        multiple
-        accept="image/*"
-        class="hidden"
-        @change="handleFileChange"
-      />
+      <input ref="fileInputRef" type="file" multiple class="hidden" @change="handleFileChange" />
     </div>
   </div>
 </template>
