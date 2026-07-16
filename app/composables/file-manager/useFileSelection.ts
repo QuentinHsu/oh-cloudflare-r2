@@ -17,6 +17,10 @@ export function useFileSelection(files: MaybeRefOrGetter<readonly BlobFile[]>) {
     selectedFiles.value.clear();
   }
 
+  function replaceSelection(paths: Iterable<string>) {
+    selectedFiles.value = new Set(paths);
+  }
+
   function toggleSelectionMode() {
     isSelectionMode.value = !isSelectionMode.value;
     if (!isSelectionMode.value) clearSelection();
@@ -40,6 +44,7 @@ export function useFileSelection(files: MaybeRefOrGetter<readonly BlobFile[]>) {
     hasSelection,
     allSelected,
     clearSelection,
+    replaceSelection,
     toggleSelectionMode,
     toggleFileSelection,
     toggleSelectAll,
