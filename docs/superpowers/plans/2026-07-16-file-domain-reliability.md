@@ -1769,11 +1769,11 @@ Expected:
 - `git diff --check` prints nothing;
 - `git status --short` lists only the README and checked plan file before the final task commit.
 
-- [ ] **Step 3: Commit Task 9**
+- [x] **Step 3: Commit Task 9**
 
 Stage the README and the completed plan checklist, then invoke `/commit-message en auto`. Expected classification: `docs(file-api)` if only documentation/checklist changes remain.
 
-- [ ] **Step 4: Confirm repository state**
+- [x] **Step 4: Confirm repository state**
 
 Run:
 
