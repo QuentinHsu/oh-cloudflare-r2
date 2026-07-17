@@ -145,7 +145,7 @@ describe("FileTable", () => {
 
     expect(directActions.find('[data-action="copy-raw"]').exists()).toBe(true);
     expect(directActions.find('[data-action="copy-markdown"]').exists()).toBe(false);
-    expect(wrapper.find('[data-overflow-actions] [data-overflow-separator]').exists()).toBe(false);
+    expect(wrapper.find("[data-overflow-actions] [data-overflow-separator]").exists()).toBe(false);
     await directActions.get('[data-action="copy-raw"]').trigger("click");
     expect(wrapper.emitted("copy-url")).toEqual([[{ pathname: "notes.txt", type: "raw" }]]);
   });
