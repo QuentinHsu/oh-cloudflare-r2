@@ -1,0 +1,143 @@
+{
+  "app": {
+    "name": "R2 文件管理",
+    "description": "管理存储在 Cloudflare R2 中的文件"
+  },
+  "sidebar": {
+    "files": "文件",
+    "root": "全部文件",
+    "upload": "上传文件",
+    "appearance": "外观",
+    "language": "语言",
+    "account": "账户",
+    "collapse": "收起侧边栏",
+    "expand": "展开侧边栏"
+  },
+  "theme": {
+    "light": "浅色",
+    "dark": "深色",
+    "system": "跟随系统",
+    "toggle": "切换主题"
+  },
+  "locale": {
+    "en": "English",
+    "zhCN": "简体中文",
+    "toggle": "切换语言"
+  },
+  "files": {
+    "title": "{name}",
+    "rootTitle": "全部文件",
+    "description": "管理当前目录中的文件和文件夹",
+    "search": "搜索当前文件夹…",
+    "clearSearch": "清除搜索",
+    "results": "找到 {count} 项",
+    "selected": "已选择 {count} 项",
+    "columns": {
+      "name": "名称",
+      "type": "类型",
+      "size": "大小",
+      "updatedAt": "更新时间"
+    },
+    "sort": {
+      "field": "排序字段",
+      "name": "名称",
+      "uploadedAt": "更新时间",
+      "size": "大小",
+      "ascending": "按升序排列",
+      "descending": "按降序排列"
+    },
+    "actions": {
+      "menu": "打开 {name} 的操作菜单",
+      "preview": "预览",
+      "copyRaw": "复制链接",
+      "copyMarkdown": "复制 Markdown",
+      "rename": "重命名",
+      "move": "移动",
+      "delete": "删除",
+      "clearSelection": "清除选择"
+    },
+    "states": {
+      "loading": "正在加载文件…",
+      "errorTitle": "无法加载文件",
+      "errorDescription": "请检查网络连接后重试。",
+      "retry": "重试",
+      "emptyTitle": "当前文件夹为空",
+      "emptyDescription": "上传文件以开始使用当前文件夹。",
+      "noResultsTitle": "没有匹配的文件或文件夹",
+      "noResultsDescription": "没有找到与“{query}”匹配的结果。"
+    }
+  },
+  "stats": {
+    "files": "文件",
+    "images": "{count} 张图片",
+    "storage": "存储空间",
+    "folders": "文件夹",
+    "latest": "最近更新",
+    "never": "暂无更新"
+  },
+  "upload": {
+    "title": "上传 {count} 个文件",
+    "target": "目标文件夹",
+    "pathPlaceholder": "输入路径或使用当前文件夹",
+    "dropTitle": "释放以上传文件",
+    "dropDescription": "支持同时上传多个文件",
+    "uploading": "上传中…",
+    "confirm": "上传",
+    "cancel": "取消"
+  },
+  "dialogs": {
+    "rename": {
+      "title": "重命名文件",
+      "current": "当前文件名",
+      "next": "新文件名",
+      "placeholder": "输入新文件名",
+      "working": "重命名中…",
+      "confirm": "重命名"
+    },
+    "move": {
+      "title": "移动文件",
+      "target": "目标文件夹",
+      "placeholder": "输入路径或移动到根目录",
+      "working": "移动中…",
+      "confirm": "移动"
+    },
+    "batchMove": {
+      "title": "移动 {count} 个文件",
+      "working": "移动中…",
+      "confirm": "移动"
+    },
+    "delete": {
+      "title": "删除文件？",
+      "description": "“{name}”将被永久删除。",
+      "confirm": "删除",
+      "working": "删除中…"
+    },
+    "batchDelete": {
+      "title": "删除 {count} 个文件？",
+      "description": "所选文件将被永久删除。",
+      "confirm": "删除",
+      "working": "删除中…"
+    },
+    "preview": {
+      "title": "预览 {name}",
+      "copyRaw": "复制链接",
+      "copyMarkdown": "复制 Markdown"
+    },
+    "cancel": "取消"
+  },
+  "auth": {
+    "title": "R2 文件管理",
+    "description": "登录后管理你的文件",
+    "github": "使用 GitHub 登录",
+    "unauthorized": "该 GitHub 账户无权访问",
+    "failed": "登录失败，请重试。",
+    "logout": "退出登录",
+    "githubUser": "GitHub 用户"
+  },
+  "errors": {
+    "partial": {
+      "title": "部分操作未完成",
+      "description": "已完成 {completed} 项，失败 {failed} 项。"
+    }
+  }
+}
