@@ -26,13 +26,29 @@ const request = vi.fn<Request>();
 const useFetchMock = vi.fn<(url: string, options?: unknown) => Promise<unknown>>();
 const mountedWrappers: VueWrapper[] = [];
 
-const ControlsStub = defineComponent({
-  name: "FileViewControls",
-  props: ["searchQuery", "sortField", "sortDirection", "hasActiveSearch", "resultCount"],
-  emits: ["update:search-query", "update:sort-field", "toggle-sort-direction", "clear-search"],
+const TableStub = defineComponent({
+  name: "FileTable",
+  props: ["folders", "files", "selectedFiles", "searchQuery", "sortField", "sortDirection"],
+  emits: [
+    "update:search-query",
+    "update:sort-field",
+    "toggle-sort-direction",
+    "toggle-select-all",
+    "navigate-folder",
+  ],
   setup(props, { emit }) {
     return () =>
       h("div", [
+        h(
+          "span",
+          { "data-files": "value" },
+          (props.files as BlobFile[]).map((file) => file.pathname).join(","),
+        ),
+        h(
+          "span",
+          { "data-selected": "value" },
+          [...(props.selectedFiles as Set<string>)].join(","),
+        ),
         h("span", { "data-search": "value" }, String(props.searchQuery)),
         h("span", { "data-sort-field": "value" }, String(props.sortField)),
         h("span", { "data-sort-direction": "value" }, String(props.sortDirection)),
@@ -48,19 +64,43 @@ const ControlsStub = defineComponent({
           "data-action": "toggle-direction",
           onClick: () => emit("toggle-sort-direction"),
         }),
+        h("button", {
+          "data-action": "select-all",
+          onClick: () => emit("toggle-select-all"),
+        }),
+        h("button", {
+          "data-action": "navigate-folder",
+          onClick: () => emit("navigate-folder", "docs"),
+        }),
       ]);
   },
 });
 
-const ToolbarStub = defineComponent({
-  name: "FileManagerToolbar",
-  emits: ["navigate", "batch-delete"],
+const HeaderStub = defineComponent({
+  name: "FileDashboardHeader",
+  emits: ["navigate"],
   setup(_, { emit }) {
     return () =>
-      h("div", [
-        h("button", { "data-action": "navigate-root", onClick: () => emit("navigate", -1) }),
-        h("button", { "data-action": "batch-delete", onClick: () => emit("batch-delete") }),
-      ]);
+      h("button", { "data-action": "navigate-root", onClick: () => emit("navigate", -1) });
+  },
+});
+
+const BulkToolbarStub = defineComponent({
+  name: "FileBulkToolbar",
+  props: ["selectedCount"],
+  emits: ["delete"],
+  setup(props, { emit }) {
+    return () =>
+      Number(props.selectedCount) > 0
+        ? h("button", { "data-action": "batch-delete", onClick: () => emit("delete") })
+        : null;
+  },
+});
+
+const WrapperStub = defineComponent({
+  inheritAttrs: false,
+  setup(_, { attrs, slots }) {
+    return () => h("div", attrs, slots.default?.());
   },
 });
 
@@ -134,35 +174,6 @@ function createDragEvent(type: string, dataTransfer: DataTransferStub): Event {
   return event;
 }
 
-const FileListStub = defineComponent({
-  name: "FileList",
-  props: ["folders", "files", "selectedFiles", "allSelected"],
-  emits: ["navigate-folder", "toggle-select-all"],
-  setup(props, { emit }) {
-    return () =>
-      h("div", [
-        h(
-          "span",
-          { "data-files": "value" },
-          (props.files as BlobFile[]).map((file) => file.pathname).join(","),
-        ),
-        h(
-          "span",
-          { "data-selected": "value" },
-          [...(props.selectedFiles as Set<string>)].join(","),
-        ),
-        h("button", {
-          "data-action": "select-all",
-          onClick: () => emit("toggle-select-all"),
-        }),
-        h("button", {
-          "data-action": "navigate-folder",
-          onClick: () => emit("navigate-folder", "docs"),
-        }),
-      ]);
-  },
-});
-
 async function mountManager() {
   const allFolders = ref({ ok: true as const, data: { folders: ["docs"] } });
   const data = ref({
@@ -174,6 +185,7 @@ async function mountManager() {
     .mockResolvedValueOnce({ data, refresh: vi.fn<Refresh>(), status: ref("success") });
   vi.stubGlobal("useFetch", useFetchMock);
   vi.stubGlobal("$fetch", request);
+  vi.stubGlobal("useI18n", () => ({ locale: ref("en"), t: (key: string) => key }));
 
   const Host = defineComponent({
     setup: () => () => h(Suspense, null, { default: () => h(FileManager) }),
@@ -181,9 +193,14 @@ async function mountManager() {
   const wrapper = mount(Host, {
     global: {
       stubs: {
-        FileViewControls: ControlsStub,
-        FileManagerToolbar: ToolbarStub,
-        FileList: FileListStub,
+        SidebarProvider: WrapperStub,
+        SidebarInset: WrapperStub,
+        AppSidebar: true,
+        FileDashboardHeader: HeaderStub,
+        FileStats: true,
+        FileBulkToolbar: BulkToolbarStub,
+        FileTable: TableStub,
+        FileStatePanel: true,
         FileDropOverlay: DropOverlayStub,
         UploadDialog: UploadDialogStub,
         PreviewDialog: true,

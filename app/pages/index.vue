@@ -5,7 +5,5 @@ definePageMeta({
 </script>
 
 <template>
-  <div>
-    <FileManager />
-  </div>
+  <FileManager />
 </template>

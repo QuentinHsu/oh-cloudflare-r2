@@ -3,7 +3,6 @@ import type { BlobFile } from "../../components/file-manager/types";
 
 export function useFileSelection(files: MaybeRefOrGetter<readonly BlobFile[]>) {
   const selectedFiles = ref(new Set<string>());
-  const isSelectionMode = ref(false);
   const hasSelection = computed(() => selectedFiles.value.size > 0);
   const allSelected = computed(() => {
     const currentFiles = toValue(files);
@@ -21,11 +20,6 @@ export function useFileSelection(files: MaybeRefOrGetter<readonly BlobFile[]>) {
     selectedFiles.value = new Set(paths);
   }
 
-  function toggleSelectionMode() {
-    isSelectionMode.value = !isSelectionMode.value;
-    if (!isSelectionMode.value) clearSelection();
-  }
-
   function toggleFileSelection(pathname: string) {
     if (selectedFiles.value.has(pathname)) selectedFiles.value.delete(pathname);
     else selectedFiles.value.add(pathname);
@@ -40,12 +34,10 @@ export function useFileSelection(files: MaybeRefOrGetter<readonly BlobFile[]>) {
 
   return {
     selectedFiles,
-    isSelectionMode,
     hasSelection,
     allSelected,
     clearSelection,
     replaceSelection,
-    toggleSelectionMode,
     toggleFileSelection,
     toggleSelectAll,
   };

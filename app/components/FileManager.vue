@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed, watch } from "vue";
+import { Upload } from "@lucide/vue";
+import { computed, ref, watch } from "vue";
 import { toast } from "vue-sonner";
 import type { ApiResponse } from "../../shared/types/files";
 import { useBatchFileOperations } from "../composables/file-manager/useBatchFileOperations";
@@ -7,22 +8,29 @@ import { useFileDropzone } from "../composables/file-manager/useFileDropzone";
 import { createFileApi } from "../composables/file-manager/useFileApi";
 import { useFileOperations } from "../composables/file-manager/useFileOperations";
 import { useFilePreview } from "../composables/file-manager/useFilePreview";
+import { createFilePresentation } from "../composables/file-manager/useFilePresentation";
 import { useFileSelection } from "../composables/file-manager/useFileSelection";
 import { useFileUpload } from "../composables/file-manager/useFileUpload";
 import { useFileView } from "../composables/file-manager/useFileView";
 import { useFolderBrowser } from "../composables/file-manager/useFolderBrowser";
+import AppSidebar from "./AppSidebar.vue";
 import BatchMoveDialog from "./file-manager/BatchMoveDialog.vue";
 import BatchDeleteAlertDialog from "./file-manager/BatchDeleteAlertDialog.vue";
 import DeleteAlertDialog from "./file-manager/DeleteAlertDialog.vue";
 import FileDropOverlay from "./file-manager/FileDropOverlay.vue";
-import FileList from "./file-manager/FileList.vue";
-import FileManagerToolbar from "./file-manager/FileManagerToolbar.vue";
-import type { CopyUrlPayload, FilesResponse } from "./file-manager/types";
-import FileViewControls from "./file-manager/FileViewControls.vue";
+import FileBulkToolbar from "./file-manager/FileBulkToolbar.vue";
+import FileDashboardHeader from "./file-manager/FileDashboardHeader.vue";
+import FileStatePanel from "./file-manager/FileStatePanel.vue";
+import FileStats from "./file-manager/FileStats.vue";
+import FileTable from "./file-manager/FileTable.vue";
+import type { CopyUrlPayload, FileListLike, FilesResponse } from "./file-manager/types";
 import MoveDialog from "./file-manager/MoveDialog.vue";
 import PreviewDialog from "./file-manager/PreviewDialog.vue";
 import RenameDialog from "./file-manager/RenameDialog.vue";
 import UploadDialog from "./file-manager/UploadDialog.vue";
+
+const { locale, t } = useI18n();
+const fileInputRef = ref<HTMLInputElement | null>(null);
 
 const { data: foldersResponse, refresh: refreshAllFolders } =
   await useFetch<ApiResponse<{ folders: string[] }>>("/api/files/folders");
@@ -37,6 +45,7 @@ const {
   expandedFolders,
   navigateToFolder,
   navigateToPath,
+  navigateToDirectory,
   toggleFolder,
   expandPathParents,
 } = useFolderBrowser(allFolders);
@@ -50,6 +59,17 @@ const {
   watch: [currentPath],
 });
 const filesData = computed(() => (filesResponse.value?.ok ? filesResponse.value.data : undefined));
+const filesError = computed(() =>
+  filesResponse.value && !filesResponse.value.ok ? filesResponse.value.error : undefined,
+);
+
+const presentation = computed(() => createFilePresentation(locale.value, t));
+const directorySummary = computed(() =>
+  presentation.value.summarizeDirectory(
+    filesData.value?.folders ?? [],
+    filesData.value?.files ?? [],
+  ),
+);
 
 const {
   searchQuery,
@@ -69,15 +89,32 @@ const {
 const hasSourceItems = computed(
   () => (filesData.value?.folders.length ?? 0) + (filesData.value?.files.length ?? 0) > 0,
 );
+const isEmptyDirectory = computed(
+  () =>
+    !hasActiveSearch.value &&
+    !hasSourceItems.value &&
+    status.value !== "pending" &&
+    !filesError.value,
+);
+const hasNoResults = computed(
+  () => hasActiveSearch.value && hasSourceItems.value && resultCount.value === 0,
+);
+const panelState = computed(() => {
+  if (status.value === "pending") return { kind: "loading" } as const;
+  if (filesError.value) return { kind: "error" } as const;
+  if (isEmptyDirectory.value) return { kind: "empty" } as const;
+  if (hasNoResults.value) {
+    return { kind: "no-results", query: searchQuery.value, count: 0 } as const;
+  }
+  return undefined;
+});
+const directoryName = computed(() => pathParts.value.at(-1) ?? t("files.rootTitle"));
 
 const {
   selectedFiles,
-  isSelectionMode,
-  hasSelection,
   allSelected,
   clearSelection,
   replaceSelection,
-  toggleSelectionMode,
   toggleFileSelection,
   toggleSelectAll,
 } = useFileSelection(visibleFiles);
@@ -133,9 +170,31 @@ function handleNavigateFolder(folder: string) {
   clearSearch();
 }
 
+function handleNavigateDirectory(path: string) {
+  navigateToDirectory(path);
+  clearSearch();
+}
+
 function handleNavigatePath(index: number) {
   navigateToPath(index);
   clearSearch();
+}
+
+function triggerUpload() {
+  fileInputRef.value?.click();
+}
+
+function handleFileInputChange(event: Event) {
+  const input = event.target as HTMLInputElement;
+  const sourceFiles = input.files ? Array.from(input.files) : [];
+
+  if (sourceFiles.length) {
+    const files = sourceFiles.slice() as FileListLike;
+    files.item = (index: number) => sourceFiles[index] ?? null;
+    handleFilesSelected(files);
+  }
+
+  input.value = "";
 }
 
 const {
@@ -210,35 +269,95 @@ const {
 </script>
 
 <template>
-  <div class="relative space-y-4">
+  <SidebarProvider>
     <FileDropOverlay v-if="isDraggingFiles" />
 
-    <FileManagerToolbar
-      :path-parts="pathParts"
-      :is-selection-mode="isSelectionMode"
-      :has-selection="hasSelection"
-      :selected-count="selectedFiles.size"
-      :is-batch-moving="isBatchMoving"
-      :is-batch-deleting="isBatchDeleting"
+    <AppSidebar
+      :folder-tree="folderTree"
+      :current-path="currentPath"
+      :expanded-folders="expandedFolders"
       :is-uploading="isUploading"
-      @navigate="handleNavigatePath"
-      @toggle-selection="toggleSelectionMode"
-      @open-batch-move="openBatchMoveDialog"
-      @batch-delete="openBatchDeleteDialog"
+      @navigate="handleNavigateDirectory"
+      @toggle-folder="toggleFolder"
       @files-selected="handleFilesSelected"
     />
 
-    <FileViewControls
-      :search-query="searchQuery"
-      :sort-field="sortField"
-      :sort-direction="sortDirection"
-      :has-active-search="hasActiveSearch"
-      :result-count="resultCount"
-      @update:search-query="searchQuery = $event"
-      @update:sort-field="sortField = $event"
-      @toggle-sort-direction="toggleSortDirection"
-      @clear-search="clearSearch"
-    />
+    <SidebarInset>
+      <FileDashboardHeader :path-parts="pathParts" @navigate="handleNavigatePath" />
+
+      <main class="relative flex flex-1 flex-col gap-4 p-4 md:gap-6 md:p-6">
+        <div class="flex flex-wrap items-start justify-between gap-3">
+          <div class="min-w-0">
+            <h1 class="truncate text-2xl font-semibold tracking-tight">
+              {{ t("files.title", { name: directoryName }) }}
+            </h1>
+            <p class="mt-1 text-sm text-muted-foreground">{{ t("files.description") }}</p>
+          </div>
+          <Button class="min-h-11 md:min-h-9" :disabled="isUploading" @click="triggerUpload">
+            <Upload class="size-4" />
+            {{ t("sidebar.upload") }}
+          </Button>
+          <input
+            ref="fileInputRef"
+            type="file"
+            multiple
+            class="hidden"
+            @change="handleFileInputChange"
+          />
+        </div>
+
+        <FileStats
+          :summary="directorySummary"
+          :format-size="presentation.formatSize"
+          :format-relative-time="presentation.formatRelativeTime"
+        />
+
+        <FileBulkToolbar
+          :selected-count="selectedFiles.size"
+          :is-moving="isBatchMoving"
+          :is-deleting="isBatchDeleting"
+          @move="openBatchMoveDialog"
+          @delete="openBatchDeleteDialog"
+          @clear="clearSelection"
+        />
+
+        <FileStatePanel
+          v-if="panelState"
+          :state="panelState"
+          @retry="refresh"
+          @upload="triggerUpload"
+          @clear-search="clearSearch"
+        />
+
+        <FileTable
+          v-else
+          :folders="visibleFolders"
+          :files="visibleFiles"
+          :selected-files="selectedFiles"
+          :all-selected="allSelected"
+          :search-query="searchQuery"
+          :sort-field="sortField"
+          :sort-direction="sortDirection"
+          :has-active-search="hasActiveSearch"
+          :result-count="resultCount"
+          :format-size="presentation.formatSize"
+          :format-date="presentation.formatDate"
+          :format-file-type="presentation.formatFileType"
+          @update:search-query="searchQuery = $event"
+          @update:sort-field="sortField = $event"
+          @toggle-sort-direction="toggleSortDirection"
+          @clear-search="clearSearch"
+          @navigate-folder="handleNavigateFolder"
+          @toggle-select-all="toggleSelectAll"
+          @toggle-file="toggleFileSelection"
+          @open-preview="openPreview"
+          @copy-url="handleCopyUrl"
+          @rename="openRenameDialog"
+          @move="openMoveDialog"
+          @delete="openDeleteDialog"
+        />
+      </main>
+    </SidebarInset>
 
     <UploadDialog
       :open="showUploadDialog"
@@ -253,28 +372,6 @@ const {
       @select-folder="selectFolder"
       @confirm="confirmUpload"
       @cancel="cancelUpload"
-    />
-
-    <FileList
-      :status="status"
-      :folders="visibleFolders"
-      :files="visibleFiles"
-      :is-selection-mode="isSelectionMode"
-      :selected-files="selectedFiles"
-      :all-selected="allSelected"
-      :has-selection="hasSelection"
-      :has-active-search="hasActiveSearch"
-      :search-query="searchQuery"
-      :has-source-items="hasSourceItems"
-      @navigate-folder="handleNavigateFolder"
-      @clear-search="clearSearch"
-      @toggle-select-all="toggleSelectAll"
-      @toggle-file="toggleFileSelection"
-      @open-preview="openPreview"
-      @copy-url="handleCopyUrl"
-      @rename="openRenameDialog"
-      @move="openMoveDialog"
-      @delete="openDeleteDialog"
     />
 
     <PreviewDialog
@@ -342,5 +439,5 @@ const {
       @confirm="confirmBatchDelete"
       @cancel="closeBatchDeleteDialog"
     />
-  </div>
+  </SidebarProvider>
 </template>
