@@ -1,5 +1,6 @@
 import { mount, type ComponentMountingOptions } from "@vue/test-utils";
-import { createI18n } from "vue-i18n";
+import { vi } from "vitest";
+import { createI18n, useI18n } from "vue-i18n";
 import en from "../../i18n/locales/en.json";
 import zhCN from "../../i18n/locales/zh-CN.json";
 
@@ -8,6 +9,7 @@ export function mountWithI18n<T>(
   options: ComponentMountingOptions<T> = {},
   locale: "en" | "zh-CN" = "en",
 ) {
+  vi.stubGlobal("useI18n", useI18n);
   const i18n = createI18n({
     legacy: false,
     locale,
