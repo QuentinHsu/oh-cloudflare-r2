@@ -10,3 +10,7 @@ export interface CopyUrlPayload {
   pathname: string;
   type: "raw" | "markdown";
 }
+
+export interface FileListLike extends Array<File> {
+  item(index: number): File | null;
+}
