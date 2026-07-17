@@ -142,7 +142,7 @@ function updateSortField(value: unknown) {
             <TableHead data-column="updatedAt" class="hidden md:table-cell">
               {{ t("files.columns.updatedAt") }}
             </TableHead>
-            <TableHead class="w-[8.75rem] md:w-[7.25rem]" />
+            <TableHead data-column="actions" class="w-[8.75rem] p-0 md:w-[7.25rem]" />
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -214,7 +214,7 @@ function updateSortField(value: unknown) {
             <TableCell data-column="updatedAt" class="hidden text-muted-foreground md:table-cell">
               {{ props.formatDate(file.uploadedAt) }}
             </TableCell>
-            <TableCell class="w-[8.75rem] md:w-[7.25rem]">
+            <TableCell data-column="actions" class="w-[8.75rem] p-0 md:w-[7.25rem]">
               <div data-direct-actions class="flex items-center justify-end gap-1">
                 <Tooltip>
                   <TooltipTrigger as-child>

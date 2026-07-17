@@ -115,6 +115,11 @@ describe("FileTable", () => {
     const row = wrapper.get(`[data-file="${imageFile.pathname}"]`);
     const directActions = row.get("[data-direct-actions]");
     expect(row.get('[aria-label="Open actions for cat.png"]').isVisible()).toBe(true);
+    for (const action of ["copy-raw", "copy-markdown"]) {
+      const button = directActions.get(`[data-action="${action}"]`);
+      expect(button.classes()).toContain("size-11");
+      expect(button.classes()).toContain("md:size-9");
+    }
 
     await directActions.get('[data-action="copy-raw"]').trigger("click");
     await directActions.get('[data-action="copy-markdown"]').trigger("click");
@@ -133,7 +138,7 @@ describe("FileTable", () => {
     expect(wrapper.emitted("delete")?.[0]).toEqual([imageFile.pathname]);
   });
 
-  it("only renders the raw URL copy action for non-image files", () => {
+  it("only renders the raw URL copy action for non-image files", async () => {
     const textFile = { ...imageFile, pathname: "notes.txt", contentType: "text/plain" };
     const wrapper = mountTable({ folders: [], files: [textFile] });
     const directActions = wrapper.get("[data-direct-actions]");
@@ -141,11 +146,14 @@ describe("FileTable", () => {
     expect(directActions.find('[data-action="copy-raw"]').exists()).toBe(true);
     expect(directActions.find('[data-action="copy-markdown"]').exists()).toBe(false);
     expect(wrapper.find('[data-overflow-actions] [data-overflow-separator]').exists()).toBe(false);
+    await directActions.get('[data-action="copy-raw"]').trigger("click");
+    expect(wrapper.emitted("copy-url")).toEqual([[{ pathname: "notes.txt", type: "raw" }]]);
   });
 
   it("navigates folder rows without rendering folder checkboxes", async () => {
     const wrapper = mountTable({ files: [], folders: ["docs"] });
     expect(wrapper.find('[data-folder="docs"] [role="checkbox"]').exists()).toBe(false);
+    expect(wrapper.find('[data-folder-row="docs"] [data-direct-actions]').exists()).toBe(false);
 
     const folderButton = wrapper.get('button[data-folder="docs"]');
     expect(folderButton.attributes("type")).toBe("button");
@@ -159,6 +167,13 @@ describe("FileTable", () => {
     expect(wrapper.get('[data-column="name"]').classes()).not.toContain("hidden");
     expect(wrapper.get('[data-column="size"]').classes()).toContain("hidden");
     expect(wrapper.get('[data-column="updatedAt"]').classes()).toContain("hidden");
+
+    const [actionHeader, actionCell] = wrapper.findAll('[data-column="actions"]');
+    for (const actionColumn of [actionHeader, actionCell]) {
+      expect(actionColumn.classes()).toContain("w-[8.75rem]");
+      expect(actionColumn.classes()).toContain("p-0");
+      expect(actionColumn.classes()).toContain("md:w-[7.25rem]");
+    }
   });
 
   it("emits controlled search and file selection", async () => {
