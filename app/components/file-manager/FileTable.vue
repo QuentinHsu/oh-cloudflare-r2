@@ -268,7 +268,10 @@ function updateSortField(value: unknown) {
                       <Image class="size-4" />
                       {{ t("files.actions.preview") }}
                     </DropdownMenuItem>
-                    <DropdownMenuSeparator />
+                    <DropdownMenuSeparator
+                      v-if="isImage(file)"
+                      data-overflow-separator
+                    />
                     <DropdownMenuItem data-action="rename" @click="emit('rename', file)">
                       <Pencil class="size-4" />
                       {{ t("files.actions.rename") }}

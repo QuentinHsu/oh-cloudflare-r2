@@ -18,6 +18,13 @@ const ButtonStub = defineComponent({
   },
 });
 
+const DropdownMenuSeparatorStub = defineComponent({
+  inheritAttrs: false,
+  setup(_, { attrs }) {
+    return () => h("div", { ...attrs, "data-overflow-separator": "" });
+  },
+});
+
 const InputStub = defineComponent({
   inheritAttrs: false,
   props: { modelValue: { type: [String, Number], default: "" } },
@@ -87,13 +94,16 @@ function mountTable(overrides: Record<string, unknown> = {}) {
         DropdownMenuTrigger: WrapperStub,
         DropdownMenuContent: WrapperStub,
         DropdownMenuItem: ButtonStub,
-        DropdownMenuSeparator: WrapperStub,
+        DropdownMenuSeparator: DropdownMenuSeparatorStub,
         Table: WrapperStub,
         TableHeader: WrapperStub,
         TableBody: WrapperStub,
         TableRow: WrapperStub,
         TableHead: WrapperStub,
         TableCell: WrapperStub,
+        Tooltip: WrapperStub,
+        TooltipTrigger: WrapperStub,
+        TooltipContent: WrapperStub,
       },
     },
   });
@@ -130,6 +140,7 @@ describe("FileTable", () => {
 
     expect(directActions.find('[data-action="copy-raw"]').exists()).toBe(true);
     expect(directActions.find('[data-action="copy-markdown"]').exists()).toBe(false);
+    expect(wrapper.find('[data-overflow-actions] [data-overflow-separator]').exists()).toBe(false);
   });
 
   it("navigates folder rows without rendering folder checkboxes", async () => {
