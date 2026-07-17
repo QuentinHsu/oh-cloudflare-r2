@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ref } from "vue";
 import type { FileApi } from "../../app/composables/file-manager/useFileApi";
 import { useFileUpload } from "../../app/composables/file-manager/useFileUpload";
+import { createTestTranslate } from "../utils/translate";
 
 describe("useFileUpload", () => {
   const upload = vi.fn<FileApi["upload"]>();
@@ -22,6 +23,7 @@ describe("useFileUpload", () => {
       refreshFolders,
       expandPathParents,
       notify,
+      translate: createTestTranslate(),
     });
 
   beforeEach(() => {

@@ -2,6 +2,7 @@
 import { LogOut, User } from "@lucide/vue";
 
 const { loggedIn, user, clear } = useUserSession();
+const { t } = useI18n();
 
 async function logout() {
   await $fetch("/api/auth/logout", { method: "POST" });
@@ -13,11 +14,16 @@ async function logout() {
 <template>
   <DropdownMenu v-if="loggedIn">
     <DropdownMenuTrigger as-child>
-      <Button variant="ghost" class="relative h-9 w-9 rounded-full">
-        <Avatar class="h-9 w-9">
+      <Button
+        variant="ghost"
+        size="icon"
+        class="relative size-11 rounded-full md:size-9"
+        :aria-label="t('sidebar.account')"
+      >
+        <Avatar class="size-9">
           <AvatarImage v-if="user?.avatar_url" :src="user.avatar_url" :alt="user.login" />
           <AvatarFallback>
-            <User class="h-4 w-4" />
+            <User class="size-4" aria-hidden="true" />
           </AvatarFallback>
         </Avatar>
       </Button>
@@ -26,13 +32,13 @@ async function logout() {
       <DropdownMenuLabel class="font-normal">
         <div class="flex flex-col space-y-1">
           <p class="text-sm font-medium">{{ user?.login }}</p>
-          <p class="text-xs text-muted-foreground">GitHub 用户</p>
+          <p class="text-xs text-muted-foreground">{{ t("auth.githubUser") }}</p>
         </div>
       </DropdownMenuLabel>
       <DropdownMenuSeparator />
-      <DropdownMenuItem @click="logout" class="text-destructive">
-        <LogOut class="mr-2 h-4 w-4" />
-        退出登录
+      <DropdownMenuItem class="text-destructive focus:text-destructive" @click="logout">
+        <LogOut class="size-4" aria-hidden="true" />
+        {{ t("auth.logout") }}
       </DropdownMenuItem>
     </DropdownMenuContent>
   </DropdownMenu>

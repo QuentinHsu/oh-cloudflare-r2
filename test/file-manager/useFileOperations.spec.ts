@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { BlobFile } from "../../app/components/file-manager/types";
 import type { FileApi } from "../../app/composables/file-manager/useFileApi";
 import { useFileOperations } from "../../app/composables/file-manager/useFileOperations";
+import { createTestTranslate } from "../utils/translate";
 
 const file: BlobFile = {
   pathname: "photos/a.txt",
@@ -28,6 +29,7 @@ describe("useFileOperations", () => {
       refreshFolders,
       expandPathParents,
       notify,
+      translate: createTestTranslate(),
     });
 
   beforeEach(() => {

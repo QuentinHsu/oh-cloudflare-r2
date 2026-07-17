@@ -1,7 +1,11 @@
 import { ref, type Ref } from "vue";
 import type { FileApi } from "./useFileApi";
 import { readFileApiError } from "./useFileApi";
-import { refreshFileIndexes, type FileOperationNotify } from "./fileOperationUtils";
+import {
+  refreshFileIndexes,
+  type FileOperationNotify,
+  type FileOperationTranslate,
+} from "./fileOperationUtils";
 
 interface FileUploadDependencies {
   api: Pick<FileApi, "upload">;
@@ -10,6 +14,7 @@ interface FileUploadDependencies {
   refreshFolders: () => Promise<unknown>;
   expandPathParents: (path: string) => void;
   notify: FileOperationNotify;
+  translate: FileOperationTranslate;
 }
 
 export function mergePendingFiles(current: readonly File[], incoming: readonly File[]) {
@@ -41,7 +46,7 @@ export function useFileUpload(dependencies: FileUploadDependencies) {
     const incoming = Array.isArray(files) ? files : Array.from(files);
     if (!incoming.length) return;
     if (isUploading.value) {
-      dependencies.notify.warning("正在上传，请稍后再试");
+      dependencies.notify.warning(dependencies.translate("notifications.uploadInProgress"));
       return;
     }
 
@@ -57,7 +62,11 @@ export function useFileUpload(dependencies: FileUploadDependencies) {
       showUploadDialog.value = true;
     }
     if (merged.replacedCount) {
-      dependencies.notify.warning(`已替换 ${merged.replacedCount} 个同名文件`);
+      dependencies.notify.warning(
+        dependencies.translate("notifications.duplicateReplaced", {
+          count: merged.replacedCount,
+        }),
+      );
     }
   }
 
@@ -84,12 +93,13 @@ export function useFileUpload(dependencies: FileUploadDependencies) {
 
     try {
       await dependencies.api.upload(formData);
-      dependencies.notify.success("上传成功");
+      dependencies.notify.success(dependencies.translate("notifications.uploadSuccess"));
       cancelUpload();
       await refreshFileIndexes(
         dependencies.refreshFiles,
         dependencies.refreshFolders,
         dependencies.notify,
+        dependencies.translate,
       );
     } catch (error: unknown) {
       dependencies.notify.error(readFileApiError(error).message);

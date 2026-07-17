@@ -5,7 +5,11 @@ import {
   getFileName,
   getParentDirectory,
 } from "../../components/file-manager/utils";
-import { refreshFileIndexes, type FileOperationNotify } from "./fileOperationUtils";
+import {
+  refreshFileIndexes,
+  type FileOperationNotify,
+  type FileOperationTranslate,
+} from "./fileOperationUtils";
 import type { FileApi } from "./useFileApi";
 import { readFileApiError } from "./useFileApi";
 
@@ -15,6 +19,7 @@ interface FileOperationsDependencies {
   refreshFolders: () => Promise<unknown>;
   expandPathParents: (path: string) => void;
   notify: FileOperationNotify;
+  translate: FileOperationTranslate;
 }
 
 function formatOperationError(error: unknown) {
@@ -64,11 +69,12 @@ export function useFileOperations(dependencies: FileOperationsDependencies) {
     isDeleting.value = true;
     try {
       await dependencies.api.execute({ action: "delete", path: pathname });
-      dependencies.notify.success("删除成功");
+      dependencies.notify.success(dependencies.translate("notifications.deleteSuccess"));
       await refreshFileIndexes(
         dependencies.refreshFiles,
         dependencies.refreshFolders,
         dependencies.notify,
+        dependencies.translate,
       );
       showDeleteDialog.value = false;
       deletePath.value = "";
@@ -101,7 +107,7 @@ export function useFileOperations(dependencies: FileOperationsDependencies) {
     if (!moveFile.value) return;
     const filename = getFileName(moveFile.value.pathname);
     if (!filename) {
-      dependencies.notify.error("移动失败");
+      dependencies.notify.error(dependencies.translate("notifications.moveFailed"));
       return;
     }
 
@@ -112,12 +118,13 @@ export function useFileOperations(dependencies: FileOperationsDependencies) {
         source: moveFile.value.pathname,
         destination: buildDestinationPath(moveTargetPath.value, filename),
       });
-      dependencies.notify.success("移动成功");
+      dependencies.notify.success(dependencies.translate("notifications.moveSuccess"));
       closeMoveDialog();
       await refreshFileIndexes(
         dependencies.refreshFiles,
         dependencies.refreshFolders,
         dependencies.notify,
+        dependencies.translate,
       );
     } catch (error: unknown) {
       dependencies.notify.error(formatOperationError(error));
@@ -126,6 +133,7 @@ export function useFileOperations(dependencies: FileOperationsDependencies) {
           dependencies.refreshFiles,
           dependencies.refreshFolders,
           dependencies.notify,
+          dependencies.translate,
         );
       }
     } finally {
@@ -154,15 +162,15 @@ export function useFileOperations(dependencies: FileOperationsDependencies) {
     if (!renameFile.value) return;
     const trimmedName = newFileName.value.trim();
     if (!trimmedName) {
-      dependencies.notify.error("文件名不能为空");
+      dependencies.notify.error(dependencies.translate("notifications.nameRequired"));
       return;
     }
     if (trimmedName === getFileName(renameFile.value.pathname)) {
-      dependencies.notify.error("文件名未改变");
+      dependencies.notify.error(dependencies.translate("notifications.nameUnchanged"));
       return;
     }
     if (/[/\\]/.test(trimmedName)) {
-      dependencies.notify.error("文件名不能包含 / 或 \\ 字符");
+      dependencies.notify.error(dependencies.translate("notifications.nameInvalid"));
       return;
     }
 
@@ -176,12 +184,13 @@ export function useFileOperations(dependencies: FileOperationsDependencies) {
           trimmedName,
         ),
       });
-      dependencies.notify.success("重命名成功");
+      dependencies.notify.success(dependencies.translate("notifications.renameSuccess"));
       closeRenameDialog();
       await refreshFileIndexes(
         dependencies.refreshFiles,
         dependencies.refreshFolders,
         dependencies.notify,
+        dependencies.translate,
       );
     } catch (error: unknown) {
       dependencies.notify.error(formatOperationError(error));
@@ -190,6 +199,7 @@ export function useFileOperations(dependencies: FileOperationsDependencies) {
           dependencies.refreshFiles,
           dependencies.refreshFolders,
           dependencies.notify,
+          dependencies.translate,
         );
       }
     } finally {

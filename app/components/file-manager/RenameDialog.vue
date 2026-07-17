@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { nextTick, ref, watch } from "vue";
 
+type InputComponent = { $el: HTMLInputElement };
+
 const props = defineProps<{
   open: boolean;
   currentName?: string;
@@ -17,11 +19,10 @@ const emit = defineEmits<{
   (e: "cancel"): void;
 }>();
 
-const inputRef = ref<HTMLInputElement | null>(null);
+const inputRef = ref<InputComponent | null>(null);
 
-function getInputEl() {
-  const target = inputRef.value as any;
-  return (target?.$el ?? target) as HTMLInputElement | null;
+function getInputEl(): HTMLInputElement | null {
+  return inputRef.value?.$el ?? null;
 }
 
 watch(
@@ -81,11 +82,11 @@ function onOpenChange(value: boolean) {
       </div>
 
       <DialogFooter>
-        <Button variant="ghost" size="sm" @click="emit('cancel')">
+        <Button variant="ghost" class="min-h-11 md:min-h-9" @click="emit('cancel')">
           {{ t("dialogs.cancel") }}
         </Button>
         <Button
-          size="sm"
+          class="min-h-11 md:min-h-9"
           @click="emit('confirm')"
           :disabled="props.isRenaming || !props.newFileName.trim()"
         >

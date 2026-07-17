@@ -42,7 +42,7 @@ describe("file API", () => {
     ).toMatchObject({ code: "FORBIDDEN" });
     expect(readFileApiError(new Error("private"))).toEqual({
       code: "STORAGE_READ_FAILED",
-      message: "存储服务暂时不可用",
+      message: "Storage is temporarily unavailable",
     });
   });
 });

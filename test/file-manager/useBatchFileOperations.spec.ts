@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ref } from "vue";
 import type { FileApi } from "../../app/composables/file-manager/useFileApi";
 import { useBatchFileOperations } from "../../app/composables/file-manager/useBatchFileOperations";
+import { createTestTranslate } from "../utils/translate";
 
 describe("useBatchFileOperations", () => {
   const batch = vi.fn<FileApi["batch"]>();
@@ -26,6 +27,7 @@ describe("useBatchFileOperations", () => {
       refreshFolders,
       expandPathParents,
       notify,
+      translate: createTestTranslate(),
     });
 
   beforeEach(() => {

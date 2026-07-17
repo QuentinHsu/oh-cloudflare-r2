@@ -87,6 +87,7 @@
     "cancel": "取消"
   },
   "dialogs": {
+    "close": "关闭对话框",
     "rename": {
       "title": "重命名文件",
       "current": "当前文件名",
@@ -135,7 +136,27 @@
     "logout": "退出登录",
     "githubUser": "GitHub 用户"
   },
+  "notifications": {
+    "uploadInProgress": "正在上传，请稍后再试",
+    "duplicateReplaced": "已替换 {count} 个同名文件",
+    "uploadSuccess": "上传成功",
+    "folderUploadUnsupported": "暂不支持上传文件夹",
+    "deleteSuccess": "删除成功",
+    "moveFailed": "移动失败",
+    "moveSuccess": "移动成功",
+    "nameRequired": "文件名不能为空",
+    "nameUnchanged": "文件名未改变",
+    "nameInvalid": "文件名不能包含 / 或 \\ 字符",
+    "renameSuccess": "重命名成功",
+    "processed": "成功处理 {count} 个文件",
+    "partial": "操作完成：{completed} 成功，{failed} 失败",
+    "refreshFailed": "数据刷新失败，当前列表可能不是最新状态",
+    "copyMarkdownSuccess": "Markdown 链接已复制",
+    "copyLinkSuccess": "链接已复制",
+    "copyFailed": "复制失败"
+  },
   "errors": {
+    "storageUnavailable": "存储服务暂时不可用",
     "partial": {
       "title": "部分操作未完成",
       "description": "已完成 {completed} 项，失败 {failed} 项。"

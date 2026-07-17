@@ -5,6 +5,7 @@ import {
   useFileDropzone,
   type UseFileDropzoneReturn,
 } from "../../app/composables/file-manager/useFileDropzone";
+import { createTestTranslate } from "../utils/translate";
 
 type DropFiles = (files: File[]) => void;
 type Notify = (message: string) => void;
@@ -55,6 +56,7 @@ function mountDropzone(isUploading = ref(false)) {
         isUploading,
         onFilesDropped,
         notify: { warning },
+        translate: createTestTranslate(),
         windowTarget,
       });
       return () => h("div");

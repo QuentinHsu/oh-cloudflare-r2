@@ -43,13 +43,14 @@ function onPathInput(event: Event) {
           {{ props.fileName }}
         </div>
 
-        <div class="flex items-center gap-2 px-3 py-2.5 bg-muted/50 rounded-lg border">
-          <FolderOpen class="h-4 w-4 text-muted-foreground shrink-0" />
+        <div class="flex items-center gap-2 rounded-lg border bg-muted/50 px-3 py-2.5">
+          <FolderOpen class="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
           <span class="text-muted-foreground">/</span>
           <input
             :value="props.targetPath"
             type="text"
-            class="flex-1 bg-transparent outline-none text-sm placeholder:text-muted-foreground"
+            class="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+            :aria-label="t('dialogs.move.target')"
             :placeholder="t('dialogs.move.placeholder')"
             @input="onPathInput"
           />
@@ -59,14 +60,15 @@ function onPathInput(event: Event) {
           v-if="props.folderTree.length"
           class="max-h-40 overflow-y-auto rounded-lg border bg-muted/30 p-2"
         >
-          <div
-            class="flex items-center gap-2 px-2 py-1.5 rounded cursor-pointer hover:bg-muted text-sm"
+          <button
+            type="button"
+            class="flex min-h-11 w-full items-center gap-2 rounded px-2 text-left text-sm hover:bg-muted md:min-h-9"
             :class="{ 'bg-muted': props.targetPath === '' }"
             @click="emit('update:targetPath', '')"
           >
-            <Home class="h-3.5 w-3.5 text-muted-foreground" />
+            <Home class="size-3.5 text-muted-foreground" aria-hidden="true" />
             <span>{{ t("sidebar.root") }}</span>
-          </div>
+          </button>
           <FolderTreeNode
             v-for="node in props.folderTree"
             :key="node.path"
@@ -80,10 +82,10 @@ function onPathInput(event: Event) {
       </div>
 
       <DialogFooter>
-        <Button variant="ghost" size="sm" @click="emit('cancel')">
+        <Button variant="ghost" class="min-h-11 md:min-h-9" @click="emit('cancel')">
           {{ t("dialogs.cancel") }}
         </Button>
-        <Button size="sm" @click="emit('confirm')" :disabled="props.isMoving">
+        <Button class="min-h-11 md:min-h-9" :disabled="props.isMoving" @click="emit('confirm')">
           {{ props.isMoving ? t("dialogs.move.working") : t("dialogs.move.confirm") }}
         </Button>
       </DialogFooter>

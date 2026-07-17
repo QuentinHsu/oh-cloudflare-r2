@@ -87,6 +87,7 @@
     "cancel": "Cancel"
   },
   "dialogs": {
+    "close": "Close dialog",
     "rename": {
       "title": "Rename file",
       "current": "Current name",
@@ -135,7 +136,27 @@
     "logout": "Sign out",
     "githubUser": "GitHub user"
   },
+  "notifications": {
+    "uploadInProgress": "An upload is already in progress",
+    "duplicateReplaced": "Replaced {count} files with the same name",
+    "uploadSuccess": "Upload complete",
+    "folderUploadUnsupported": "Folder uploads are not supported",
+    "deleteSuccess": "File deleted",
+    "moveFailed": "The file could not be moved",
+    "moveSuccess": "File moved",
+    "nameRequired": "Enter a file name",
+    "nameUnchanged": "Enter a different file name",
+    "nameInvalid": "File names cannot contain / or \\ characters",
+    "renameSuccess": "File renamed",
+    "processed": "Processed {count} files",
+    "partial": "{completed} completed and {failed} failed",
+    "refreshFailed": "The list could not be refreshed and may be out of date",
+    "copyMarkdownSuccess": "Markdown link copied",
+    "copyLinkSuccess": "Link copied",
+    "copyFailed": "The link could not be copied"
+  },
   "errors": {
+    "storageUnavailable": "Storage is temporarily unavailable",
     "partial": {
       "title": "Some operations did not complete",
       "description": "{completed} completed and {failed} failed."

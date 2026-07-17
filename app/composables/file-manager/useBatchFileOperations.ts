@@ -1,7 +1,11 @@
 import { ref, type Ref } from "vue";
 import type { BatchResult, FileOperation } from "../../../shared/types/files";
 import { buildDestinationPath, getFileName } from "../../components/file-manager/utils";
-import { refreshFileIndexes, type FileOperationNotify } from "./fileOperationUtils";
+import {
+  refreshFileIndexes,
+  type FileOperationNotify,
+  type FileOperationTranslate,
+} from "./fileOperationUtils";
 import type { FileApi } from "./useFileApi";
 import { readFileApiError } from "./useFileApi";
 
@@ -14,6 +18,7 @@ interface BatchFileOperationsDependencies {
   refreshFolders: () => Promise<unknown>;
   expandPathParents: (path: string) => void;
   notify: FileOperationNotify;
+  translate: FileOperationTranslate;
 }
 
 function getOperationPath(operation: FileOperation) {
@@ -34,9 +39,16 @@ export function useBatchFileOperations(dependencies: BatchFileOperationsDependen
     dependencies.replaceSelection(failedPaths);
 
     if (!failedResults.length) {
-      dependencies.notify.success(`成功处理 ${successCount} 个文件`);
+      dependencies.notify.success(
+        dependencies.translate("notifications.processed", { count: successCount }),
+      );
     } else {
-      dependencies.notify.warning(`操作完成：${successCount} 成功，${failedResults.length} 失败`);
+      dependencies.notify.warning(
+        dependencies.translate("notifications.partial", {
+          completed: successCount,
+          failed: failedResults.length,
+        }),
+      );
       for (const item of failedResults) {
         if (
           item.error.code === "MOVE_PARTIALLY_COMPLETED" &&
@@ -58,6 +70,7 @@ export function useBatchFileOperations(dependencies: BatchFileOperationsDependen
         dependencies.refreshFiles,
         dependencies.refreshFolders,
         dependencies.notify,
+        dependencies.translate,
       );
     }
     return successCount;

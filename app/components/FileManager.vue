@@ -125,13 +125,14 @@ const requestFileApi = $fetch as unknown as (
   url: string,
   options?: Record<string, unknown>,
 ) => Promise<unknown>;
-const fileApi = createFileApi(requestFileApi);
+const fileApi = createFileApi(requestFileApi, t("errors.storageUnavailable"));
 
 const upload = useFileUpload({
   api: fileApi,
   refreshFiles: refresh,
   refreshFolders: refreshAllFolders,
   notify: toast,
+  translate: t,
   currentPath,
   expandPathParents,
 });
@@ -141,6 +142,7 @@ const operations = useFileOperations({
   refreshFiles: refresh,
   refreshFolders: refreshAllFolders,
   notify: toast,
+  translate: t,
   expandPathParents,
 });
 
@@ -149,6 +151,7 @@ const batchOperations = useBatchFileOperations({
   refreshFiles: refresh,
   refreshFolders: refreshAllFolders,
   notify: toast,
+  translate: t,
   currentPath,
   selectedFiles,
   replaceSelection,
@@ -159,6 +162,7 @@ const preview = useFilePreview({
   getOrigin: () => window.location.origin,
   writeClipboard: (text) => navigator.clipboard.writeText(text),
   notify: toast,
+  translate: t,
 });
 
 function handleCopyUrl(payload: CopyUrlPayload) {
@@ -255,6 +259,7 @@ const { isDraggingFiles } = useFileDropzone({
   isUploading,
   onFilesDropped: handleFilesSelected,
   notify: { warning: toast.warning },
+  translate: t,
 });
 
 const {

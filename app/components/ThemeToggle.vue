@@ -1,24 +1,33 @@
 <script setup lang="ts">
-import { Moon, Sun, Monitor } from "@lucide/vue";
+import { Monitor, Moon, Sun } from "@lucide/vue";
 
 const colorMode = useColorMode();
+const { t } = useI18n();
 
 const themes = [
-  { value: "light", icon: Sun, label: "浅色" },
-  { value: "dark", icon: Moon, label: "深色" },
-  { value: "system", icon: Monitor, label: "系统" },
+  { value: "light", icon: Sun, labelKey: "theme.light" },
+  { value: "dark", icon: Moon, labelKey: "theme.dark" },
+  { value: "system", icon: Monitor, labelKey: "theme.system" },
 ] as const;
 </script>
 
 <template>
   <DropdownMenu>
     <DropdownMenuTrigger as-child>
-      <Button variant="ghost" size="icon" class="h-9 w-9">
-        <Sun class="h-4 w-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-        <Moon
-          class="absolute h-4 w-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100"
+      <Button
+        variant="ghost"
+        size="icon"
+        class="relative size-11 md:size-9"
+        :aria-label="t('theme.toggle')"
+      >
+        <Sun
+          class="size-4 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"
+          aria-hidden="true"
         />
-        <span class="sr-only">切换主题</span>
+        <Moon
+          class="absolute size-4 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100"
+          aria-hidden="true"
+        />
       </Button>
     </DropdownMenuTrigger>
     <DropdownMenuContent align="end">
@@ -27,8 +36,8 @@ const themes = [
         :key="theme.value"
         @click="colorMode.preference = theme.value"
       >
-        <component :is="theme.icon" class="mr-2 h-4 w-4" />
-        {{ theme.label }}
+        <component :is="theme.icon" class="size-4" aria-hidden="true" />
+        {{ t(theme.labelKey) }}
       </DropdownMenuItem>
     </DropdownMenuContent>
   </DropdownMenu>

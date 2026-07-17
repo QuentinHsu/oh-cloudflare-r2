@@ -26,16 +26,21 @@ function onOpenChange(value: boolean) {
       <DialogHeader>
         <DialogTitle>{{ t("dialogs.preview.title", { name: props.fileName ?? "" }) }}</DialogTitle>
       </DialogHeader>
-      <div class="flex justify-center">
-        <img v-if="props.src" :src="props.src" class="max-h-[70vh] object-contain rounded" />
+      <div class="flex justify-center overflow-hidden rounded-md bg-muted/40">
+        <img
+          v-if="props.src"
+          :src="props.src"
+          :alt="props.fileName ?? ''"
+          class="max-h-[65vh] object-contain"
+        />
       </div>
       <DialogFooter>
-        <Button variant="outline" @click="emit('copy-raw')">
-          <Link class="mr-2 h-4 w-4" />
+        <Button variant="outline" class="min-h-11 md:min-h-9" @click="emit('copy-raw')">
+          <Link class="size-4" aria-hidden="true" />
           {{ t("dialogs.preview.copyRaw") }}
         </Button>
-        <Button variant="outline" @click="emit('copy-markdown')">
-          <Image class="mr-2 h-4 w-4" />
+        <Button variant="outline" class="min-h-11 md:min-h-9" @click="emit('copy-markdown')">
+          <Image class="size-4" aria-hidden="true" />
           {{ t("dialogs.preview.copyMarkdown") }}
         </Button>
       </DialogFooter>
