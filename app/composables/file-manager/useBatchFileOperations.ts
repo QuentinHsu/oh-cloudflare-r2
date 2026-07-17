@@ -12,7 +12,6 @@ interface BatchFileOperationsDependencies {
   replaceSelection: (paths: Iterable<string>) => void;
   refreshFiles: () => Promise<unknown>;
   refreshFolders: () => Promise<unknown>;
-  confirmAction: (message: string) => boolean;
   expandPathParents: (path: string) => void;
   notify: FileOperationNotify;
 }
@@ -24,6 +23,7 @@ function getOperationPath(operation: FileOperation) {
 export function useBatchFileOperations(dependencies: BatchFileOperationsDependencies) {
   const isBatchMoving = ref(false);
   const isBatchDeleting = ref(false);
+  const showBatchDeleteDialog = ref(false);
   const showBatchMoveDialog = ref(false);
   const batchMoveTargetPath = ref("");
 
@@ -63,15 +63,30 @@ export function useBatchFileOperations(dependencies: BatchFileOperationsDependen
     return successCount;
   }
 
-  async function batchDelete() {
+  function openBatchDeleteDialog() {
+    if (!dependencies.selectedFiles.value.size) return;
+    showBatchDeleteDialog.value = true;
+  }
+
+  function closeBatchDeleteDialog() {
+    if (isBatchDeleting.value) return;
+    showBatchDeleteDialog.value = false;
+  }
+
+  function handleBatchDeleteDialogOpenChange(open: boolean) {
+    if (open) showBatchDeleteDialog.value = true;
+    else closeBatchDeleteDialog();
+  }
+
+  async function confirmBatchDelete() {
     const paths = [...dependencies.selectedFiles.value];
     if (!paths.length) return;
-    if (!dependencies.confirmAction(`确定要删除选中的 ${paths.length} 个文件吗？`)) return;
 
     isBatchDeleting.value = true;
     try {
       const operations: FileOperation[] = paths.map((path) => ({ action: "delete", path }));
       await handleResolvedBatch(await dependencies.api.batch(operations));
+      showBatchDeleteDialog.value = false;
     } catch (error: unknown) {
       dependencies.notify.error(readFileApiError(error).message);
     } finally {
@@ -120,9 +135,13 @@ export function useBatchFileOperations(dependencies: BatchFileOperationsDependen
   return {
     isBatchMoving,
     isBatchDeleting,
+    showBatchDeleteDialog,
     showBatchMoveDialog,
     batchMoveTargetPath,
-    batchDelete,
+    openBatchDeleteDialog,
+    closeBatchDeleteDialog,
+    handleBatchDeleteDialogOpenChange,
+    confirmBatchDelete,
     openBatchMoveDialog,
     closeBatchMoveDialog,
     handleBatchMoveDialogOpenChange,

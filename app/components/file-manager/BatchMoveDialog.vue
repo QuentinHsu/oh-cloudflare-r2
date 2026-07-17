@@ -19,6 +19,8 @@ const emit = defineEmits<{
   (e: "cancel"): void;
 }>();
 
+const { t } = useI18n();
+
 function onOpenChange(value: boolean) {
   emit("update:open", value);
 }
@@ -32,7 +34,8 @@ function onPathInput(event: Event) {
   <Dialog :open="props.open" @update:open="onOpenChange">
     <DialogContent class="sm:max-w-sm">
       <DialogHeader>
-        <DialogTitle>批量移动 {{ props.count }} 个文件</DialogTitle>
+        <DialogTitle>{{ t("dialogs.batchMove.title", { count: props.count }) }}</DialogTitle>
+        <DialogDescription>{{ t("dialogs.move.target") }}</DialogDescription>
       </DialogHeader>
 
       <div class="space-y-3 py-2">
@@ -43,7 +46,7 @@ function onPathInput(event: Event) {
             :value="props.targetPath"
             type="text"
             class="flex-1 bg-transparent outline-none text-sm placeholder:text-muted-foreground"
-            placeholder="输入目标路径或留空移动到根目录"
+            :placeholder="t('dialogs.move.placeholder')"
             @input="onPathInput"
           />
         </div>
@@ -58,7 +61,7 @@ function onPathInput(event: Event) {
             @click="emit('update:targetPath', '')"
           >
             <Home class="h-3.5 w-3.5 text-muted-foreground" />
-            <span>根目录</span>
+            <span>{{ t("sidebar.root") }}</span>
           </div>
           <FolderTreeNode
             v-for="node in props.folderTree"
@@ -73,9 +76,13 @@ function onPathInput(event: Event) {
       </div>
 
       <DialogFooter>
-        <Button variant="ghost" size="sm" @click="emit('cancel')">取消</Button>
+        <Button variant="ghost" size="sm" @click="emit('cancel')">
+          {{ t("dialogs.cancel") }}
+        </Button>
         <Button size="sm" @click="emit('confirm')" :disabled="props.isBatchMoving">
-          {{ props.isBatchMoving ? "移动中..." : "移动" }}
+          {{
+            props.isBatchMoving ? t("dialogs.batchMove.working") : t("dialogs.batchMove.confirm")
+          }}
         </Button>
       </DialogFooter>
     </DialogContent>

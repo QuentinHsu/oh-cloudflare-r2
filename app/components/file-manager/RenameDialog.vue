@@ -1,10 +1,14 @@
 <script setup lang="ts">
+import { nextTick, ref, watch } from "vue";
+
 const props = defineProps<{
   open: boolean;
   currentName?: string;
   newFileName: string;
   isRenaming: boolean;
 }>();
+
+const { t } = useI18n();
 
 const emit = defineEmits<{
   (e: "update:open", value: boolean): void;
@@ -54,22 +58,22 @@ function onOpenChange(value: boolean) {
   <Dialog :open="props.open" @update:open="onOpenChange">
     <DialogContent class="sm:max-w-md">
       <DialogHeader>
-        <DialogTitle>重命名文件</DialogTitle>
+        <DialogTitle>{{ t("dialogs.rename.title") }}</DialogTitle>
       </DialogHeader>
 
       <div class="space-y-4 py-2">
         <div class="text-sm text-muted-foreground">
-          <span class="font-medium">原文件名：</span>
+          <span class="font-medium">{{ t("dialogs.rename.current") }}：</span>
           {{ props.currentName }}
         </div>
 
         <div class="space-y-2">
-          <Label for="rename-input">新文件名</Label>
+          <Label for="rename-input">{{ t("dialogs.rename.next") }}</Label>
           <Input
             id="rename-input"
             ref="inputRef"
             :model-value="props.newFileName"
-            placeholder="输入新文件名"
+            :placeholder="t('dialogs.rename.placeholder')"
             @update:model-value="emit('update:newFileName', $event as string)"
             @keyup.enter="emit('confirm')"
           />
@@ -77,13 +81,15 @@ function onOpenChange(value: boolean) {
       </div>
 
       <DialogFooter>
-        <Button variant="ghost" size="sm" @click="emit('cancel')">取消</Button>
+        <Button variant="ghost" size="sm" @click="emit('cancel')">
+          {{ t("dialogs.cancel") }}
+        </Button>
         <Button
           size="sm"
           @click="emit('confirm')"
           :disabled="props.isRenaming || !props.newFileName.trim()"
         >
-          {{ props.isRenaming ? "重命名中..." : "确认" }}
+          {{ props.isRenaming ? t("dialogs.rename.working") : t("dialogs.rename.confirm") }}
         </Button>
       </DialogFooter>
     </DialogContent>

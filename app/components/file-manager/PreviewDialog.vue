@@ -13,6 +13,8 @@ const emit = defineEmits<{
   (e: "copy-markdown"): void;
 }>();
 
+const { t } = useI18n();
+
 function onOpenChange(value: boolean) {
   emit("update:open", value);
 }
@@ -22,7 +24,7 @@ function onOpenChange(value: boolean) {
   <Dialog :open="props.open" @update:open="onOpenChange">
     <DialogContent class="max-w-4xl">
       <DialogHeader>
-        <DialogTitle>{{ props.fileName }}</DialogTitle>
+        <DialogTitle>{{ t("dialogs.preview.title", { name: props.fileName ?? "" }) }}</DialogTitle>
       </DialogHeader>
       <div class="flex justify-center">
         <img v-if="props.src" :src="props.src" class="max-h-[70vh] object-contain rounded" />
@@ -30,11 +32,11 @@ function onOpenChange(value: boolean) {
       <DialogFooter>
         <Button variant="outline" @click="emit('copy-raw')">
           <Link class="mr-2 h-4 w-4" />
-          复制链接
+          {{ t("dialogs.preview.copyRaw") }}
         </Button>
         <Button variant="outline" @click="emit('copy-markdown')">
           <Image class="mr-2 h-4 w-4" />
-          复制 Markdown
+          {{ t("dialogs.preview.copyMarkdown") }}
         </Button>
       </DialogFooter>
     </DialogContent>

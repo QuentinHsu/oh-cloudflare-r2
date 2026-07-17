@@ -13,7 +13,6 @@ interface FileOperationsDependencies {
   api: Pick<FileApi, "execute">;
   refreshFiles: () => Promise<unknown>;
   refreshFolders: () => Promise<unknown>;
-  confirmAction: (message: string) => boolean;
   expandPathParents: (path: string) => void;
   notify: FileOperationNotify;
 }
@@ -39,9 +38,30 @@ export function useFileOperations(dependencies: FileOperationsDependencies) {
   const renameFile = ref<BlobFile | null>(null);
   const newFileName = ref("");
   const isRenaming = ref(false);
+  const showDeleteDialog = ref(false);
+  const deletePath = ref("");
+  const isDeleting = ref(false);
 
-  async function deleteFile(pathname: string) {
-    if (!dependencies.confirmAction("确定要删除这个文件吗？")) return;
+  function openDeleteDialog(pathname: string) {
+    deletePath.value = pathname;
+    showDeleteDialog.value = true;
+  }
+
+  function closeDeleteDialog() {
+    if (isDeleting.value) return;
+    showDeleteDialog.value = false;
+    deletePath.value = "";
+  }
+
+  function handleDeleteDialogOpenChange(open: boolean) {
+    if (open) showDeleteDialog.value = true;
+    else closeDeleteDialog();
+  }
+
+  async function confirmDelete() {
+    if (!deletePath.value) return;
+    const pathname = deletePath.value;
+    isDeleting.value = true;
     try {
       await dependencies.api.execute({ action: "delete", path: pathname });
       dependencies.notify.success("删除成功");
@@ -50,8 +70,12 @@ export function useFileOperations(dependencies: FileOperationsDependencies) {
         dependencies.refreshFolders,
         dependencies.notify,
       );
+      showDeleteDialog.value = false;
+      deletePath.value = "";
     } catch (error: unknown) {
       dependencies.notify.error(formatOperationError(error));
+    } finally {
+      isDeleting.value = false;
     }
   }
 
@@ -182,7 +206,13 @@ export function useFileOperations(dependencies: FileOperationsDependencies) {
     renameFile,
     newFileName,
     isRenaming,
-    deleteFile,
+    showDeleteDialog,
+    deletePath,
+    isDeleting,
+    openDeleteDialog,
+    closeDeleteDialog,
+    handleDeleteDialogOpenChange,
+    confirmDelete,
     openMoveDialog,
     closeMoveDialog,
     handleMoveDialogOpenChange,

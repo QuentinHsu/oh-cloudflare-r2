@@ -20,6 +20,8 @@ const emit = defineEmits<{
   (e: "cancel"): void;
 }>();
 
+const { t } = useI18n();
+
 function onOpenChange(value: boolean) {
   emit("update:open", value);
 }
@@ -33,7 +35,8 @@ function onPathInput(event: Event) {
   <Dialog :open="props.open" @update:open="onOpenChange">
     <DialogContent class="sm:max-w-sm">
       <DialogHeader>
-        <DialogTitle>上传 {{ props.pendingCount || 0 }} 个文件</DialogTitle>
+        <DialogTitle>{{ t("upload.title", { count: props.pendingCount || 0 }) }}</DialogTitle>
+        <DialogDescription>{{ t("upload.target") }}</DialogDescription>
       </DialogHeader>
 
       <div class="space-y-3 py-2">
@@ -44,7 +47,7 @@ function onPathInput(event: Event) {
             :value="props.uploadPath"
             type="text"
             class="flex-1 bg-transparent outline-none text-sm placeholder:text-muted-foreground"
-            placeholder="输入路径或留空上传到根目录"
+            :placeholder="t('upload.pathPlaceholder')"
             @input="onPathInput"
           />
         </div>
@@ -59,7 +62,7 @@ function onPathInput(event: Event) {
             @click="emit('select-folder', '')"
           >
             <Home class="h-3.5 w-3.5 text-muted-foreground" />
-            <span>根目录</span>
+            <span>{{ t("sidebar.root") }}</span>
           </div>
           <FolderTreeNode
             v-for="node in props.folderTree"
@@ -74,9 +77,11 @@ function onPathInput(event: Event) {
       </div>
 
       <DialogFooter>
-        <Button variant="ghost" size="sm" @click="emit('cancel')">取消</Button>
+        <Button variant="ghost" size="sm" @click="emit('cancel')">
+          {{ t("upload.cancel") }}
+        </Button>
         <Button size="sm" @click="emit('confirm')" :disabled="props.isUploading">
-          {{ props.isUploading ? "上传中..." : "上传" }}
+          {{ props.isUploading ? t("upload.uploading") : t("upload.confirm") }}
         </Button>
       </DialogFooter>
     </DialogContent>

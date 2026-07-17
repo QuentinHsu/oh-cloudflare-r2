@@ -12,6 +12,8 @@ import { useFileUpload } from "../composables/file-manager/useFileUpload";
 import { useFileView } from "../composables/file-manager/useFileView";
 import { useFolderBrowser } from "../composables/file-manager/useFolderBrowser";
 import BatchMoveDialog from "./file-manager/BatchMoveDialog.vue";
+import BatchDeleteAlertDialog from "./file-manager/BatchDeleteAlertDialog.vue";
+import DeleteAlertDialog from "./file-manager/DeleteAlertDialog.vue";
 import FileDropOverlay from "./file-manager/FileDropOverlay.vue";
 import FileList from "./file-manager/FileList.vue";
 import FileManagerToolbar from "./file-manager/FileManagerToolbar.vue";
@@ -101,7 +103,6 @@ const operations = useFileOperations({
   api: fileApi,
   refreshFiles: refresh,
   refreshFolders: refreshAllFolders,
-  confirmAction: (message) => window.confirm(message),
   notify: toast,
   expandPathParents,
 });
@@ -110,7 +111,6 @@ const batchOperations = useBatchFileOperations({
   api: fileApi,
   refreshFiles: refresh,
   refreshFolders: refreshAllFolders,
-  confirmAction: (message) => window.confirm(message),
   notify: toast,
   currentPath,
   selectedFiles,
@@ -159,7 +159,13 @@ const {
   renameFile,
   newFileName,
   isRenaming,
-  deleteFile,
+  showDeleteDialog,
+  deletePath,
+  isDeleting,
+  openDeleteDialog,
+  closeDeleteDialog,
+  handleDeleteDialogOpenChange,
+  confirmDelete,
   openMoveDialog,
   closeMoveDialog,
   handleMoveDialogOpenChange,
@@ -173,9 +179,13 @@ const {
 const {
   isBatchMoving,
   isBatchDeleting,
+  showBatchDeleteDialog,
   showBatchMoveDialog,
   batchMoveTargetPath,
-  batchDelete,
+  openBatchDeleteDialog,
+  closeBatchDeleteDialog,
+  handleBatchDeleteDialogOpenChange,
+  confirmBatchDelete,
   openBatchMoveDialog,
   closeBatchMoveDialog,
   handleBatchMoveDialogOpenChange,
@@ -214,7 +224,7 @@ const {
       @navigate="handleNavigatePath"
       @toggle-selection="toggleSelectionMode"
       @open-batch-move="openBatchMoveDialog"
-      @batch-delete="batchDelete"
+      @batch-delete="openBatchDeleteDialog"
       @files-selected="handleFilesSelected"
     />
 
@@ -264,7 +274,7 @@ const {
       @copy-url="handleCopyUrl"
       @rename="openRenameDialog"
       @move="openMoveDialog"
-      @delete="deleteFile"
+      @delete="openDeleteDialog"
     />
 
     <PreviewDialog
@@ -313,6 +323,24 @@ const {
       @toggle-folder="toggleFolder"
       @confirm="confirmBatchMove"
       @cancel="closeBatchMoveDialog"
+    />
+
+    <DeleteAlertDialog
+      :open="showDeleteDialog"
+      :file-name="deletePath.split('/').pop() || deletePath"
+      :is-deleting="isDeleting"
+      @update:open="handleDeleteDialogOpenChange"
+      @confirm="confirmDelete"
+      @cancel="closeDeleteDialog"
+    />
+
+    <BatchDeleteAlertDialog
+      :open="showBatchDeleteDialog"
+      :count="selectedFiles.size"
+      :is-deleting="isBatchDeleting"
+      @update:open="handleBatchDeleteDialogOpenChange"
+      @confirm="confirmBatchDelete"
+      @cancel="closeBatchDeleteDialog"
     />
   </div>
 </template>

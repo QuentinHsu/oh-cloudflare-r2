@@ -82,6 +82,23 @@ const UploadDialogStub = defineComponent({
   },
 });
 
+const BatchDeleteDialogStub = defineComponent({
+  name: "BatchDeleteAlertDialog",
+  props: ["open"],
+  emits: ["confirm"],
+  setup(props, { emit }) {
+    return () =>
+      h("div", [
+        props.open
+          ? h("button", {
+              "data-action": "confirm-batch-delete",
+              onClick: () => emit("confirm"),
+            })
+          : null,
+      ]);
+  },
+});
+
 const DropOverlayStub = defineComponent({
   name: "FileDropOverlay",
   setup: () => () => h("div", { "data-drop-overlay": "visible" }),
@@ -173,6 +190,8 @@ async function mountManager() {
         RenameDialog: true,
         MoveDialog: true,
         BatchMoveDialog: true,
+        DeleteAlertDialog: true,
+        BatchDeleteAlertDialog: BatchDeleteDialogStub,
       },
     },
   });
@@ -297,6 +316,7 @@ describe("FileManager view workflow", () => {
     const wrapper = await mountManager();
     await wrapper.get('[data-action="select-all"]').trigger("click");
     await wrapper.get('[data-action="batch-delete"]').trigger("click");
+    await wrapper.get('[data-action="confirm-batch-delete"]').trigger("click");
     await flushPromises();
 
     expect(request).toHaveBeenCalledTimes(1);
