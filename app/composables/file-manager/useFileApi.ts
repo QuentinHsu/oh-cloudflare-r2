@@ -42,21 +42,36 @@ function readFailureBody(value: unknown): FileApiError | null {
   return null;
 }
 
-export function readFileApiError(error: unknown): FileApiError {
+const DEFAULT_STORAGE_ERROR = "Storage is temporarily unavailable";
+type Translate = (key: string, values?: Record<string, unknown>) => string;
+
+export function readFileApiError(
+  error: unknown,
+  fallbackMessage = DEFAULT_STORAGE_ERROR,
+): FileApiError {
   if (isFileApiError(error)) return error;
   const failure = readFailureBody(error);
-  return failure ?? { code: "STORAGE_READ_FAILED", message: "存储服务暂时不可用" };
+  return failure ?? { code: "STORAGE_READ_FAILED", message: fallbackMessage };
 }
 
-async function unwrap<T>(request: Promise<unknown>): Promise<T> {
+export function formatFileApiError(error: unknown, translate: Translate): string {
+  const failure = readFileApiError(error);
+  const source = typeof failure.details?.source === "string" ? failure.details.source : "";
+  const destination =
+    typeof failure.details?.destination === "string" ? failure.details.destination : "";
+
+  return translate(`errors.file.${failure.code}`, { source, destination });
+}
+
+async function unwrap<T>(request: Promise<unknown>, fallbackMessage: string): Promise<T> {
   try {
     const response = await request;
     if (isRecord(response) && response.ok === true && "data" in response) {
       return response.data as T;
     }
-    throw readFileApiError(response);
+    throw readFileApiError(response, fallbackMessage);
   } catch (error: unknown) {
-    throw readFileApiError(error);
+    throw readFileApiError(error, fallbackMessage);
   }
 }
 
@@ -66,19 +81,24 @@ export interface FileApi {
   batch(operations: FileOperation[]): Promise<BatchResult>;
 }
 
-export function createFileApi(request: Request): FileApi {
+export function createFileApi(request: Request, fallbackMessage = DEFAULT_STORAGE_ERROR): FileApi {
   return {
     upload(formData) {
-      return unwrap<UploadResult>(request("/api/files/upload", { method: "POST", body: formData }));
+      return unwrap<UploadResult>(
+        request("/api/files/upload", { method: "POST", body: formData }),
+        fallbackMessage,
+      );
     },
     execute(operation) {
       return unwrap<{ operation: FileOperation }>(
         request("/api/files/operations", { method: "POST", body: operation }),
+        fallbackMessage,
       );
     },
     batch(operations) {
       return unwrap<BatchResult>(
         request("/api/files/batch", { method: "POST", body: { operations } }),
+        fallbackMessage,
       );
     },
   };

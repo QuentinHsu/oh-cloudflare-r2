@@ -1,41 +1,46 @@
 <script setup lang="ts">
 import { GitFork as Github, HardDrive } from "@lucide/vue";
+import { computed } from "vue";
 
 definePageMeta({
   layout: false,
 });
 
 const route = useRoute();
+const { t } = useI18n();
 const error = route.query.error;
 const errorMessage = computed(() =>
-  error === "unauthorized" ? "该 GitHub 用户无权访问" : "登录失败，请重试",
+  error === "unauthorized" ? t("auth.unauthorized") : t("auth.failed"),
 );
 </script>
 
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-background">
-    <Card class="w-full max-w-md mx-4">
-      <CardHeader class="text-center space-y-2">
-        <div class="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-          <HardDrive class="h-6 w-6 text-primary" />
+  <main class="flex min-h-screen items-center justify-center bg-background px-4 py-10">
+    <Card class="w-full max-w-md shadow-sm">
+      <CardHeader class="space-y-2 text-center">
+        <div
+          class="mx-auto flex size-12 items-center justify-center rounded-xl bg-primary text-primary-foreground"
+        >
+          <HardDrive class="size-6" aria-hidden="true" />
         </div>
-        <CardTitle class="text-2xl">R2 Dashboard</CardTitle>
-        <CardDescription> 登录以管理你的文件 </CardDescription>
+        <CardTitle class="text-2xl">{{ t("auth.title") }}</CardTitle>
+        <CardDescription>{{ t("auth.description") }}</CardDescription>
       </CardHeader>
       <CardContent class="space-y-4">
         <div
           v-if="error"
-          class="p-3 rounded-lg bg-destructive/10 text-destructive text-sm text-center"
+          role="alert"
+          class="rounded-lg bg-destructive/10 p-3 text-center text-sm text-destructive"
         >
           {{ errorMessage }}
         </div>
-        <Button as-child class="w-full" size="lg">
+        <Button as-child class="min-h-11 w-full" size="lg">
           <a href="/api/auth/github">
-            <Github class="mr-2 h-5 w-5" />
-            使用 GitHub 登录
+            <Github class="size-5" aria-hidden="true" />
+            {{ t("auth.github") }}
           </a>
         </Button>
       </CardContent>
     </Card>
-  </div>
+  </main>
 </template>

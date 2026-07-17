@@ -4,6 +4,7 @@ type DropzoneDependencies = {
   isUploading: MaybeRefOrGetter<boolean>;
   onFilesDropped: (files: File[]) => void;
   notify: { warning: (message: string) => void };
+  translate: (key: string) => string;
   windowTarget?: EventTarget;
 };
 
@@ -82,7 +83,7 @@ export function useFileDropzone(dependencies: DropzoneDependencies): UseFileDrop
     resetDragState();
 
     if (toValue(dependencies.isUploading)) {
-      dependencies.notify.warning("正在上传，请稍后再试");
+      dependencies.notify.warning(dependencies.translate("notifications.uploadInProgress"));
       return;
     }
 
@@ -92,7 +93,7 @@ export function useFileDropzone(dependencies: DropzoneDependencies): UseFileDrop
       return;
     }
     if (dropped.directoryCount > 0) {
-      dependencies.notify.warning("暂不支持上传文件夹");
+      dependencies.notify.warning(dependencies.translate("notifications.folderUploadUnsupported"));
     }
   }
 

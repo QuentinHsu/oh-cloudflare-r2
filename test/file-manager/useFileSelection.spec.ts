@@ -9,27 +9,23 @@ const files: BlobFile[] = [
 ];
 
 describe("useFileSelection", () => {
-  it("toggles individual and all-file selection", () => {
+  it("selects files without entering a separate mode", () => {
     const selection = useFileSelection(ref(files));
 
-    selection.toggleSelectionMode();
     selection.toggleFileSelection("a.png");
     expect(selection.hasSelection.value).toBe(true);
     expect(selection.allSelected.value).toBe(false);
 
+    expect("isSelectionMode" in selection).toBe(false);
+    expect("toggleSelectionMode" in selection).toBe(false);
+  });
+
+  it("selects and clears every visible file", () => {
+    const selection = useFileSelection(ref(files));
+
     selection.toggleSelectAll();
     expect(selection.allSelected.value).toBe(true);
     selection.toggleSelectAll();
-    expect(selection.selectedFiles.value.size).toBe(0);
-  });
-
-  it("clears selection when leaving selection mode", () => {
-    const selection = useFileSelection(ref(files));
-    selection.toggleSelectionMode();
-    selection.toggleFileSelection("a.png");
-    selection.toggleSelectionMode();
-
-    expect(selection.isSelectionMode.value).toBe(false);
     expect(selection.selectedFiles.value.size).toBe(0);
   });
 
@@ -42,7 +38,6 @@ describe("useFileSelection", () => {
   it("selects only files in the reactive visible list", () => {
     const visibleFiles = ref(files);
     const selection = useFileSelection(visibleFiles);
-    selection.toggleSelectionMode();
 
     visibleFiles.value = [files[1]];
     selection.toggleSelectAll();

@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { UploadCloud } from "@lucide/vue";
+
+const { t } = useI18n();
 </script>
 
 <template>
@@ -14,8 +16,8 @@ import { UploadCloud } from "@lucide/vue";
         <UploadCloud aria-hidden="true" class="h-7 w-7" />
       </div>
       <div>
-        <p class="font-medium">释放以上传文件</p>
-        <p class="mt-1 text-sm text-muted-foreground">支持同时上传多个文件</p>
+        <p class="font-medium">{{ t("upload.dropTitle") }}</p>
+        <p class="mt-1 text-sm text-muted-foreground">{{ t("upload.dropDescription") }}</p>
       </div>
     </div>
   </div>

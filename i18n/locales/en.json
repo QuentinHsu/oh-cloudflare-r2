@@ -1,0 +1,180 @@
+{
+  "app": {
+    "name": "R2 Dashboard",
+    "description": "Manage files stored in Cloudflare R2"
+  },
+  "sidebar": {
+    "files": "Files",
+    "root": "All files",
+    "upload": "Upload files",
+    "appearance": "Appearance",
+    "language": "Language",
+    "account": "Account",
+    "toggle": "Toggle sidebar",
+    "collapse": "Collapse sidebar",
+    "expand": "Expand sidebar"
+  },
+  "theme": {
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System",
+    "toggle": "Change theme"
+  },
+  "locale": {
+    "en": "English",
+    "zhCN": "Simplified Chinese",
+    "toggle": "Change language"
+  },
+  "files": {
+    "title": "{name}",
+    "rootTitle": "All files",
+    "description": "Manage files and folders in this directory",
+    "typeUnknown": "File",
+    "search": "Search this folder…",
+    "clearSearch": "Clear search",
+    "results": "{count} results",
+    "selected": "{count} selected",
+    "columns": {
+      "name": "Name",
+      "type": "Type",
+      "size": "Size",
+      "updatedAt": "Updated"
+    },
+    "sort": {
+      "field": "Sort field",
+      "name": "Name",
+      "uploadedAt": "Updated",
+      "size": "Size",
+      "ascending": "Sort ascending",
+      "descending": "Sort descending"
+    },
+    "actions": {
+      "menu": "Open actions for {name}",
+      "preview": "Preview",
+      "copyRaw": "Copy link",
+      "copyMarkdown": "Copy Markdown",
+      "rename": "Rename",
+      "move": "Move",
+      "delete": "Delete",
+      "clearSelection": "Clear selection"
+    },
+    "states": {
+      "loading": "Loading files…",
+      "errorTitle": "Files could not be loaded",
+      "errorDescription": "Check the connection and try again.",
+      "retry": "Try again",
+      "emptyTitle": "This folder is empty",
+      "emptyDescription": "Upload files to start using this folder.",
+      "noResultsTitle": "No matching files or folders",
+      "noResultsDescription": "No results for “{query}”."
+    }
+  },
+  "stats": {
+    "summary": "Directory summary",
+    "files": "Files",
+    "images": "{count} images",
+    "storage": "Storage",
+    "folders": "Folders",
+    "latest": "Latest update",
+    "never": "No updates"
+  },
+  "upload": {
+    "title": "Upload {count} files",
+    "target": "Target folder",
+    "pathPlaceholder": "Enter a path or use the current folder",
+    "dropTitle": "Drop to upload",
+    "dropDescription": "You can upload multiple files at once",
+    "uploading": "Uploading…",
+    "confirm": "Upload",
+    "cancel": "Cancel"
+  },
+  "dialogs": {
+    "close": "Close dialog",
+    "rename": {
+      "title": "Rename file",
+      "current": "Current name",
+      "next": "New name",
+      "placeholder": "Enter a new file name",
+      "working": "Renaming…",
+      "confirm": "Rename"
+    },
+    "move": {
+      "title": "Move file",
+      "target": "Target folder",
+      "placeholder": "Enter a path or move to the root",
+      "working": "Moving…",
+      "confirm": "Move"
+    },
+    "batchMove": {
+      "title": "Move {count} files",
+      "working": "Moving…",
+      "confirm": "Move"
+    },
+    "delete": {
+      "title": "Delete file?",
+      "description": "“{name}” will be permanently deleted.",
+      "confirm": "Delete",
+      "working": "Deleting…"
+    },
+    "batchDelete": {
+      "title": "Delete {count} files?",
+      "description": "The selected files will be permanently deleted.",
+      "confirm": "Delete",
+      "working": "Deleting…"
+    },
+    "preview": {
+      "title": "Preview {name}",
+      "copyRaw": "Copy link",
+      "copyMarkdown": "Copy Markdown"
+    },
+    "cancel": "Cancel"
+  },
+  "auth": {
+    "title": "R2 Dashboard",
+    "description": "Sign in to manage your files",
+    "github": "Continue with GitHub",
+    "unauthorized": "This GitHub account does not have access",
+    "failed": "Sign-in failed. Try again.",
+    "logout": "Sign out",
+    "githubUser": "GitHub user"
+  },
+  "notifications": {
+    "uploadInProgress": "An upload is already in progress",
+    "duplicateReplaced": "Replaced {count} files with the same name",
+    "uploadSuccess": "Upload complete",
+    "folderUploadUnsupported": "Folder uploads are not supported",
+    "deleteSuccess": "File deleted",
+    "moveFailed": "The file could not be moved",
+    "moveSuccess": "File moved",
+    "nameRequired": "Enter a file name",
+    "nameUnchanged": "Enter a different file name",
+    "nameInvalid": "File names cannot contain / or \\ characters",
+    "renameSuccess": "File renamed",
+    "processed": "Processed {count} files",
+    "partial": "{completed} completed and {failed} failed",
+    "refreshFailed": "The list could not be refreshed and may be out of date",
+    "copyMarkdownSuccess": "Markdown link copied",
+    "copyLinkSuccess": "Link copied",
+    "copyFailed": "The link could not be copied"
+  },
+  "errors": {
+    "storageUnavailable": "Storage is temporarily unavailable",
+    "file": {
+      "INVALID_PATH": "The file path is invalid",
+      "INVALID_FILE": "The file is invalid",
+      "SOURCE_NOT_FOUND": "The source file no longer exists",
+      "DESTINATION_EXISTS": "A file already exists at the destination",
+      "SOURCE_EQUALS_DESTINATION": "The source and destination are the same",
+      "STORAGE_READ_FAILED": "Storage is temporarily unavailable",
+      "STORAGE_WRITE_FAILED": "The file could not be written",
+      "STORAGE_DELETE_FAILED": "The file could not be deleted",
+      "MOVE_PARTIALLY_COMPLETED": "The file was copied, but the original could not be removed: {source} → {destination}",
+      "UNAUTHORIZED": "Sign in to continue",
+      "FORBIDDEN": "You do not have permission to perform this action"
+    },
+    "partial": {
+      "title": "Some operations did not complete",
+      "description": "{completed} completed and {failed} failed."
+    }
+  }
+}

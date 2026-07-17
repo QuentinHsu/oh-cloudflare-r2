@@ -15,6 +15,11 @@ export function useFolderBrowser(folders: MaybeRefOrGetter<readonly string[]>) {
     currentPath.value = index === -1 ? "" : pathParts.value.slice(0, index + 1).join("/");
   }
 
+  function navigateToDirectory(path: string) {
+    currentPath.value = path;
+    expandPathParents(path);
+  }
+
   function toggleFolder(path: string) {
     const index = expandedFolders.value.indexOf(path);
     if (index === -1) expandedFolders.value.push(path);
@@ -34,6 +39,7 @@ export function useFolderBrowser(folders: MaybeRefOrGetter<readonly string[]>) {
     folderTree,
     navigateToFolder,
     navigateToPath,
+    navigateToDirectory,
     toggleFolder,
     expandPathParents,
   };

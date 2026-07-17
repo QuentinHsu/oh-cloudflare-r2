@@ -9,6 +9,7 @@ interface FilePreviewDependencies {
     success: (message: string) => void;
     error: (message: string) => void;
   };
+  translate: (key: string) => string;
 }
 
 function getFileUrl(pathname: string) {
@@ -32,9 +33,11 @@ export function useFilePreview(dependencies: FilePreviewDependencies) {
   async function copyUrl(pathname: string, type: FileLinkType) {
     try {
       await dependencies.writeClipboard(buildFileLink(dependencies.getOrigin(), pathname, type));
-      dependencies.notify.success(type === "markdown" ? "Markdown 链接已复制" : "链接已复制");
+      const messageKey =
+        type === "markdown" ? "notifications.copyMarkdownSuccess" : "notifications.copyLinkSuccess";
+      dependencies.notify.success(dependencies.translate(messageKey));
     } catch {
-      dependencies.notify.error("复制失败");
+      dependencies.notify.error(dependencies.translate("notifications.copyFailed"));
     }
   }
 

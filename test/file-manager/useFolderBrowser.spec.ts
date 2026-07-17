@@ -28,4 +28,13 @@ describe("useFolderBrowser", () => {
     browser.toggleFolder("photos/2026");
     expect(browser.expandedFolders.value).toEqual(["photos", "photos/2026/events"]);
   });
+
+  it("navigates directly to a sidebar path and expands its parents", () => {
+    const browser = useFolderBrowser(ref(["images/campaign/launch", "docs"]));
+
+    browser.navigateToDirectory("images/campaign");
+
+    expect(browser.currentPath.value).toBe("images/campaign");
+    expect(browser.expandedFolders.value).toEqual(["images", "images/campaign"]);
+  });
 });

@@ -2,13 +2,13 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ref } from "vue";
 import type { FileApi } from "../../app/composables/file-manager/useFileApi";
 import { useBatchFileOperations } from "../../app/composables/file-manager/useBatchFileOperations";
+import { createTestTranslate } from "../utils/translate";
 
 describe("useBatchFileOperations", () => {
   const batch = vi.fn<FileApi["batch"]>();
   const refreshFiles = vi.fn<() => Promise<unknown>>();
   const refreshFolders = vi.fn<() => Promise<unknown>>();
   const replaceSelection = vi.fn<(paths: Iterable<string>) => void>();
-  const confirmAction = vi.fn<(message: string) => boolean>();
   const expandPathParents = vi.fn<(path: string) => void>();
   const notify = {
     success: vi.fn<(message: string) => void>(),
@@ -25,9 +25,9 @@ describe("useBatchFileOperations", () => {
       replaceSelection,
       refreshFiles,
       refreshFolders,
-      confirmAction,
       expandPathParents,
       notify,
+      translate: createTestTranslate(),
     });
 
   beforeEach(() => {
@@ -35,7 +35,26 @@ describe("useBatchFileOperations", () => {
     selectedFiles.value = new Set(["a.txt", "b.txt"]);
     refreshFiles.mockResolvedValue(undefined);
     refreshFolders.mockResolvedValue(undefined);
-    confirmAction.mockReturnValue(true);
+  });
+
+  it("waits for controlled confirmation before batch deletion", async () => {
+    batch.mockResolvedValueOnce({
+      results: [
+        { operation: { action: "delete", path: "a.txt" }, ok: true },
+        { operation: { action: "delete", path: "b.txt" }, ok: true },
+      ],
+    });
+    const state = createBatch();
+
+    state.openBatchDeleteDialog();
+
+    expect(state.showBatchDeleteDialog.value).toBe(true);
+    expect(batch).not.toHaveBeenCalled();
+
+    await state.confirmBatchDelete();
+
+    expect(batch).toHaveBeenCalledOnce();
+    expect(state.showBatchDeleteDialog.value).toBe(false);
   });
 
   it("keeps only failed paths after partial batch deletion", async () => {
@@ -54,7 +73,8 @@ describe("useBatchFileOperations", () => {
       ],
     });
     const state = createBatch();
-    await state.batchDelete();
+    state.openBatchDeleteDialog();
+    await state.confirmBatchDelete();
 
     expect(batch).toHaveBeenCalledTimes(1);
     expect(replaceSelection).toHaveBeenCalledWith(["b.txt"]);

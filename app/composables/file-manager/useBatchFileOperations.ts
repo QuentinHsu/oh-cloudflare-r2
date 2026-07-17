@@ -1,9 +1,13 @@
 import { ref, type Ref } from "vue";
 import type { BatchResult, FileOperation } from "../../../shared/types/files";
 import { buildDestinationPath, getFileName } from "../../components/file-manager/utils";
-import { refreshFileIndexes, type FileOperationNotify } from "./fileOperationUtils";
+import {
+  refreshFileIndexes,
+  type FileOperationNotify,
+  type FileOperationTranslate,
+} from "./fileOperationUtils";
 import type { FileApi } from "./useFileApi";
-import { readFileApiError } from "./useFileApi";
+import { formatFileApiError } from "./useFileApi";
 
 interface BatchFileOperationsDependencies {
   api: Pick<FileApi, "batch">;
@@ -12,9 +16,9 @@ interface BatchFileOperationsDependencies {
   replaceSelection: (paths: Iterable<string>) => void;
   refreshFiles: () => Promise<unknown>;
   refreshFolders: () => Promise<unknown>;
-  confirmAction: (message: string) => boolean;
   expandPathParents: (path: string) => void;
   notify: FileOperationNotify;
+  translate: FileOperationTranslate;
 }
 
 function getOperationPath(operation: FileOperation) {
@@ -24,6 +28,7 @@ function getOperationPath(operation: FileOperation) {
 export function useBatchFileOperations(dependencies: BatchFileOperationsDependencies) {
   const isBatchMoving = ref(false);
   const isBatchDeleting = ref(false);
+  const showBatchDeleteDialog = ref(false);
   const showBatchMoveDialog = ref(false);
   const batchMoveTargetPath = ref("");
 
@@ -34,18 +39,23 @@ export function useBatchFileOperations(dependencies: BatchFileOperationsDependen
     dependencies.replaceSelection(failedPaths);
 
     if (!failedResults.length) {
-      dependencies.notify.success(`成功处理 ${successCount} 个文件`);
+      dependencies.notify.success(
+        dependencies.translate("notifications.processed", { count: successCount }),
+      );
     } else {
-      dependencies.notify.warning(`操作完成：${successCount} 成功，${failedResults.length} 失败`);
+      dependencies.notify.warning(
+        dependencies.translate("notifications.partial", {
+          completed: successCount,
+          failed: failedResults.length,
+        }),
+      );
       for (const item of failedResults) {
         if (
           item.error.code === "MOVE_PARTIALLY_COMPLETED" &&
           typeof item.error.details?.source === "string" &&
           typeof item.error.details.destination === "string"
         ) {
-          dependencies.notify.error(
-            `${item.error.message}：${item.error.details.source} → ${item.error.details.destination}`,
-          );
+          dependencies.notify.error(formatFileApiError(item.error, dependencies.translate));
         }
       }
     }
@@ -58,22 +68,38 @@ export function useBatchFileOperations(dependencies: BatchFileOperationsDependen
         dependencies.refreshFiles,
         dependencies.refreshFolders,
         dependencies.notify,
+        dependencies.translate,
       );
     }
     return successCount;
   }
 
-  async function batchDelete() {
+  function openBatchDeleteDialog() {
+    if (!dependencies.selectedFiles.value.size) return;
+    showBatchDeleteDialog.value = true;
+  }
+
+  function closeBatchDeleteDialog() {
+    if (isBatchDeleting.value) return;
+    showBatchDeleteDialog.value = false;
+  }
+
+  function handleBatchDeleteDialogOpenChange(open: boolean) {
+    if (open) showBatchDeleteDialog.value = true;
+    else closeBatchDeleteDialog();
+  }
+
+  async function confirmBatchDelete() {
     const paths = [...dependencies.selectedFiles.value];
     if (!paths.length) return;
-    if (!dependencies.confirmAction(`确定要删除选中的 ${paths.length} 个文件吗？`)) return;
 
     isBatchDeleting.value = true;
     try {
       const operations: FileOperation[] = paths.map((path) => ({ action: "delete", path }));
       await handleResolvedBatch(await dependencies.api.batch(operations));
+      showBatchDeleteDialog.value = false;
     } catch (error: unknown) {
-      dependencies.notify.error(readFileApiError(error).message);
+      dependencies.notify.error(formatFileApiError(error, dependencies.translate));
     } finally {
       isBatchDeleting.value = false;
     }
@@ -111,7 +137,7 @@ export function useBatchFileOperations(dependencies: BatchFileOperationsDependen
       const successCount = await handleResolvedBatch(await dependencies.api.batch(operations));
       if (successCount > 0) closeBatchMoveDialog();
     } catch (error: unknown) {
-      dependencies.notify.error(readFileApiError(error).message);
+      dependencies.notify.error(formatFileApiError(error, dependencies.translate));
     } finally {
       isBatchMoving.value = false;
     }
@@ -120,9 +146,13 @@ export function useBatchFileOperations(dependencies: BatchFileOperationsDependen
   return {
     isBatchMoving,
     isBatchDeleting,
+    showBatchDeleteDialog,
     showBatchMoveDialog,
     batchMoveTargetPath,
-    batchDelete,
+    openBatchDeleteDialog,
+    closeBatchDeleteDialog,
+    handleBatchDeleteDialogOpenChange,
+    confirmBatchDelete,
     openBatchMoveDialog,
     closeBatchMoveDialog,
     handleBatchMoveDialogOpenChange,

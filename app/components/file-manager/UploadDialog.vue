@@ -20,6 +20,8 @@ const emit = defineEmits<{
   (e: "cancel"): void;
 }>();
 
+const { t } = useI18n();
+
 function onOpenChange(value: boolean) {
   emit("update:open", value);
 }
@@ -33,18 +35,20 @@ function onPathInput(event: Event) {
   <Dialog :open="props.open" @update:open="onOpenChange">
     <DialogContent class="sm:max-w-sm">
       <DialogHeader>
-        <DialogTitle>上传 {{ props.pendingCount || 0 }} 个文件</DialogTitle>
+        <DialogTitle>{{ t("upload.title", { count: props.pendingCount || 0 }) }}</DialogTitle>
+        <DialogDescription>{{ t("upload.target") }}</DialogDescription>
       </DialogHeader>
 
       <div class="space-y-3 py-2">
-        <div class="flex items-center gap-2 px-3 py-2.5 bg-muted/50 rounded-lg border">
-          <FolderOpen class="h-4 w-4 text-muted-foreground shrink-0" />
+        <div class="flex items-center gap-2 rounded-lg border bg-muted/50 px-3 py-2.5">
+          <FolderOpen class="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
           <span class="text-muted-foreground">/</span>
           <input
             :value="props.uploadPath"
             type="text"
-            class="flex-1 bg-transparent outline-none text-sm placeholder:text-muted-foreground"
-            placeholder="输入路径或留空上传到根目录"
+            class="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+            :aria-label="t('upload.target')"
+            :placeholder="t('upload.pathPlaceholder')"
             @input="onPathInput"
           />
         </div>
@@ -53,14 +57,15 @@ function onPathInput(event: Event) {
           v-if="props.folderTree.length"
           class="max-h-40 overflow-y-auto rounded-lg border bg-muted/30 p-2"
         >
-          <div
-            class="flex items-center gap-2 px-2 py-1.5 rounded cursor-pointer hover:bg-muted text-sm"
+          <button
+            type="button"
+            class="flex min-h-11 w-full items-center gap-2 rounded px-2 text-left text-sm hover:bg-muted md:min-h-9"
             :class="{ 'bg-muted': props.uploadPath === '' }"
             @click="emit('select-folder', '')"
           >
-            <Home class="h-3.5 w-3.5 text-muted-foreground" />
-            <span>根目录</span>
-          </div>
+            <Home class="size-3.5 text-muted-foreground" aria-hidden="true" />
+            <span>{{ t("sidebar.root") }}</span>
+          </button>
           <FolderTreeNode
             v-for="node in props.folderTree"
             :key="node.path"
@@ -74,9 +79,16 @@ function onPathInput(event: Event) {
       </div>
 
       <DialogFooter>
-        <Button variant="ghost" size="sm" @click="emit('cancel')">取消</Button>
-        <Button size="sm" @click="emit('confirm')" :disabled="props.isUploading">
-          {{ props.isUploading ? "上传中..." : "上传" }}
+        <Button
+          variant="ghost"
+          class="min-h-11 md:min-h-9"
+          :disabled="props.isUploading"
+          @click="emit('cancel')"
+        >
+          {{ t("upload.cancel") }}
+        </Button>
+        <Button class="min-h-11 md:min-h-9" :disabled="props.isUploading" @click="emit('confirm')">
+          {{ props.isUploading ? t("upload.uploading") : t("upload.confirm") }}
         </Button>
       </DialogFooter>
     </DialogContent>

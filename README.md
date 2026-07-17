@@ -7,12 +7,15 @@
 ## 功能一览
 
 - 上传、移动、删除 R2 文件
-- 虚拟文件夹树 / 面包屑导航
-- 文件预览（含图片）、批量操作
+- 基于 shadcn-vue Dashboard 的响应式文件工作区
+- 可折叠文件夹侧边栏、面包屑导航与当前目录统计
+- 可发现的文件表格、图片预览与批量操作
 - URL 复制（原始链接 & Markdown）
 - GitHub OAuth 登录与会话保护
 - 域名白名单与通配符 Origin 校验
-- 深浅色主题、响应式 UI、Toast 提示
+- 浅色、深色、跟随系统三种主题
+- 简体中文与英文切换，首次访问跟随浏览器且手动选择持久化
+- 移动端抽屉导航、44px 触摸目标与 Toast 操作反馈
 
 ## 推荐使用方式：作为模板 / 子仓库嵌入
 
@@ -184,8 +187,9 @@ server/
 - Nuxt 4.4.8、Vue 3
 - NuxtHub Blob (Cloudflare R2)
 - nuxt-auth-utils（GitHub OAuth）
-- shadcn-vue + Radix Vue + Tailwind CSS 4
-- Lucide Vue Next、vue-sonner
+- shadcn-vue + Reka UI + Tailwind CSS 4
+- @nuxtjs/i18n、@nuxtjs/color-mode
+- Lucide Vue、vue-sonner
 
 - CI / 生产的密钥请在 Cloudflare Dashboard 或 CI Secret 管理，`.env` 仅限本地开发。
 

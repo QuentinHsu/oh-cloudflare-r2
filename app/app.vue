@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { Toaster } from "~/components/ui/sonner";
 
+const { t } = useI18n();
+
 useSeoMeta({
-  title: "R2 Dashboard",
-  description: "现代化的 Cloudflare R2 文件管理面板",
+  title: () => t("app.name"),
+  description: () => t("app.description"),
 });
 
 const colorMode = useColorMode();

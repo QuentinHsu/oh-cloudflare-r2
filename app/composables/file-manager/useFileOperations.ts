@@ -5,29 +5,21 @@ import {
   getFileName,
   getParentDirectory,
 } from "../../components/file-manager/utils";
-import { refreshFileIndexes, type FileOperationNotify } from "./fileOperationUtils";
+import {
+  refreshFileIndexes,
+  type FileOperationNotify,
+  type FileOperationTranslate,
+} from "./fileOperationUtils";
 import type { FileApi } from "./useFileApi";
-import { readFileApiError } from "./useFileApi";
+import { formatFileApiError, readFileApiError } from "./useFileApi";
 
 interface FileOperationsDependencies {
   api: Pick<FileApi, "execute">;
   refreshFiles: () => Promise<unknown>;
   refreshFolders: () => Promise<unknown>;
-  confirmAction: (message: string) => boolean;
   expandPathParents: (path: string) => void;
   notify: FileOperationNotify;
-}
-
-function formatOperationError(error: unknown) {
-  const failure = readFileApiError(error);
-  if (
-    failure.code === "MOVE_PARTIALLY_COMPLETED" &&
-    typeof failure.details?.source === "string" &&
-    typeof failure.details.destination === "string"
-  ) {
-    return `${failure.message}：${failure.details.source} → ${failure.details.destination}`;
-  }
-  return failure.message;
+  translate: FileOperationTranslate;
 }
 
 export function useFileOperations(dependencies: FileOperationsDependencies) {
@@ -39,19 +31,45 @@ export function useFileOperations(dependencies: FileOperationsDependencies) {
   const renameFile = ref<BlobFile | null>(null);
   const newFileName = ref("");
   const isRenaming = ref(false);
+  const showDeleteDialog = ref(false);
+  const deletePath = ref("");
+  const isDeleting = ref(false);
 
-  async function deleteFile(pathname: string) {
-    if (!dependencies.confirmAction("确定要删除这个文件吗？")) return;
+  function openDeleteDialog(pathname: string) {
+    deletePath.value = pathname;
+    showDeleteDialog.value = true;
+  }
+
+  function closeDeleteDialog() {
+    if (isDeleting.value) return;
+    showDeleteDialog.value = false;
+    deletePath.value = "";
+  }
+
+  function handleDeleteDialogOpenChange(open: boolean) {
+    if (open) showDeleteDialog.value = true;
+    else closeDeleteDialog();
+  }
+
+  async function confirmDelete() {
+    if (!deletePath.value) return;
+    const pathname = deletePath.value;
+    isDeleting.value = true;
     try {
       await dependencies.api.execute({ action: "delete", path: pathname });
-      dependencies.notify.success("删除成功");
+      dependencies.notify.success(dependencies.translate("notifications.deleteSuccess"));
       await refreshFileIndexes(
         dependencies.refreshFiles,
         dependencies.refreshFolders,
         dependencies.notify,
+        dependencies.translate,
       );
+      showDeleteDialog.value = false;
+      deletePath.value = "";
     } catch (error: unknown) {
-      dependencies.notify.error(formatOperationError(error));
+      dependencies.notify.error(formatFileApiError(error, dependencies.translate));
+    } finally {
+      isDeleting.value = false;
     }
   }
 
@@ -77,7 +95,7 @@ export function useFileOperations(dependencies: FileOperationsDependencies) {
     if (!moveFile.value) return;
     const filename = getFileName(moveFile.value.pathname);
     if (!filename) {
-      dependencies.notify.error("移动失败");
+      dependencies.notify.error(dependencies.translate("notifications.moveFailed"));
       return;
     }
 
@@ -88,20 +106,22 @@ export function useFileOperations(dependencies: FileOperationsDependencies) {
         source: moveFile.value.pathname,
         destination: buildDestinationPath(moveTargetPath.value, filename),
       });
-      dependencies.notify.success("移动成功");
+      dependencies.notify.success(dependencies.translate("notifications.moveSuccess"));
       closeMoveDialog();
       await refreshFileIndexes(
         dependencies.refreshFiles,
         dependencies.refreshFolders,
         dependencies.notify,
+        dependencies.translate,
       );
     } catch (error: unknown) {
-      dependencies.notify.error(formatOperationError(error));
+      dependencies.notify.error(formatFileApiError(error, dependencies.translate));
       if (readFileApiError(error).code === "MOVE_PARTIALLY_COMPLETED") {
         await refreshFileIndexes(
           dependencies.refreshFiles,
           dependencies.refreshFolders,
           dependencies.notify,
+          dependencies.translate,
         );
       }
     } finally {
@@ -130,15 +150,15 @@ export function useFileOperations(dependencies: FileOperationsDependencies) {
     if (!renameFile.value) return;
     const trimmedName = newFileName.value.trim();
     if (!trimmedName) {
-      dependencies.notify.error("文件名不能为空");
+      dependencies.notify.error(dependencies.translate("notifications.nameRequired"));
       return;
     }
     if (trimmedName === getFileName(renameFile.value.pathname)) {
-      dependencies.notify.error("文件名未改变");
+      dependencies.notify.error(dependencies.translate("notifications.nameUnchanged"));
       return;
     }
     if (/[/\\]/.test(trimmedName)) {
-      dependencies.notify.error("文件名不能包含 / 或 \\ 字符");
+      dependencies.notify.error(dependencies.translate("notifications.nameInvalid"));
       return;
     }
 
@@ -152,20 +172,22 @@ export function useFileOperations(dependencies: FileOperationsDependencies) {
           trimmedName,
         ),
       });
-      dependencies.notify.success("重命名成功");
+      dependencies.notify.success(dependencies.translate("notifications.renameSuccess"));
       closeRenameDialog();
       await refreshFileIndexes(
         dependencies.refreshFiles,
         dependencies.refreshFolders,
         dependencies.notify,
+        dependencies.translate,
       );
     } catch (error: unknown) {
-      dependencies.notify.error(formatOperationError(error));
+      dependencies.notify.error(formatFileApiError(error, dependencies.translate));
       if (readFileApiError(error).code === "MOVE_PARTIALLY_COMPLETED") {
         await refreshFileIndexes(
           dependencies.refreshFiles,
           dependencies.refreshFolders,
           dependencies.notify,
+          dependencies.translate,
         );
       }
     } finally {
@@ -182,7 +204,13 @@ export function useFileOperations(dependencies: FileOperationsDependencies) {
     renameFile,
     newFileName,
     isRenaming,
-    deleteFile,
+    showDeleteDialog,
+    deletePath,
+    isDeleting,
+    openDeleteDialog,
+    closeDeleteDialog,
+    handleDeleteDialogOpenChange,
+    confirmDelete,
     openMoveDialog,
     closeMoveDialog,
     handleMoveDialogOpenChange,

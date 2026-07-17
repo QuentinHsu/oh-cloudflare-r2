@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { BlobFile } from "../../app/components/file-manager/types";
 import type { FileApi } from "../../app/composables/file-manager/useFileApi";
 import { useFileOperations } from "../../app/composables/file-manager/useFileOperations";
+import { createTestTranslate } from "../utils/translate";
 
 const file: BlobFile = {
   pathname: "photos/a.txt",
@@ -14,7 +15,6 @@ describe("useFileOperations", () => {
   const execute = vi.fn<FileApi["execute"]>();
   const refreshFiles = vi.fn<() => Promise<unknown>>();
   const refreshFolders = vi.fn<() => Promise<unknown>>();
-  const confirmAction = vi.fn<(message: string) => boolean>();
   const expandPathParents = vi.fn<(path: string) => void>();
   const notify = {
     success: vi.fn<(message: string) => void>(),
@@ -27,9 +27,9 @@ describe("useFileOperations", () => {
       api: { execute },
       refreshFiles,
       refreshFolders,
-      confirmAction,
       expandPathParents,
       notify,
+      translate: createTestTranslate(),
     });
 
   beforeEach(() => {
@@ -37,7 +37,21 @@ describe("useFileOperations", () => {
     execute.mockResolvedValue({ operation: { action: "delete", path: "a.txt" } });
     refreshFiles.mockResolvedValue(undefined);
     refreshFolders.mockResolvedValue(undefined);
-    confirmAction.mockReturnValue(true);
+  });
+
+  it("waits for controlled confirmation before deleting", async () => {
+    const state = createOperations();
+
+    state.openDeleteDialog("photos/a.txt");
+
+    expect(state.showDeleteDialog.value).toBe(true);
+    expect(state.deletePath.value).toBe("photos/a.txt");
+    expect(execute).not.toHaveBeenCalled();
+
+    await state.confirmDelete();
+
+    expect(execute).toHaveBeenCalledWith({ action: "delete", path: "photos/a.txt" });
+    expect(state.showDeleteDialog.value).toBe(false);
   });
 
   it("moves a file through the operation API", async () => {

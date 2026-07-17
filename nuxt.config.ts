@@ -10,7 +10,13 @@ export default defineNuxtConfig({
     allowedOrigins: "",
   },
 
-  modules: ["@nuxthub/core", "@nuxtjs/color-mode", "nuxt-auth-utils", "shadcn-nuxt"],
+  modules: [
+    "@nuxthub/core",
+    "@nuxtjs/color-mode",
+    "@nuxtjs/i18n",
+    "nuxt-auth-utils",
+    "shadcn-nuxt",
+  ],
 
   devtools: { enabled: true },
   compatibilityDate: "2025-12-11",
@@ -25,6 +31,27 @@ export default defineNuxtConfig({
     classSuffix: "",
     preference: "system",
     fallback: "light",
+  },
+
+  i18n: {
+    strategy: "no_prefix",
+    defaultLocale: "en",
+    langDir: "locales",
+    locales: [
+      { code: "en", language: "en", name: "English", file: "en.json" },
+      {
+        code: "zh-CN",
+        language: "zh-CN",
+        name: "简体中文",
+        file: "zh-CN.json",
+      },
+    ],
+    detectBrowserLanguage: {
+      useCookie: true,
+      cookieKey: "r2_locale",
+      fallbackLocale: "en",
+      redirectOn: "root",
+    },
   },
 
   shadcn: {

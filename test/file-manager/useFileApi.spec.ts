@@ -1,5 +1,10 @@
 import { describe, expect, it, vi } from "vitest";
-import { createFileApi, readFileApiError } from "../../app/composables/file-manager/useFileApi";
+import {
+  createFileApi,
+  formatFileApiError,
+  readFileApiError,
+} from "../../app/composables/file-manager/useFileApi";
+import { createTestTranslate } from "../utils/translate";
 
 describe("file API", () => {
   it("returns successful data", async () => {
@@ -42,7 +47,27 @@ describe("file API", () => {
     ).toMatchObject({ code: "FORBIDDEN" });
     expect(readFileApiError(new Error("private"))).toEqual({
       code: "STORAGE_READ_FAILED",
-      message: "存储服务暂时不可用",
+      message: "Storage is temporarily unavailable",
     });
+  });
+
+  it("localizes stable error codes instead of exposing server copy", () => {
+    expect(
+      formatFileApiError(
+        { code: "DESTINATION_EXISTS", message: "目标文件已存在" },
+        createTestTranslate("en"),
+      ),
+    ).toBe("A file already exists at the destination");
+
+    expect(
+      formatFileApiError(
+        {
+          code: "MOVE_PARTIALLY_COMPLETED",
+          message: "目标副本已创建，但源文件删除失败",
+          details: { source: "a.txt", destination: "archive/a.txt" },
+        },
+        createTestTranslate("en"),
+      ),
+    ).toBe("The file was copied, but the original could not be removed: a.txt → archive/a.txt");
   });
 });

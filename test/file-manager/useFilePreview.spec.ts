@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { useFilePreview } from "../../app/composables/file-manager/useFilePreview";
 import type { BlobFile } from "../../app/components/file-manager/types";
+import { createTestTranslate } from "../utils/translate";
 
 const file: BlobFile = {
   pathname: "photos/cat.png",
@@ -18,6 +19,7 @@ describe("useFilePreview", () => {
       getOrigin: () => "https://cdn.example.com",
       writeClipboard: vi.fn<WriteClipboard>(),
       notify: { success: vi.fn<Notify>(), error: vi.fn<Notify>() },
+      translate: createTestTranslate(),
     });
 
     preview.openPreview(file);
@@ -36,6 +38,7 @@ describe("useFilePreview", () => {
       getOrigin: () => "https://cdn.example.com",
       writeClipboard,
       notify,
+      translate: createTestTranslate(),
     });
 
     const pending = preview.copyUrl(file.pathname, "raw");
@@ -51,6 +54,7 @@ describe("useFilePreview", () => {
       getOrigin: () => "https://cdn.example.com",
       writeClipboard: vi.fn<WriteClipboard>().mockRejectedValue(new Error("denied")),
       notify,
+      translate: createTestTranslate(),
     });
 
     await expect(preview.copyUrl(file.pathname, "markdown")).resolves.toBeUndefined();

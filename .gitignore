@@ -8,6 +8,7 @@ dist
 .wrangler
 .vercel
 .worktrees
+.superpowers
 
 # Node dependencies
 node_modules
