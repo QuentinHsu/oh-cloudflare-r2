@@ -44,7 +44,7 @@ const { t } = useI18n();
             <BreadcrumbLink v-else as-child>
               <button
                 type="button"
-                class="flex min-h-11 items-center px-2 md:min-h-8"
+                class="flex min-h-11 min-w-11 items-center justify-center px-2 md:min-h-8 md:min-w-8"
                 :data-path-index="index"
                 @click="emit('navigate', index)"
               >

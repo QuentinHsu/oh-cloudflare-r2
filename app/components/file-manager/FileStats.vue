@@ -17,7 +17,7 @@ const { t } = useI18n();
     <Card data-stat-card="files">
       <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle class="text-sm font-medium">{{ t("stats.files") }}</CardTitle>
-        <FileIcon class="size-4 text-muted-foreground" />
+        <FileIcon class="size-4 text-muted-foreground" aria-hidden="true" />
       </CardHeader>
       <CardContent>
         <p class="text-2xl font-semibold tracking-tight">{{ props.summary.fileCount }}</p>
@@ -30,7 +30,7 @@ const { t } = useI18n();
     <Card data-stat-card="storage">
       <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle class="text-sm font-medium">{{ t("stats.storage") }}</CardTitle>
-        <HardDrive class="size-4 text-muted-foreground" />
+        <HardDrive class="size-4 text-muted-foreground" aria-hidden="true" />
       </CardHeader>
       <CardContent>
         <p class="text-2xl font-semibold tracking-tight">
@@ -42,7 +42,7 @@ const { t } = useI18n();
     <Card data-stat-card="folders">
       <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle class="text-sm font-medium">{{ t("stats.folders") }}</CardTitle>
-        <Folder class="size-4 text-muted-foreground" />
+        <Folder class="size-4 text-muted-foreground" aria-hidden="true" />
       </CardHeader>
       <CardContent>
         <p class="text-2xl font-semibold tracking-tight">{{ props.summary.folderCount }}</p>
@@ -52,7 +52,7 @@ const { t } = useI18n();
     <Card data-stat-card="latest">
       <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle class="text-sm font-medium">{{ t("stats.latest") }}</CardTitle>
-        <Clock3 class="size-4 text-muted-foreground" />
+        <Clock3 class="size-4 text-muted-foreground" aria-hidden="true" />
       </CardHeader>
       <CardContent>
         <template v-if="props.summary.latestFile">
