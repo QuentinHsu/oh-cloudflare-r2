@@ -142,7 +142,7 @@ function updateSortField(value: unknown) {
             <TableHead data-column="updatedAt" class="hidden md:table-cell">
               {{ t("files.columns.updatedAt") }}
             </TableHead>
-            <TableHead class="w-14" />
+            <TableHead class="w-[8.75rem] md:w-[7.25rem]" />
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -214,61 +214,80 @@ function updateSortField(value: unknown) {
             <TableCell data-column="updatedAt" class="hidden text-muted-foreground md:table-cell">
               {{ props.formatDate(file.uploadedAt) }}
             </TableCell>
-            <TableCell>
-              <DropdownMenu>
-                <DropdownMenuTrigger as-child>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    class="size-11 md:size-9"
-                    :aria-label="t('files.actions.menu', { name: getFileName(file.pathname) })"
-                  >
-                    <MoreHorizontal class="size-4" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem
-                    v-if="isImage(file)"
-                    data-action="preview"
-                    @click="emit('open-preview', file)"
-                  >
-                    <Image class="size-4" />
-                    {{ t("files.actions.preview") }}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    data-action="copy-raw"
-                    @click="emit('copy-url', { pathname: file.pathname, type: 'raw' })"
-                  >
-                    <Link class="size-4" />
-                    {{ t("files.actions.copyRaw") }}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    v-if="isImage(file)"
-                    data-action="copy-markdown"
-                    @click="emit('copy-url', { pathname: file.pathname, type: 'markdown' })"
-                  >
-                    <Image class="size-4" />
-                    {{ t("files.actions.copyMarkdown") }}
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem data-action="rename" @click="emit('rename', file)">
-                    <Pencil class="size-4" />
-                    {{ t("files.actions.rename") }}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem data-action="move" @click="emit('move', file)">
-                    <Move class="size-4" />
-                    {{ t("files.actions.move") }}
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    data-action="delete"
-                    class="text-destructive focus:text-destructive"
-                    @click="emit('delete', file.pathname)"
-                  >
-                    <Trash2 class="size-4" />
-                    {{ t("files.actions.delete") }}
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+            <TableCell class="w-[8.75rem] md:w-[7.25rem]">
+              <div data-direct-actions class="flex items-center justify-end gap-1">
+                <Tooltip>
+                  <TooltipTrigger as-child>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      class="size-11 md:size-9"
+                      data-action="copy-raw"
+                      :aria-label="t('files.actions.copyRaw')"
+                      @click="emit('copy-url', { pathname: file.pathname, type: 'raw' })"
+                    >
+                      <Link class="size-4" aria-hidden="true" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>{{ t("files.actions.copyRaw") }}</TooltipContent>
+                </Tooltip>
+
+                <Tooltip v-if="isImage(file)">
+                  <TooltipTrigger as-child>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      class="size-11 md:size-9"
+                      data-action="copy-markdown"
+                      :aria-label="t('files.actions.copyMarkdown')"
+                      @click="emit('copy-url', { pathname: file.pathname, type: 'markdown' })"
+                    >
+                      <Image class="size-4" aria-hidden="true" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>{{ t("files.actions.copyMarkdown") }}</TooltipContent>
+                </Tooltip>
+
+                <DropdownMenu>
+                  <DropdownMenuTrigger as-child>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      class="size-11 md:size-9"
+                      :aria-label="t('files.actions.menu', { name: getFileName(file.pathname) })"
+                    >
+                      <MoreHorizontal class="size-4" aria-hidden="true" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent data-overflow-actions align="end">
+                    <DropdownMenuItem
+                      v-if="isImage(file)"
+                      data-action="preview"
+                      @click="emit('open-preview', file)"
+                    >
+                      <Image class="size-4" />
+                      {{ t("files.actions.preview") }}
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem data-action="rename" @click="emit('rename', file)">
+                      <Pencil class="size-4" />
+                      {{ t("files.actions.rename") }}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem data-action="move" @click="emit('move', file)">
+                      <Move class="size-4" />
+                      {{ t("files.actions.move") }}
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      data-action="delete"
+                      class="text-destructive focus:text-destructive"
+                      @click="emit('delete', file.pathname)"
+                    >
+                      <Trash2 class="size-4" />
+                      {{ t("files.actions.delete") }}
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
             </TableCell>
           </TableRow>
         </TableBody>

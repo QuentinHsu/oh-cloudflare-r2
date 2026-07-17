@@ -102,14 +102,18 @@ function mountTable(overrides: Record<string, unknown> = {}) {
 describe("FileTable", () => {
   it("keeps row actions visible and emits every applicable image action", async () => {
     const wrapper = mountTable({ folders: [] });
-    expect(wrapper.get('[aria-label="Open actions for cat.png"]').isVisible()).toBe(true);
+    const row = wrapper.get(`[data-file="${imageFile.pathname}"]`);
+    const directActions = row.get("[data-direct-actions]");
+    expect(row.get('[aria-label="Open actions for cat.png"]').isVisible()).toBe(true);
 
-    await wrapper.get('[data-action="copy-raw"]').trigger("click");
-    await wrapper.get('[data-action="copy-markdown"]').trigger("click");
+    await directActions.get('[data-action="copy-raw"]').trigger("click");
+    await directActions.get('[data-action="copy-markdown"]').trigger("click");
     await wrapper.get('[data-action="rename"]').trigger("click");
     await wrapper.get('[data-action="move"]').trigger("click");
     await wrapper.get('[data-action="delete"]').trigger("click");
 
+    expect(row.find('[data-overflow-actions] [data-action="copy-raw"]').exists()).toBe(false);
+    expect(row.find('[data-overflow-actions] [data-action="copy-markdown"]').exists()).toBe(false);
     expect(wrapper.emitted("copy-url")).toEqual([
       [{ pathname: imageFile.pathname, type: "raw" }],
       [{ pathname: imageFile.pathname, type: "markdown" }],
@@ -117,6 +121,15 @@ describe("FileTable", () => {
     expect(wrapper.emitted("rename")?.[0]).toEqual([imageFile]);
     expect(wrapper.emitted("move")?.[0]).toEqual([imageFile]);
     expect(wrapper.emitted("delete")?.[0]).toEqual([imageFile.pathname]);
+  });
+
+  it("only renders the raw URL copy action for non-image files", () => {
+    const textFile = { ...imageFile, pathname: "notes.txt", contentType: "text/plain" };
+    const wrapper = mountTable({ folders: [], files: [textFile] });
+    const directActions = wrapper.get("[data-direct-actions]");
+
+    expect(directActions.find('[data-action="copy-raw"]').exists()).toBe(true);
+    expect(directActions.find('[data-action="copy-markdown"]').exists()).toBe(false);
   });
 
   it("navigates folder rows without rendering folder checkboxes", async () => {
