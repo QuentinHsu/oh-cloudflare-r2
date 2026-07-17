@@ -4,6 +4,15 @@ import { mount } from "@vue/test-utils";
 import AppSidebar from "../../app/components/AppSidebar.vue";
 import type { FolderNode } from "../../app/components/file-manager/types";
 
+const sidebarContext = vi.hoisted(() => ({
+  isMobile: { value: true },
+  setOpenMobile: vi.fn<(open: boolean) => void>(),
+}));
+
+vi.mock("../../app/components/ui/sidebar/utils", () => ({
+  useSidebar: () => sidebarContext,
+}));
+
 const WrapperStub = defineComponent({
   inheritAttrs: false,
   setup(_, { attrs, slots }) {
@@ -82,7 +91,10 @@ function mountSidebar() {
 }
 
 describe("AppSidebar", () => {
-  afterEach(() => vi.unstubAllGlobals());
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    sidebarContext.setOpenMobile.mockClear();
+  });
 
   it("navigates to the selected folder", async () => {
     const wrapper = mountSidebar();
@@ -90,6 +102,16 @@ describe("AppSidebar", () => {
     await wrapper.get('[data-folder-path="images"]').trigger("click");
 
     expect(wrapper.emitted("navigate")?.at(-1)).toEqual(["images"]);
+    expect(sidebarContext.setOpenMobile).toHaveBeenCalledWith(false);
+  });
+
+  it("closes the mobile drawer after root navigation", async () => {
+    const wrapper = mountSidebar();
+
+    await wrapper.get('[data-folder-path=""]').trigger("click");
+
+    expect(wrapper.emitted("navigate")?.at(-1)).toEqual([""]);
+    expect(sidebarContext.setOpenMobile).toHaveBeenCalledWith(false);
   });
 
   it("keeps expansion separate from navigation", async () => {

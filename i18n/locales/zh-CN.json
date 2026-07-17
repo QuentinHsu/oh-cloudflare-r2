@@ -10,6 +10,7 @@
     "appearance": "外观",
     "language": "语言",
     "account": "账户",
+    "toggle": "切换侧边栏",
     "collapse": "收起侧边栏",
     "expand": "展开侧边栏"
   },
@@ -69,6 +70,7 @@
     }
   },
   "stats": {
+    "summary": "目录摘要",
     "files": "文件",
     "images": "{count} 张图片",
     "storage": "存储空间",
@@ -157,6 +159,19 @@
   },
   "errors": {
     "storageUnavailable": "存储服务暂时不可用",
+    "file": {
+      "INVALID_PATH": "文件路径无效",
+      "INVALID_FILE": "文件无效",
+      "SOURCE_NOT_FOUND": "源文件不存在",
+      "DESTINATION_EXISTS": "目标文件已存在",
+      "SOURCE_EQUALS_DESTINATION": "源路径与目标路径相同",
+      "STORAGE_READ_FAILED": "存储服务暂时不可用",
+      "STORAGE_WRITE_FAILED": "文件写入失败",
+      "STORAGE_DELETE_FAILED": "文件删除失败",
+      "MOVE_PARTIALLY_COMPLETED": "目标副本已创建，但源文件删除失败：{source} → {destination}",
+      "UNAUTHORIZED": "请先登录",
+      "FORBIDDEN": "无权执行此操作"
+    },
     "partial": {
       "title": "部分操作未完成",
       "description": "已完成 {completed} 项，失败 {failed} 项。"

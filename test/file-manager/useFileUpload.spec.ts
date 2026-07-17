@@ -61,6 +61,25 @@ describe("useFileUpload", () => {
     expect(notify.error).toHaveBeenCalledWith("文件写入失败");
   });
 
+  it("keeps the upload dialog open while a request is pending", async () => {
+    let resolveUpload: ((value: { files: [] }) => void) | undefined;
+    upload.mockImplementationOnce(
+      () => new Promise((resolve) => (resolveUpload = resolve as (value: { files: [] }) => void)),
+    );
+    const state = createUpload();
+    state.handleFilesSelected([new File(["cat"], "cat.txt")]);
+
+    const pending = state.confirmUpload();
+    state.cancelUpload();
+    state.handleUploadDialogOpenChange(false);
+
+    expect(state.showUploadDialog.value).toBe(true);
+    expect(state.pendingFiles.value).toHaveLength(1);
+
+    resolveUpload?.({ files: [] });
+    await pending;
+  });
+
   it("warns when refresh fails after a successful upload", async () => {
     refreshFiles.mockRejectedValueOnce(new Error("stale"));
     const state = createUpload();

@@ -10,6 +10,7 @@ const props = defineProps<{
 }>();
 
 const { toggleSidebar } = useSidebar();
+const { t } = useI18n();
 </script>
 
 <template>
@@ -18,9 +19,9 @@ const { toggleSidebar } = useSidebar();
     variant="ghost"
     size="icon"
     :class="cn('h-7 w-7', props.class)"
+    :aria-label="t('sidebar.toggle')"
     @click="toggleSidebar"
   >
-    <PanelLeft />
-    <span class="sr-only">Toggle Sidebar</span>
+    <PanelLeft aria-hidden="true" />
   </Button>
 </template>

@@ -123,7 +123,9 @@ describe("FileTable", () => {
     const wrapper = mountTable({ files: [], folders: ["docs"] });
     expect(wrapper.find('[data-folder="docs"] [role="checkbox"]').exists()).toBe(false);
 
-    await wrapper.get('[data-folder="docs"]').trigger("click");
+    const folderButton = wrapper.get('button[data-folder="docs"]');
+    expect(folderButton.attributes("type")).toBe("button");
+    await folderButton.trigger("click");
 
     expect(wrapper.emitted("navigate-folder")).toEqual([["docs"]]);
   });

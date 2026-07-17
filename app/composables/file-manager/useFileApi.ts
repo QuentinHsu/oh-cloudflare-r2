@@ -43,6 +43,7 @@ function readFailureBody(value: unknown): FileApiError | null {
 }
 
 const DEFAULT_STORAGE_ERROR = "Storage is temporarily unavailable";
+type Translate = (key: string, values?: Record<string, unknown>) => string;
 
 export function readFileApiError(
   error: unknown,
@@ -51,6 +52,15 @@ export function readFileApiError(
   if (isFileApiError(error)) return error;
   const failure = readFailureBody(error);
   return failure ?? { code: "STORAGE_READ_FAILED", message: fallbackMessage };
+}
+
+export function formatFileApiError(error: unknown, translate: Translate): string {
+  const failure = readFileApiError(error);
+  const source = typeof failure.details?.source === "string" ? failure.details.source : "";
+  const destination =
+    typeof failure.details?.destination === "string" ? failure.details.destination : "";
+
+  return translate(`errors.file.${failure.code}`, { source, destination });
 }
 
 async function unwrap<T>(request: Promise<unknown>, fallbackMessage: string): Promise<T> {

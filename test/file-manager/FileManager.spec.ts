@@ -280,6 +280,15 @@ describe("FileManager view workflow", () => {
     expect(wrapper.get('[data-sort-direction="value"]').text()).toBe("asc");
   });
 
+  it("clears selection when navigating to another directory", async () => {
+    const wrapper = await mountManager();
+    await wrapper.get('[data-action="select-all"]').trigger("click");
+
+    await wrapper.get('[data-action="navigate-folder"]').trigger("click");
+
+    expect(wrapper.get('[data-selected="value"]').text()).toBe("");
+  });
+
   it("shows drag feedback and opens the existing upload dialog after drop", async () => {
     const wrapper = await mountManager();
     const file = new File(["notes"], "notes.txt");
@@ -312,7 +321,6 @@ describe("FileManager view workflow", () => {
   });
 
   it("sends one batch request and retains only failed selections", async () => {
-    vi.spyOn(window, "confirm").mockReturnValue(true);
     request.mockResolvedValueOnce({
       ok: true,
       data: {

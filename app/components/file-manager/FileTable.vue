@@ -149,16 +149,19 @@ function updateSortField(value: unknown) {
           <TableRow
             v-for="folder in props.folders"
             :key="`folder:${folder}`"
-            :data-folder="folder"
-            class="cursor-pointer"
-            @click="emit('navigate-folder', folder)"
+            :data-folder-row="folder"
           >
             <TableCell />
             <TableCell data-column="name">
-              <div class="flex min-w-0 items-center gap-2 font-medium">
-                <Folder class="size-4 shrink-0 text-muted-foreground" />
+              <button
+                type="button"
+                :data-folder="folder"
+                class="flex min-h-11 w-full min-w-0 items-center gap-2 text-left font-medium hover:underline md:min-h-8"
+                @click="emit('navigate-folder', folder)"
+              >
+                <Folder class="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
                 <span class="truncate">{{ folder }}</span>
-              </div>
+              </button>
             </TableCell>
             <TableCell data-column="type" class="text-muted-foreground">
               {{ t("stats.folders") }}
@@ -169,7 +172,9 @@ function updateSortField(value: unknown) {
             <TableCell data-column="updatedAt" class="hidden text-muted-foreground md:table-cell">
               —
             </TableCell>
-            <TableCell><ChevronRight class="ml-auto size-4 text-muted-foreground" /></TableCell>
+            <TableCell>
+              <ChevronRight class="ml-auto size-4 text-muted-foreground" aria-hidden="true" />
+            </TableCell>
           </TableRow>
 
           <TableRow

@@ -9,6 +9,12 @@ const themes = [
   { value: "dark", icon: Moon, labelKey: "theme.dark" },
   { value: "system", icon: Monitor, labelKey: "theme.system" },
 ] as const;
+
+function updateTheme(value: unknown) {
+  if (value === "light" || value === "dark" || value === "system") {
+    colorMode.preference = value;
+  }
+}
 </script>
 
 <template>
@@ -31,14 +37,12 @@ const themes = [
       </Button>
     </DropdownMenuTrigger>
     <DropdownMenuContent align="end">
-      <DropdownMenuItem
-        v-for="theme in themes"
-        :key="theme.value"
-        @click="colorMode.preference = theme.value"
-      >
-        <component :is="theme.icon" class="size-4" aria-hidden="true" />
-        {{ t(theme.labelKey) }}
-      </DropdownMenuItem>
+      <DropdownMenuRadioGroup :model-value="colorMode.preference" @update:model-value="updateTheme">
+        <DropdownMenuRadioItem v-for="theme in themes" :key="theme.value" :value="theme.value">
+          <component :is="theme.icon" class="size-4" aria-hidden="true" />
+          {{ t(theme.labelKey) }}
+        </DropdownMenuRadioItem>
+      </DropdownMenuRadioGroup>
     </DropdownMenuContent>
   </DropdownMenu>
 </template>

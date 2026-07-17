@@ -32,6 +32,7 @@ describe("dashboard responsive and theme contract", () => {
 
     expect(businessSources).not.toMatch(/bg-white|text-black|(?:bg|text|border)-gray-/);
     expect(styles).toContain("@media (prefers-reduced-motion: reduce)");
+    expect(styles).toMatch(/--destructive-foreground:\s*oklch\(0\.985 0 0\)/);
   });
 
   it("keeps user-facing copy in locale resources", () => {
@@ -78,5 +79,13 @@ describe("dashboard responsive and theme contract", () => {
     expect(dialogPrimitives).toContain("max-h-[calc(100vh-2rem)]");
     expect(folderDialogs).not.toMatch(/<div[^>]*@click=/);
     expect(alertActions).toContain("min-h-11");
+  });
+
+  it("gives every primary mobile navigation control an explicit touch target", () => {
+    const sidebar = readFileSync("app/components/AppSidebar.vue", "utf8");
+    const header = readFileSync("app/components/file-manager/FileDashboardHeader.vue", "utf8");
+
+    expect(sidebar).toMatch(/class="min-h-11 md:min-h-8"[\s\S]{0,100}data-folder-path=""/);
+    expect(header).toMatch(/class="flex min-h-11[^"]*"[\s\S]{0,100}:data-path-index="index"/);
   });
 });

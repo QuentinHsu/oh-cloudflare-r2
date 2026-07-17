@@ -7,7 +7,7 @@ import {
   type FileOperationTranslate,
 } from "./fileOperationUtils";
 import type { FileApi } from "./useFileApi";
-import { readFileApiError } from "./useFileApi";
+import { formatFileApiError } from "./useFileApi";
 
 interface BatchFileOperationsDependencies {
   api: Pick<FileApi, "batch">;
@@ -55,9 +55,7 @@ export function useBatchFileOperations(dependencies: BatchFileOperationsDependen
           typeof item.error.details?.source === "string" &&
           typeof item.error.details.destination === "string"
         ) {
-          dependencies.notify.error(
-            `${item.error.message}：${item.error.details.source} → ${item.error.details.destination}`,
-          );
+          dependencies.notify.error(formatFileApiError(item.error, dependencies.translate));
         }
       }
     }
@@ -101,7 +99,7 @@ export function useBatchFileOperations(dependencies: BatchFileOperationsDependen
       await handleResolvedBatch(await dependencies.api.batch(operations));
       showBatchDeleteDialog.value = false;
     } catch (error: unknown) {
-      dependencies.notify.error(readFileApiError(error).message);
+      dependencies.notify.error(formatFileApiError(error, dependencies.translate));
     } finally {
       isBatchDeleting.value = false;
     }
@@ -139,7 +137,7 @@ export function useBatchFileOperations(dependencies: BatchFileOperationsDependen
       const successCount = await handleResolvedBatch(await dependencies.api.batch(operations));
       if (successCount > 0) closeBatchMoveDialog();
     } catch (error: unknown) {
-      dependencies.notify.error(readFileApiError(error).message);
+      dependencies.notify.error(formatFileApiError(error, dependencies.translate));
     } finally {
       isBatchMoving.value = false;
     }

@@ -172,16 +172,19 @@ function handleCopyUrl(payload: CopyUrlPayload) {
 function handleNavigateFolder(folder: string) {
   navigateToFolder(folder);
   clearSearch();
+  clearSelection();
 }
 
 function handleNavigateDirectory(path: string) {
   navigateToDirectory(path);
   clearSearch();
+  clearSelection();
 }
 
 function handleNavigatePath(index: number) {
   navigateToPath(index);
   clearSearch();
+  clearSelection();
 }
 
 function triggerUpload() {

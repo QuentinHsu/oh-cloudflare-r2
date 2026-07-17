@@ -11,7 +11,7 @@ import {
   type FileOperationTranslate,
 } from "./fileOperationUtils";
 import type { FileApi } from "./useFileApi";
-import { readFileApiError } from "./useFileApi";
+import { formatFileApiError, readFileApiError } from "./useFileApi";
 
 interface FileOperationsDependencies {
   api: Pick<FileApi, "execute">;
@@ -20,18 +20,6 @@ interface FileOperationsDependencies {
   expandPathParents: (path: string) => void;
   notify: FileOperationNotify;
   translate: FileOperationTranslate;
-}
-
-function formatOperationError(error: unknown) {
-  const failure = readFileApiError(error);
-  if (
-    failure.code === "MOVE_PARTIALLY_COMPLETED" &&
-    typeof failure.details?.source === "string" &&
-    typeof failure.details.destination === "string"
-  ) {
-    return `${failure.message}：${failure.details.source} → ${failure.details.destination}`;
-  }
-  return failure.message;
 }
 
 export function useFileOperations(dependencies: FileOperationsDependencies) {
@@ -79,7 +67,7 @@ export function useFileOperations(dependencies: FileOperationsDependencies) {
       showDeleteDialog.value = false;
       deletePath.value = "";
     } catch (error: unknown) {
-      dependencies.notify.error(formatOperationError(error));
+      dependencies.notify.error(formatFileApiError(error, dependencies.translate));
     } finally {
       isDeleting.value = false;
     }
@@ -127,7 +115,7 @@ export function useFileOperations(dependencies: FileOperationsDependencies) {
         dependencies.translate,
       );
     } catch (error: unknown) {
-      dependencies.notify.error(formatOperationError(error));
+      dependencies.notify.error(formatFileApiError(error, dependencies.translate));
       if (readFileApiError(error).code === "MOVE_PARTIALLY_COMPLETED") {
         await refreshFileIndexes(
           dependencies.refreshFiles,
@@ -193,7 +181,7 @@ export function useFileOperations(dependencies: FileOperationsDependencies) {
         dependencies.translate,
       );
     } catch (error: unknown) {
-      dependencies.notify.error(formatOperationError(error));
+      dependencies.notify.error(formatFileApiError(error, dependencies.translate));
       if (readFileApiError(error).code === "MOVE_PARTIALLY_COMPLETED") {
         await refreshFileIndexes(
           dependencies.refreshFiles,

@@ -79,7 +79,12 @@ function onPathInput(event: Event) {
       </div>
 
       <DialogFooter>
-        <Button variant="ghost" class="min-h-11 md:min-h-9" @click="emit('cancel')">
+        <Button
+          variant="ghost"
+          class="min-h-11 md:min-h-9"
+          :disabled="props.isUploading"
+          @click="emit('cancel')"
+        >
           {{ t("upload.cancel") }}
         </Button>
         <Button class="min-h-11 md:min-h-9" :disabled="props.isUploading" @click="emit('confirm')">

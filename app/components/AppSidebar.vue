@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { HardDrive, Home, Upload } from "@lucide/vue";
 import { ref } from "vue";
+import { useSidebar } from "./ui/sidebar/utils";
 import type { FileListLike, FolderNode } from "./file-manager/types";
 
 const props = defineProps<{
@@ -17,10 +18,16 @@ const emit = defineEmits<{
 }>();
 
 const { t } = useI18n();
+const { isMobile, setOpenMobile } = useSidebar();
 const fileInputRef = ref<HTMLInputElement | null>(null);
 
 function triggerUpload() {
   fileInputRef.value?.click();
+}
+
+function navigate(path: string) {
+  emit("navigate", path);
+  if (isMobile.value) setOpenMobile(false);
 }
 
 function handleFileChange(event: Event) {
@@ -73,8 +80,9 @@ function handleFileChange(event: Event) {
               <SidebarMenuButton
                 :is-active="props.currentPath === ''"
                 :tooltip="t('sidebar.root')"
+                class="min-h-11 md:min-h-8"
                 data-folder-path=""
-                @click="emit('navigate', '')"
+                @click="navigate('')"
               >
                 <Home class="size-4" />
                 <span>{{ t("sidebar.root") }}</span>
@@ -89,7 +97,7 @@ function handleFileChange(event: Event) {
               :node="node"
               :selected="props.currentPath"
               :expanded="props.expandedFolders"
-              @select="emit('navigate', $event)"
+              @select="navigate"
               @toggle="emit('toggle-folder', $event)"
             />
           </div>

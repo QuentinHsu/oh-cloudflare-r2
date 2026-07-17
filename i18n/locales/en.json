@@ -10,6 +10,7 @@
     "appearance": "Appearance",
     "language": "Language",
     "account": "Account",
+    "toggle": "Toggle sidebar",
     "collapse": "Collapse sidebar",
     "expand": "Expand sidebar"
   },
@@ -69,6 +70,7 @@
     }
   },
   "stats": {
+    "summary": "Directory summary",
     "files": "Files",
     "images": "{count} images",
     "storage": "Storage",
@@ -157,6 +159,19 @@
   },
   "errors": {
     "storageUnavailable": "Storage is temporarily unavailable",
+    "file": {
+      "INVALID_PATH": "The file path is invalid",
+      "INVALID_FILE": "The file is invalid",
+      "SOURCE_NOT_FOUND": "The source file no longer exists",
+      "DESTINATION_EXISTS": "A file already exists at the destination",
+      "SOURCE_EQUALS_DESTINATION": "The source and destination are the same",
+      "STORAGE_READ_FAILED": "Storage is temporarily unavailable",
+      "STORAGE_WRITE_FAILED": "The file could not be written",
+      "STORAGE_DELETE_FAILED": "The file could not be deleted",
+      "MOVE_PARTIALLY_COMPLETED": "The file was copied, but the original could not be removed: {source} → {destination}",
+      "UNAUTHORIZED": "Sign in to continue",
+      "FORBIDDEN": "You do not have permission to perform this action"
+    },
     "partial": {
       "title": "Some operations did not complete",
       "description": "{completed} completed and {failed} failed."

@@ -42,7 +42,12 @@ const { t } = useI18n();
               {{ part }}
             </BreadcrumbPage>
             <BreadcrumbLink v-else as-child>
-              <button type="button" :data-path-index="index" @click="emit('navigate', index)">
+              <button
+                type="button"
+                class="flex min-h-11 items-center px-2 md:min-h-8"
+                :data-path-index="index"
+                @click="emit('navigate', index)"
+              >
                 {{ part }}
               </button>
             </BreadcrumbLink>

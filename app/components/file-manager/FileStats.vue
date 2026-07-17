@@ -13,7 +13,7 @@ const { t } = useI18n();
 </script>
 
 <template>
-  <section class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4" aria-label="Directory summary">
+  <section class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4" :aria-label="t('stats.summary')">
     <Card data-stat-card="files">
       <CardHeader class="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle class="text-sm font-medium">{{ t("stats.files") }}</CardTitle>

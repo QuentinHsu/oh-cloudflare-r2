@@ -1,6 +1,6 @@
 import { ref, type Ref } from "vue";
 import type { FileApi } from "./useFileApi";
-import { readFileApiError } from "./useFileApi";
+import { formatFileApiError } from "./useFileApi";
 import {
   refreshFileIndexes,
   type FileOperationNotify,
@@ -70,14 +70,19 @@ export function useFileUpload(dependencies: FileUploadDependencies) {
     }
   }
 
-  function cancelUpload() {
+  function resetUpload() {
     showUploadDialog.value = false;
     pendingFiles.value = null;
   }
 
+  function cancelUpload() {
+    if (isUploading.value) return;
+    resetUpload();
+  }
+
   function handleUploadDialogOpenChange(open: boolean) {
     if (open) showUploadDialog.value = true;
-    else cancelUpload();
+    else if (!isUploading.value) cancelUpload();
   }
 
   function selectFolder(path: string) {
@@ -94,7 +99,7 @@ export function useFileUpload(dependencies: FileUploadDependencies) {
     try {
       await dependencies.api.upload(formData);
       dependencies.notify.success(dependencies.translate("notifications.uploadSuccess"));
-      cancelUpload();
+      resetUpload();
       await refreshFileIndexes(
         dependencies.refreshFiles,
         dependencies.refreshFolders,
@@ -102,7 +107,7 @@ export function useFileUpload(dependencies: FileUploadDependencies) {
         dependencies.translate,
       );
     } catch (error: unknown) {
-      dependencies.notify.error(readFileApiError(error).message);
+      dependencies.notify.error(formatFileApiError(error, dependencies.translate));
     } finally {
       isUploading.value = false;
     }
