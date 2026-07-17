@@ -28,6 +28,7 @@
     "title": "{name}",
     "rootTitle": "All files",
     "description": "Manage files and folders in this directory",
+    "typeUnknown": "File",
     "search": "Search this folder…",
     "clearSearch": "Clear search",
     "results": "{count} results",

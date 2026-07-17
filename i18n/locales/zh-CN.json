@@ -28,6 +28,7 @@
     "title": "{name}",
     "rootTitle": "全部文件",
     "description": "管理当前目录中的文件和文件夹",
+    "typeUnknown": "文件",
     "search": "搜索当前文件夹…",
     "clearSearch": "清除搜索",
     "results": "找到 {count} 项",
