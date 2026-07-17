@@ -17,10 +17,10 @@ async function logout() {
       <Button
         variant="ghost"
         size="icon"
-        class="relative size-11 rounded-full md:size-9"
+        class="relative size-11 rounded-full md:size-9 group-data-[collapsible=icon]:size-8"
         :aria-label="t('sidebar.account')"
       >
-        <Avatar class="size-9">
+        <Avatar class="size-9 group-data-[collapsible=icon]:size-8">
           <AvatarImage v-if="user?.avatar_url" :src="user.avatar_url" :alt="user.login" />
           <AvatarFallback>
             <User class="size-4" aria-hidden="true" />

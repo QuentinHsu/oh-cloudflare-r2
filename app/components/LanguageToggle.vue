@@ -16,7 +16,7 @@ function selectLocale(code: SupportedLocale) {
       <Button
         variant="ghost"
         size="icon"
-        class="size-11 md:size-8"
+        class="size-11 md:size-8 group-data-[collapsible=icon]:size-8"
         :aria-label="t('locale.toggle')"
       >
         <Languages class="size-4" />

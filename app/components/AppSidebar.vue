@@ -61,7 +61,7 @@ function handleFileChange(event: Event) {
       </SidebarMenu>
 
       <Button
-        class="h-11 w-full justify-start md:h-9"
+        class="h-11 w-full justify-start md:h-9 group-data-[collapsible=icon]:size-8 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-0"
         :disabled="props.isUploading"
         @click="triggerUpload"
       >
@@ -90,7 +90,7 @@ function handleFileChange(event: Event) {
             </SidebarMenuItem>
           </SidebarMenu>
 
-          <div class="mt-1 space-y-0.5">
+          <div data-folder-tree class="mt-1 space-y-0.5 group-data-[collapsible=icon]:hidden">
             <FolderTreeNode
               v-for="node in props.folderTree"
               :key="node.path"
@@ -106,7 +106,9 @@ function handleFileChange(event: Event) {
     </SidebarContent>
 
     <SidebarFooter>
-      <div class="flex items-center justify-between gap-1 group-data-[collapsible=icon]:flex-col">
+      <div
+        class="flex items-center justify-between gap-1 group-data-[collapsible=icon]:flex-col group-data-[collapsible=icon]:gap-0"
+      >
         <ThemeToggle />
         <LanguageToggle />
         <UserMenu />

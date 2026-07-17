@@ -91,4 +91,15 @@ describe("dashboard responsive and theme contract", () => {
       /class="flex min-h-11 min-w-11[^"]*"[\s\S]{0,100}:data-path-index="index"/,
     );
   });
+
+  it("keeps the collapsed sidebar in a single aligned icon column", () => {
+    const sidebar = readFileSync("app/components/AppSidebar.vue", "utf8");
+    const themeToggle = readFileSync("app/components/ThemeToggle.vue", "utf8");
+    const userMenu = readFileSync("app/components/UserMenu.vue", "utf8");
+
+    expect(sidebar).toMatch(/group-data-\[collapsible=icon\]:size-8/);
+    expect(sidebar).toMatch(/data-folder-tree[^>]*group-data-\[collapsible=icon\]:hidden/);
+    expect(themeToggle).toContain("group-data-[collapsible=icon]:size-8");
+    expect(userMenu).toContain("group-data-[collapsible=icon]:size-8");
+  });
 });

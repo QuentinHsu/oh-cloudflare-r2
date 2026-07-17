@@ -23,7 +23,7 @@ function updateTheme(value: unknown) {
       <Button
         variant="ghost"
         size="icon"
-        class="relative size-11 md:size-9"
+        class="relative size-11 md:size-9 group-data-[collapsible=icon]:size-8"
         :aria-label="t('theme.toggle')"
       >
         <Sun
